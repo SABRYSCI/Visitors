@@ -3,172 +3,307 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>برنامج تحليل الزيارات الصفية</title>
+  <title>برنامج تحليل الزيارات الصفية المتطور</title>
+  
+  <!-- إعدادات Tailwind CSS والوضع الداكن -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { fontFamily: { sans: ['Tajawal', 'sans-serif'] } } }
+    }
+  </script>
+  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  
   <style>
-    body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; }
+    body { font-family: 'Tajawal', sans-serif; }
+    
     /* تنسيقات الطباعة الاحترافية */
     @media print {
-      body { background: white; }
+      body, html { background: white !important; color: black !important; }
       .no-print { display: none !important; }
       .print-only { display: block !important; }
       @page { margin: 1cm; size: A4 portrait; }
       .print-header { text-align: center; margin-bottom: 20px; }
       table { width: 100%; border-collapse: collapse; margin-top: 15px; direction: rtl;}
-      th, td { border: 1px solid #000; padding: 8px; text-align: center; font-size: 12px; }
+      th, td { border: 1px solid #000 !important; padding: 8px; text-align: center; font-size: 12px; color: black !important; }
       th { background-color: #e2e8f0 !important; -webkit-print-color-adjust: exact; font-weight: bold;}
       .signatures { display: flex; justify-content: space-between; margin-top: 50px; font-size: 12px; }
     }
     .print-only { display: none; }
   </style>
 </head>
-<body class="text-slate-800">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col">
 
-  <!-- الشريط العلوي -->
-  <header class="bg-gradient-to-r from-red-900 to-red-700 text-white shadow-md no-print p-4 flex justify-between items-center">
-    <div class="flex items-center gap-3">
-      <i class="fa-solid fa-chart-pie text-3xl"></i>
-      <div>
-        <h1 class="text-xl font-bold">برنامج تحليل الزيارات الصفية</h1>
-        <p class="text-xs text-red-200" id="schoolNameHeader">جاري التحميل...</p>
+  <!-- ================= شاشة تسجيل الدخول ================= -->
+  <div id="loginScreen" class="fixed inset-0 bg-slate-100 dark:bg-slate-900 z-50 flex items-center justify-center px-4 transition-opacity duration-500">
+    <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-slate-700">
+      <div class="w-20 h-20 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl shadow-inner">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <h2 class="text-2xl font-bold mb-2 text-slate-800 dark:text-white">برنامج تحليل الزيارات الصفية المتطور</h2>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mb-8">الرجاء إدخال كلمة المرور للوصول للنظام</p>
+      
+      <input type="password" id="loginPass" class="w-full border border-slate-300 dark:border-slate-600 p-3 rounded-xl mb-4 text-center text-lg bg-slate-50 dark:bg-slate-700 focus:ring-2 focus:ring-red-600 outline-none" placeholder="كلمة المرور">
+      <p id="loginError" class="text-red-500 text-sm mb-4 hidden font-bold">كلمة المرور غير صحيحة!</p>
+      
+      <button onclick="checkLogin()" class="w-full bg-gradient-to-r from-red-800 to-red-600 hover:from-red-900 hover:to-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition transform hover:scale-[1.02]">
+        تسجيل الدخول <i class="fa-solid fa-arrow-right-to-bracket ml-2"></i>
+      </button>
+      
+      <div class="mt-8 pt-4 border-t border-slate-100 dark:border-slate-700 text-xs text-slate-400">
+        إعداد وتصميم أ.صبري محمد حمد 36864227
       </div>
     </div>
-    <div class="flex gap-2">
-      <button onclick="switchTab('tab-entry')" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded font-bold transition"><i class="fa-solid fa-plus"></i> زيارة جديدة</button>
-      <button onclick="switchTab('tab-reports')" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded font-bold transition"><i class="fa-solid fa-print"></i> التقارير</button>
-    </div>
-  </header>
+  </div>
 
-  <main class="max-w-7xl mx-auto p-4">
-
-    <!-- شاشة إدخال الزيارة -->
-    <section id="tab-entry" class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-      <h2 class="text-xl font-bold mb-4 border-b pb-2"><i class="fa-solid fa-file-signature text-red-700"></i> إدخال زيارة صفية</h2>
-      <form id="visitForm" onsubmit="saveVisit(event)">
-        <!-- البيانات الأولية -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-6">
+  <!-- ================= واجهة النظام الرئيسية ================= -->
+  <div id="mainApp" class="hidden flex-col flex-1">
+    
+    <!-- الشريط العلوي -->
+    <header class="bg-gradient-to-r from-red-900 to-red-700 text-white shadow-md no-print">
+      <div class="max-w-7xl mx-auto p-4 flex justify-between items-center">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('tab-home')">
+          <i class="fa-solid fa-chart-pie text-3xl"></i>
           <div>
-            <label class="text-sm font-bold block mb-1">العام الدراسي</label>
-            <input type="text" id="v_year" class="w-full border p-2 rounded" required>
-          </div>
-          <div>
-            <label class="text-sm font-bold block mb-1">الشهر/الفصل</label>
-            <input type="text" id="v_semester" class="w-full border p-2 rounded" placeholder="مثال: 9 أو الفصل الأول" required>
-          </div>
-          <div>
-            <label class="text-sm font-bold block mb-1">التاريخ</label>
-            <input type="date" id="v_date" class="w-full border p-2 rounded" required>
-          </div>
-          <div>
-            <label class="text-sm font-bold block mb-1 text-red-700">الحكم النهائي للزيارة</label>
-            <select id="v_final" class="w-full border p-2 rounded font-bold text-red-700" required>
-              <option value="ممتاز = يتجاوز التوقعات بكثير">ممتاز = يتجاوز التوقعات بكثير</option>
-              <option value="جيد = يتجاوز التوقعات">جيد = يتجاوز التوقعات</option>
-              <option value="مرض = يفي بالتوقعات تماما">مرض = يفي بالتوقعات تماما</option>
-              <option value="غير ملائم = يفي بالتوقعات جزئيا">غير ملائم = يفي بالتوقعات جزئيا</option>
-            </select>
-          </div>
-          <div>
-            <label class="text-sm font-bold block mb-1">اسم المعلم</label>
-            <select id="v_teacher" onchange="fillTeacherData()" class="w-full border p-2 rounded" required><option value="">اختر المعلم</option></select>
-          </div>
-          <div>
-            <label class="text-sm font-bold block mb-1">المادة/القسم</label>
-            <input type="text" id="v_subject" class="w-full border p-2 rounded bg-slate-100" readonly>
-            <input type="hidden" id="v_cpr">
-          </div>
-          <div>
-            <label class="text-sm font-bold block mb-1">اسم الزائر</label>
-            <select id="v_visitor" onchange="fillVisitorData()" class="w-full border p-2 rounded" required><option value="">اختر الزائر</option></select>
-          </div>
-          <div>
-            <label class="text-sm font-bold block mb-1">المسمى الوظيفي</label>
-            <input type="text" id="v_job" class="w-full border p-2 rounded bg-slate-100" readonly>
+            <h1 class="text-xl font-bold">برنامج تحليل الزيارات الصفية</h1>
+            <p class="text-xs text-red-200" id="schoolNameHeader">جاري التحميل...</p>
           </div>
         </div>
-
-        <!-- المعايير الـ 18 -->
-        <div id="criteriaContainer" class="space-y-2 mb-6"></div>
-
-        <!-- خيار إرسال الإيميل -->
-        <input type="hidden" id="v_email">
-        <div class="mb-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
-          <label class="flex items-center gap-3 font-bold text-slate-700 cursor-pointer">
-            <input type="checkbox" id="v_send_email" checked class="w-5 h-5 accent-red-700">
-            إرسال نسخة من التقرير فوراً إلى الإيميل الشخصي للمعلم
-          </label>
-          <p class="text-xs text-slate-500 mt-1 mr-8" id="teacherEmailDisplay">سيتم تحديد الإيميل تلقائياً عند اختيار المعلم.</p>
+        <div class="flex gap-2 items-center">
+          <button onclick="switchTab('tab-home')" class="hidden md:block bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg font-bold transition"><i class="fa-solid fa-house"></i> الرئيسية</button>
+          <!-- زر التبديل للوضع الداكن -->
+          <button onclick="toggleDarkMode()" class="bg-slate-800/50 hover:bg-slate-800 px-4 py-2 rounded-lg font-bold transition shadow-inner">
+            <i id="themeIcon" class="fa-solid fa-moon"></i>
+          </button>
         </div>
-
-        <button type="submit" id="saveBtn" class="bg-red-700 text-white px-8 py-3 rounded font-bold hover:bg-red-800 w-full md:w-auto transition">
-          <i class="fa-solid fa-save"></i> حفظ الزيارة السحابية
-        </button>
-      </form>
-    </section>
-
-    <!-- شاشة التقارير والطباعة -->
-    <section id="tab-reports" class="hidden">
-      <!-- أزرار الفلترة -->
-      <div class="bg-white p-4 rounded-lg shadow-sm mb-4 border border-slate-200 no-print flex gap-4 items-end flex-wrap">
-        <div>
-          <label class="text-sm font-bold block mb-1">نوع التقرير</label>
-          <select id="reportType" class="border p-2 rounded w-48 bg-slate-50">
-            <option value="all">إحصائية المدرسة كاملة</option>
-            <option value="dept">تحليل حسب القسم</option>
-            <option value="teacher">تحليل حسب المعلم</option>
-            <option value="visitor">تحليل حسب المقيم</option>
-          </select>
-        </div>
-        <button onclick="generateReport()" class="bg-amber-500 text-slate-900 px-6 py-2 rounded font-bold hover:bg-amber-600 shadow transition">استخراج التقرير</button>
-        <button onclick="window.print()" class="bg-slate-700 text-white px-6 py-2 rounded font-bold hover:bg-slate-800 shadow transition"><i class="fa-solid fa-print"></i> طباعة PDF</button>
       </div>
+      
+      <!-- شريط الوقت والتاريخ -->
+      <div class="bg-red-950/40 text-center py-2 text-sm font-medium border-t border-white/10 backdrop-blur-sm">
+        <i class="fa-regular fa-calendar ml-1"></i> <span id="clockDisplay"></span>
+      </div>
+    </header>
 
-      <!-- منطقة التقرير المطبوع -->
-      <div id="printArea" class="bg-white p-8 rounded-lg shadow-sm border border-slate-200 min-h-[500px] text-slate-800">
-        <!-- الترويسة المخصصة للطباعة -->
-        <div class="print-header print-only">
-          <!-- الترويسة الذهبية -->
-          <img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt="ترويسة المدرسة" class="w-full h-auto mb-4 mx-auto" style="max-height: 160px; object-fit: contain;">
+    <main class="max-w-7xl mx-auto p-4 w-full flex-1 flex flex-col">
+
+      <!-- شاشة الاختيار (الرئيسية) -->
+      <section id="tab-home" class="flex-1 flex flex-col items-center justify-center py-10">
+        <h2 class="text-2xl font-bold mb-8 text-slate-700 dark:text-slate-200 text-center">أهلاً بك في النظام المطور، ماذا تريد أن تفعل؟</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
           
-          <!-- عنوان التقرير -->
-          <h3 class="font-bold text-lg mt-4 text-center border-b-2 border-slate-300 pb-2 inline-block" id="printReportTitle">ملخص نتائج الزيارات الصفية للمدرسة للعام الدراسي</h3>
+          <button onclick="switchTab('tab-entry')" class="group bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-100 dark:border-slate-700 flex flex-col items-center gap-4 transform hover:-translate-y-2">
+            <div class="w-24 h-24 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-file-signature text-5xl text-red-700 dark:text-red-500"></i>
+            </div>
+            <span class="text-2xl font-bold text-slate-800 dark:text-white">إدخال زيارة صفية جديدة</span>
+            <span class="text-sm text-slate-500 dark:text-slate-400">تسجيل بيانات زيارة وتقييم المعلم</span>
+          </button>
+
+          <button onclick="switchTab('tab-reports')" class="group bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-100 dark:border-slate-700 flex flex-col items-center gap-4 transform hover:-translate-y-2">
+            <div class="w-24 h-24 bg-amber-50 dark:bg-amber-900/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-chart-line text-5xl text-amber-500"></i>
+            </div>
+            <span class="text-2xl font-bold text-slate-800 dark:text-white">استخراج التقارير</span>
+            <span class="text-sm text-slate-500 dark:text-slate-400">عرض الإحصائيات وطباعة التقارير كـ PDF</span>
+          </button>
+          
+        </div>
+      </section>
+
+      <!-- شاشة إدخال الزيارة -->
+      <section id="tab-entry" class="hidden bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="flex justify-between items-center mb-6 border-b dark:border-slate-700 pb-4">
+          <h2 class="text-xl font-bold text-slate-800 dark:text-white"><i class="fa-solid fa-file-signature text-red-700 dark:text-red-500"></i> إدخال زيارة صفية</h2>
+          <button onclick="switchTab('tab-home')" class="text-sm bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded font-bold hover:bg-slate-200 dark:hover:bg-slate-600">عودة</button>
         </div>
         
-        <!-- الجدول -->
-        <div id="reportTableContainer" class="mt-4">
-          <p class="text-center text-slate-400 mt-10 no-print">اختر نوع التقرير واضغط "استخراج التقرير"</p>
+        <form id="visitForm" onsubmit="saveVisit(event)">
+          <!-- البيانات الأولية -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-200 dark:border-slate-700 mb-6">
+            <div>
+              <label class="text-sm font-bold block mb-1">العام الدراسي</label>
+              <input type="text" id="v_year" class="w-full border dark:border-slate-600 p-2 rounded-lg bg-white dark:bg-slate-700 outline-none focus:border-red-500" required>
+            </div>
+            <div>
+              <label class="text-sm font-bold block mb-1">الشهر/الفصل</label>
+              <input type="text" id="v_semester" class="w-full border dark:border-slate-600 p-2 rounded-lg bg-white dark:bg-slate-700 outline-none focus:border-red-500" placeholder="مثال: 9 أو الفصل الأول" required>
+            </div>
+            <div>
+              <label class="text-sm font-bold block mb-1">التاريخ</label>
+              <input type="date" id="v_date" class="w-full border dark:border-slate-600 p-2 rounded-lg bg-white dark:bg-slate-700 outline-none focus:border-red-500" required>
+            </div>
+            <div>
+              <label class="text-sm font-bold block mb-1 text-red-700 dark:text-red-400">الحكم النهائي للزيارة</label>
+              <select id="v_final" class="w-full border dark:border-slate-600 p-2 rounded-lg font-bold text-red-700 dark:text-red-400 bg-white dark:bg-slate-700 outline-none" required>
+                <option value="ممتاز = يتجاوز التوقعات بكثير">ممتاز = يتجاوز التوقعات بكثير</option>
+                <option value="جيد = يتجاوز التوقعات">جيد = يتجاوز التوقعات</option>
+                <option value="مرض = يفي بالتوقعات تماما">مرض = يفي بالتوقعات تماما</option>
+                <option value="غير ملائم = يفي بالتوقعات جزئيا">غير ملائم = يفي بالتوقعات جزئيا</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-sm font-bold block mb-1">اسم المعلم</label>
+              <select id="v_teacher" onchange="fillTeacherData()" class="w-full border dark:border-slate-600 p-2 rounded-lg bg-white dark:bg-slate-700 outline-none focus:border-red-500" required><option value="">اختر المعلم</option></select>
+            </div>
+            <div>
+              <label class="text-sm font-bold block mb-1">المادة/القسم</label>
+              <input type="text" id="v_subject" class="w-full border dark:border-slate-600 p-2 rounded-lg bg-slate-200 dark:bg-slate-600 cursor-not-allowed" readonly>
+              <input type="hidden" id="v_cpr">
+            </div>
+            <div>
+              <label class="text-sm font-bold block mb-1">اسم الزائر</label>
+              <select id="v_visitor" onchange="fillVisitorData()" class="w-full border dark:border-slate-600 p-2 rounded-lg bg-white dark:bg-slate-700 outline-none focus:border-red-500" required><option value="">اختر الزائر</option></select>
+            </div>
+            <div>
+              <label class="text-sm font-bold block mb-1">المسمى الوظيفي</label>
+              <input type="text" id="v_job" class="w-full border dark:border-slate-600 p-2 rounded-lg bg-slate-200 dark:bg-slate-600 cursor-not-allowed" readonly>
+            </div>
+          </div>
+
+          <!-- المعايير الـ 18 -->
+          <div id="criteriaContainer" class="space-y-3 mb-6"></div>
+
+          <!-- إرسال الإيميل -->
+          <input type="hidden" id="v_email">
+          <div class="mb-6 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+            <label class="flex items-center gap-3 font-bold cursor-pointer">
+              <input type="checkbox" id="v_send_email" checked class="w-5 h-5 accent-red-700">
+              إرسال نسخة من التقرير فوراً إلى الإيميل الشخصي للمعلم
+            </label>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 mr-8" id="teacherEmailDisplay">سيتم تحديد الإيميل تلقائياً عند اختيار المعلم.</p>
+          </div>
+
+          <button type="submit" id="saveBtn" class="bg-red-700 text-white px-8 py-3 rounded-xl font-bold hover:bg-red-800 w-full md:w-auto shadow-md transition transform hover:-translate-y-1">
+            <i class="fa-solid fa-cloud-arrow-up ml-2"></i> حفظ ومزامنة الزيارة
+          </button>
+        </form>
+      </section>
+
+      <!-- شاشة التقارير والطباعة -->
+      <section id="tab-reports" class="hidden">
+        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm mb-4 border border-slate-200 dark:border-slate-700 no-print flex gap-4 items-end flex-wrap">
+          <div>
+            <label class="text-sm font-bold block mb-1 dark:text-slate-200">نوع التقرير</label>
+            <select id="reportType" class="border dark:border-slate-600 p-2.5 rounded-xl w-48 bg-slate-50 dark:bg-slate-700 outline-none">
+              <option value="all">إحصائية المدرسة كاملة</option>
+              <option value="dept">تحليل حسب القسم</option>
+              <option value="teacher">تحليل حسب المعلم</option>
+              <option value="visitor">تحليل حسب المقيم</option>
+            </select>
+          </div>
+          <button onclick="generateReport()" class="bg-amber-500 text-slate-900 px-6 py-2.5 rounded-xl font-bold hover:bg-amber-600 shadow transition"><i class="fa-solid fa-magnifying-glass-chart ml-2"></i> استخراج التقرير</button>
+          <button onclick="window.print()" class="bg-slate-700 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-slate-800 shadow transition"><i class="fa-solid fa-print ml-2"></i> طباعة PDF</button>
+          <button onclick="switchTab('tab-home')" class="mr-auto text-sm bg-slate-100 dark:bg-slate-700 px-4 py-2 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-600">عودة للرئيسية</button>
         </div>
 
-        <!-- التوقيعات -->
-        <div class="signatures print-only">
-          <div class="text-center">
-            <p class="font-bold mb-8">إدخال البيانات</p>
-            <p id="signEntry" class="text-sm"></p>
+        <div id="printArea" class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 min-h-[500px]">
+          <!-- الترويسة المخصصة للطباعة -->
+          <div class="print-header print-only">
+            <!-- الترويسة الذهبية -->
+            <img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt="ترويسة المدرسة" class="w-full h-auto mb-4 mx-auto" style="max-height: 160px; object-fit: contain;">
+            <h3 class="font-bold text-lg mt-4 text-center border-b-2 border-slate-300 pb-2 inline-block" id="printReportTitle">ملخص نتائج الزيارات الصفية للمدرسة</h3>
           </div>
-          <div class="text-center">
-            <p class="font-bold mb-8" id="signViceTitle">المدير المساعد</p>
-            <p id="signViceName" class="text-sm"></p>
+          
+          <div id="reportTableContainer" class="mt-4 overflow-x-auto">
+            <div class="text-center py-20 text-slate-400 no-print">
+              <i class="fa-solid fa-chart-bar text-6xl mb-4 opacity-50"></i>
+              <p>اختر نوع التقرير واضغط "استخراج التقرير"</p>
+            </div>
           </div>
-          <div class="text-center">
-            <p class="font-bold mb-8" id="signPrincTitle">مدير المدرسة</p>
-            <p id="signPrincName" class="text-sm"></p>
+
+          <!-- التوقيعات -->
+          <div class="signatures print-only">
+            <div class="text-center">
+              <p class="font-bold mb-8">إدخال البيانات</p>
+              <p id="signEntry" class="text-sm"></p>
+            </div>
+            <div class="text-center">
+              <p class="font-bold mb-8" id="signViceTitle">المدير المساعد</p>
+              <p id="signViceName" class="text-sm"></p>
+            </div>
+            <div class="text-center">
+              <p class="font-bold mb-8" id="signPrincTitle">مدير المدرسة</p>
+              <p id="signPrincName" class="text-sm"></p>
+            </div>
+          </div>
+          <div class="print-only text-center text-[10px] mt-6 border-t pt-2 text-slate-500" id="footerText">
+            برنامج تحليل الزيارات الصفية المتطور - إعداد وتصميم أ.صبري محمد حمد
           </div>
         </div>
-        <div class="print-only text-center text-[10px] mt-6 border-t pt-2 text-slate-500" id="footerText">
-          برنامج تحليل الزيارات الصفية
-        </div>
-      </div>
-    </section>
-  </main>
+      </section>
+      
+      <!-- الفوتر -->
+      <footer class="text-center p-6 text-sm text-slate-500 dark:text-slate-400 no-print mt-auto font-medium">
+        إعداد وتصميم أ.صبري محمد حمد 36864227
+      </footer>
+    </main>
+  </div>
 
   <script>
-    // تم وضع الرابط الخاص بك بنجاح
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzty9WyGvvCLyOVI9XaDZxImseaSd4tanfPK4H9ZNWtEdYJUuTKlY7uo30ing_ARR8/exec";
+    // ------------------------------------------------------------------
+    // رابط التطبيق (Apps Script)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzty9WyGvvCLyOVI9XaDZxImseaSd4tanfPK4H9ZNWtEdYJUuTKlY7uo30ing_ARR8/exec"; 
+    // ------------------------------------------------------------------
 
     let db = { visits: [], teachers: [], visitors: [], settings: {} };
 
+    // ================= إعدادات النظام وتحديث الوقت =================
+    function updateClock() {
+      const now = new Date();
+      const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+      const dayName = days[now.getDay()];
+      const dateString = now.toLocaleDateString('ar-EG');
+      const timeString = now.toLocaleTimeString('ar-EG');
+      document.getElementById('clockDisplay').innerText = `اليوم: ${dayName} | التاريخ: ${dateString} | الساعة: ${timeString}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      const icon = document.getElementById('themeIcon');
+      html.classList.toggle('dark');
+      if(html.classList.contains('dark')){
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        icon.classList.remove('fa-sun');
+        icon.classList.add('fa-moon');
+        localStorage.setItem('theme', 'light');
+      }
+    }
+
+    // التحقق من الوضع المحفوظ مسبقاً
+    if(localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+      document.getElementById('themeIcon').classList.replace('fa-moon', 'fa-sun');
+    }
+
+    // ================= تسجيل الدخول =================
+    function checkLogin() {
+      const pass = document.getElementById('loginPass').value;
+      if (pass === "2030") {
+        document.getElementById('loginScreen').style.opacity = '0';
+        setTimeout(() => {
+          document.getElementById('loginScreen').classList.add('hidden');
+          document.getElementById('mainApp').classList.remove('hidden');
+          document.getElementById('mainApp').classList.add('flex');
+        }, 500);
+      } else {
+        document.getElementById('loginError').classList.remove('hidden');
+      }
+    }
+    
+    // إتاحة الدخول بضغط زر Enter
+    document.getElementById('loginPass').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') checkLogin();
+    });
+
+    // ================= معايير التقييم =================
     const criteriaList = [
       { id: 1, title: "اتساق تخطيط الدرس مع الكفايات التعليمية للمنهج، ومراعاته احتياجات الطلبة.", cat: "التخطيط وإدارة الموقف التعليمي" },
       { id: 2, title: "توفير بيئة تعلم آمنة ومحفزة خالية من المخاطر لضمان إنتاجية التعلم.", cat: "التخطيط وإدارة الموقف التعليمي" },
@@ -203,15 +338,15 @@
       let html = "";
       criteriaList.forEach(c => {
         if (c.cat !== currentCat) {
-          html += `<div class="bg-slate-200 font-bold p-2 mt-4 text-center rounded text-sm">${c.cat}</div>`;
+          html += `<div class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold p-2 mt-4 text-center rounded text-sm">${c.cat}</div>`;
           currentCat = c.cat;
         }
         html += `
-          <div class="flex flex-col md:flex-row items-center border-b pb-2 gap-4">
-            <div class="w-8 text-center font-bold text-red-700 bg-red-100 rounded">${c.id}</div>
-            <div class="flex-1 text-xs font-medium leading-relaxed">${c.title}</div>
+          <div class="flex flex-col md:flex-row items-center border-b dark:border-slate-700 pb-3 gap-4 pt-2">
+            <div class="w-8 text-center font-bold text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900/40 rounded">${c.id}</div>
+            <div class="flex-1 text-sm font-medium leading-relaxed">${c.title}</div>
             <div class="w-full md:w-64">
-              <select id="q_${c.id}" class="w-full border p-1.5 rounded text-xs bg-white focus:ring-red-500 focus:border-red-500" required>
+              <select id="q_${c.id}" class="w-full border dark:border-slate-600 p-2 rounded-lg text-sm bg-white dark:bg-slate-700 outline-none focus:ring-1 focus:ring-red-500" required>
                 ${optionsHTML}
               </select>
             </div>
@@ -220,32 +355,28 @@
       container.innerHTML = html;
     }
 
+    // ================= الاتصال بقاعدة البيانات =================
     async function fetchData() {
       try {
         const res = await fetch(SCRIPT_URL);
         db = await res.json();
         
-        // تعبئة المعلمين
         const tSelect = document.getElementById('v_teacher');
         tSelect.innerHTML = '<option value="">اختر المعلم</option>';
         db.teachers.forEach(t => tSelect.innerHTML += `<option value="${t.TeacherName}">${t.TeacherName}</option>`);
         
-        // تعبئة المقيمين
         const vSelect = document.getElementById('v_visitor');
         vSelect.innerHTML = '<option value="">اختر الزائر</option>';
         db.visitors.forEach(v => vSelect.innerHTML += `<option value="${v.VisitorName}">${v.VisitorName}</option>`);
         
-        // إعدادات المدرسة
         document.getElementById('schoolNameHeader').innerText = db.settings.SchoolName || "";
         document.getElementById('v_year').value = db.settings.SchoolYear || "";
         
-        // التوقيعات
         document.getElementById('signEntry').innerText = db.settings.DataEntryName || "";
         document.getElementById('signViceTitle').innerText = db.settings.VicePrincipalJob || "المدير المساعد";
         document.getElementById('signViceName').innerText = db.settings.VicePrincipalName || "";
         document.getElementById('signPrincTitle').innerText = db.settings.PrincipalJob || "مدير المدرسة";
         document.getElementById('signPrincName').innerText = db.settings.PrincipalName || "";
-        document.getElementById('footerText').innerText = `برنامج تحليل الزيارات الصفية - تصميم وبرمجة مطورة - مديرة المدرسة: ${db.settings.PrincipalName || ""}`;
         
       } catch (e) { console.error("Error fetching data"); }
     }
@@ -256,16 +387,14 @@
       if(t) {
         document.getElementById('v_subject').value = t.Subject;
         document.getElementById('v_cpr').value = t.CPR;
-        
-        // جلب الإيميل
         const email = t.PersonalEmail || t.MOEEmail || "";
         document.getElementById('v_email').value = email;
         
         const emailDisplay = document.getElementById('teacherEmailDisplay');
         if(email) {
-          emailDisplay.innerHTML = `<span class="text-emerald-600">سيتم الإرسال إلى: ${email}</span>`;
+          emailDisplay.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400"><i class="fa-solid fa-envelope-circle-check"></i> سيتم الإرسال إلى: ${email}</span>`;
         } else {
-          emailDisplay.innerHTML = `<span class="text-red-600">لا يوجد إيميل مسجل لهذا المعلم في قاعدة البيانات.</span>`;
+          emailDisplay.innerHTML = `<span class="text-red-600 dark:text-red-400"><i class="fa-solid fa-circle-exclamation"></i> لا يوجد إيميل مسجل لهذا المعلم.</span>`;
         }
       }
     }
@@ -279,7 +408,8 @@
     async function saveVisit(e) {
       e.preventDefault();
       const btn = document.getElementById('saveBtn');
-      btn.innerText = "جاري الحفظ والمزامنة السحابية..."; btn.disabled = true;
+      btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> جاري الحفظ والمزامنة السحابية..."; 
+      btn.disabled = true;
 
       let payload = {
         Year: document.getElementById('v_year').value,
@@ -304,21 +434,23 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        alert("تم حفظ الزيارة بنجاح في جوجل شيت وإرسال البريد الإلكتروني (إن وجد)!");
+        alert("تم حفظ الزيارة بنجاح في قاعدة البيانات!");
         e.target.reset();
         document.getElementById('teacherEmailDisplay').innerHTML = `سيتم تحديد الإيميل تلقائياً عند اختيار المعلم.`;
         fetchData();
+        switchTab('tab-home');
       } catch (err) { alert("حدث خطأ أثناء الحفظ."); }
-      btn.innerHTML = '<i class="fa-solid fa-save"></i> حفظ الزيارة السحابية'; btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up ml-2"></i> حفظ ومزامنة الزيارة'; 
+      btn.disabled = false;
     }
 
     function switchTab(tabId) {
-      ['tab-entry', 'tab-reports'].forEach(id => {
+      ['tab-home', 'tab-entry', 'tab-reports'].forEach(id => {
         document.getElementById(id).classList.toggle('hidden', id !== tabId);
       });
     }
 
-    // بناء التقارير لتطابق تصميم الـ PDF
+    // ================= التقارير =================
     function generateReport() {
       const type = document.getElementById('reportType').value;
       const container = document.getElementById('reportTableContainer');
@@ -347,58 +479,58 @@
         };
       };
 
-      let thead = `<tr>
-        <th>ممتاز = يتجاوز<br>التوقعات بكثير</th>
-        <th>جيد يتجاوز<br>التوقعات</th>
-        <th>مرض يفي<br>بالتوقعات تمامًا</th>
-        <th>غير ملائم = يفي<br>بالتوقعات جزئيًا</th>
-        <th>مجموع<br>الزيارات</th>`;
+      let thead = `<table class="w-full border-collapse border dark:border-slate-600 text-sm">
+        <thead class="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
+        <tr>
+        <th class="border dark:border-slate-600 p-2">ممتاز = يتجاوز<br>التوقعات بكثير</th>
+        <th class="border dark:border-slate-600 p-2">جيد يتجاوز<br>التوقعات</th>
+        <th class="border dark:border-slate-600 p-2">مرض يفي<br>بالتوقعات تمامًا</th>
+        <th class="border dark:border-slate-600 p-2">غير ملائم = يفي<br>بالتوقعات جزئيًا</th>
+        <th class="border dark:border-slate-600 p-2">مجموع<br>الزيارات</th>`;
             
-      if(type === 'dept') thead += `<th>القسم / المادة</th>`;
-      if(type === 'teacher') thead += `<th>القسم</th><th>اسم المعلم</th>`;
-      if(type === 'visitor') thead += `<th>المسمى الوظيفي</th><th>اسم الزائر (المقيم)</th>`;
-      thead += `</tr>`;
+      if(type === 'dept') {thead += `<th class="border dark:border-slate-600 p-2">القسم / المادة</th>`; document.getElementById('printReportTitle').innerText = `${baseTitle} حسب الأقسام التعليمية`;}
+      if(type === 'teacher') {thead += `<th class="border dark:border-slate-600 p-2">القسم</th><th class="border dark:border-slate-600 p-2">اسم المعلم</th>`; document.getElementById('printReportTitle').innerText = `${baseTitle} حسب المعلم`;}
+      if(type === 'visitor') {thead += `<th class="border dark:border-slate-600 p-2">المسمى الوظيفي</th><th class="border dark:border-slate-600 p-2">اسم الزائر (المقيم)</th>`; document.getElementById('printReportTitle').innerText = `${baseTitle} حسب الزائر (المقيم)`;}
+      if(type === 'all') document.getElementById('printReportTitle').innerText = baseTitle;
+      thead += `</tr></thead><tbody class="text-center dark:text-slate-300">`;
 
       let tbody = "";
 
       if(type === 'all') {
-        document.getElementById('printReportTitle').innerText = baseTitle;
         let stats = calcPercentages(db.visits);
-        tbody += `<tr><td>${stats.m}</td><td>${stats.g}</td><td>${stats.s}</td><td>${stats.p}</td><td class="font-bold">${stats.total}</td></tr>`;
+        tbody += `<tr><td class="border dark:border-slate-600 p-2">${stats.m}</td><td class="border dark:border-slate-600 p-2">${stats.g}</td><td class="border dark:border-slate-600 p-2">${stats.s}</td><td class="border dark:border-slate-600 p-2">${stats.p}</td><td class="border dark:border-slate-600 p-2 font-bold">${stats.total}</td></tr>`;
       } 
       else if (type === 'dept') {
-        document.getElementById('printReportTitle').innerText = `${baseTitle} حسب الأقسام التعليمية`;
         let grouped = {};
         db.visits.forEach(v => { grouped[v.Subject] = grouped[v.Subject] || []; grouped[v.Subject].push(v); });
         for(let dept of Object.keys(grouped).sort()) {
           let stats = calcPercentages(grouped[dept]);
-          tbody += `<tr><td>${stats.m}</td><td>${stats.g}</td><td>${stats.s}</td><td>${stats.p}</td><td class="font-bold">${stats.total}</td><td class="font-bold">${dept}</td></tr>`;
+          tbody += `<tr><td class="border dark:border-slate-600 p-2">${stats.m}</td><td class="border dark:border-slate-600 p-2">${stats.g}</td><td class="border dark:border-slate-600 p-2">${stats.s}</td><td class="border dark:border-slate-600 p-2">${stats.p}</td><td class="border dark:border-slate-600 p-2 font-bold">${stats.total}</td><td class="border dark:border-slate-600 p-2 font-bold">${dept}</td></tr>`;
         }
       }
       else if (type === 'teacher') {
-         document.getElementById('printReportTitle').innerText = `${baseTitle} حسب المعلم`;
          let grouped = {};
          db.visits.forEach(v => { grouped[v.TeacherName] = grouped[v.TeacherName] || []; grouped[v.TeacherName].push(v); });
          for(let t of Object.keys(grouped).sort()) {
            let stats = calcPercentages(grouped[t]);
            let dept = grouped[t][0].Subject || "";
-           tbody += `<tr><td>${stats.m}</td><td>${stats.g}</td><td>${stats.s}</td><td>${stats.p}</td><td class="font-bold">${stats.total}</td><td>${dept}</td><td class="font-bold">${t}</td></tr>`;
+           tbody += `<tr><td class="border dark:border-slate-600 p-2">${stats.m}</td><td class="border dark:border-slate-600 p-2">${stats.g}</td><td class="border dark:border-slate-600 p-2">${stats.s}</td><td class="border dark:border-slate-600 p-2">${stats.p}</td><td class="border dark:border-slate-600 p-2 font-bold">${stats.total}</td><td class="border dark:border-slate-600 p-2">${dept}</td><td class="border dark:border-slate-600 p-2 font-bold">${t}</td></tr>`;
          }
       }
       else if (type === 'visitor') {
-         document.getElementById('printReportTitle').innerText = `${baseTitle} حسب الزائر (المقيم)`;
          let grouped = {};
          db.visits.forEach(v => { grouped[v.VisitorName] = grouped[v.VisitorName] || []; grouped[v.VisitorName].push(v); });
          for(let v of Object.keys(grouped).sort()) {
            let stats = calcPercentages(grouped[v]);
            let job = grouped[v][0].VisitorJob || "";
-           tbody += `<tr><td>${stats.m}</td><td>${stats.g}</td><td>${stats.s}</td><td>${stats.p}</td><td class="font-bold">${stats.total}</td><td>${job}</td><td class="font-bold">${v}</td></tr>`;
+           tbody += `<tr><td class="border dark:border-slate-600 p-2">${stats.m}</td><td class="border dark:border-slate-600 p-2">${stats.g}</td><td class="border dark:border-slate-600 p-2">${stats.s}</td><td class="border dark:border-slate-600 p-2">${stats.p}</td><td class="border dark:border-slate-600 p-2 font-bold">${stats.total}</td><td class="border dark:border-slate-600 p-2">${job}</td><td class="border dark:border-slate-600 p-2 font-bold">${v}</td></tr>`;
          }
       }
       
-      container.innerHTML = `<table><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
+      container.innerHTML = thead + tbody + `</tbody></table>`;
     }
 
+    // التهيئة
     buildCriteria();
     fetchData();
   </script>
