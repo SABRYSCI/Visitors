@@ -40,9 +40,10 @@
   <!-- ================= شاشة تسجيل الدخول ================= -->
   <div id="loginScreen" class="fixed inset-0 bg-slate-100 dark:bg-slate-900 z-50 flex items-center justify-center px-4 transition-opacity duration-500">
     <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-slate-700">
-      <div class="w-20 h-20 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl shadow-inner">
-        <i class="fa-solid fa-shield-halved"></i>
-      </div>
+      
+      <!-- الترويسة الذهبية أعلى شاشة الدخول -->
+      <img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt="ترويسة المدرسة" class="w-full h-auto mb-6 mx-auto" style="max-height: 110px; object-fit: contain;">
+      
       <h2 class="text-2xl font-bold mb-2 text-slate-800 dark:text-white">برنامج تحليل الزيارات الصفية المتطور</h2>
       <p class="text-sm text-slate-500 dark:text-slate-400 mb-8">الرجاء إدخال كلمة المرور للوصول للنظام</p>
       
@@ -230,7 +231,7 @@
             </div>
           </div>
           <div class="print-only text-center text-[10px] mt-6 border-t pt-2 text-slate-500" id="footerText">
-            برنامج تحليل الزيارات الصفية المتطور - إعداد وتصميم أ.صبري محمد حمد
+            برنامج تحليل الزيارات الصفية المتطور - إعداد وتصميم أ.صبري محمد حمد 36864227
           </div>
         </div>
       </section>
@@ -256,7 +257,7 @@
       const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
       const dayName = days[now.getDay()];
       const dateString = now.toLocaleDateString('ar-EG');
-      const timeString = now.toLocaleTimeString('ar-EG');
+      const timeString = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       document.getElementById('clockDisplay').innerText = `اليوم: ${dayName} | التاريخ: ${dateString} | الساعة: ${timeString}`;
     }
     setInterval(updateClock, 1000);
@@ -298,7 +299,6 @@
       }
     }
     
-    // إتاحة الدخول بضغط زر Enter
     document.getElementById('loginPass').addEventListener('keypress', function (e) {
       if (e.key === 'Enter') checkLogin();
     });
