@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>برنامج تحليل الزيارات الصفية</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; }
+    /* تنسيقات الطباعة الاحترافية */
+    @media print {
+      body { background: white; }
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      @page { margin: 1cm; size: A4 portrait; }
+      .print-header { text-align: center; margin-bottom: 20px; }
+      table { width: 100%; border-collapse: collapse; margin-top: 15px; direction: rtl;}
+      th, td { border: 1px solid #000; padding: 8px; text-align: center; font-size: 12px; }
+      th { background-color: #e2e8f0 !important; -webkit-print-color-adjust: exact; font-weight: bold;}
+      .signatures { display: flex; justify-content: space-between; margin-top: 50px; font-size: 12px; }
+    }
+    .print-only { display: none; }
+  </style>
+</head>
+<body class="text-slate-800">
+
+  <!-- الشريط العلوي -->
+  <header class="bg-gradient-to-r from-red-900 to-red-700 text-white shadow-md no-print p-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <i class="fa-solid fa-chart-pie text-3xl"></i>
+      <div>
+        <h1 class="text-xl font-bold">برنامج تحليل الزيارات الصفية</h1>
+        <p class="text-xs text-red-200" id="schoolNameHeader">جاري التحميل...</p>
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="switchTab('tab-entry')" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded font-bold transition"><i class="fa-solid fa-plus"></i> زيارة جديدة</button>
+      <button onclick="switchTab('tab-reports')" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded font-bold transition"><i class="fa-solid fa-print"></i> التقارير</button>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto p-4">
+
+    <!-- شاشة إدخال الزيارة -->
+    <section id="tab-entry" class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+      <h2 class="text-xl font-bold mb-4 border-b pb-2"><i class="fa-solid fa-file-signature text-red-700"></i> إدخال زيارة صفية</h2>
+      <form id="visitForm" onsubmit="saveVisit(event)">
+        <!-- البيانات الأولية -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-6">
+          <div>
+            <label class="text-sm font-bold block mb-1">العام الدراسي</label>
+            <input type="text" id="v_year" class="w-full border p-2 rounded" required>
+          </div>
+          <div>
+            <label class="text-sm font-bold block mb-1">الشهر/الفصل</label>
+            <input type="text" id="v_semester" class="w-full border p-2 rounded" placeholder="مثال: 9 أو الفصل الأول" required>
+          </div>
+          <div>
+            <label class="text-sm font-bold block mb-1">التاريخ</label>
+            <input type="date" id="v_date" class="w-full border p-2 rounded" required>
+          </div>
+          <div>
+            <label class="text-sm font-bold block mb-1 text-red-700">الحكم النهائي للزيارة</label>
+            <select id="v_final" class="w-full border p-2 rounded font-bold text-red-700" required>
+              <option value="ممتاز = يتجاوز التوقعات بكثير">ممتاز = يتجاوز التوقعات بكثير</option>
+              <option value="جيد = يتجاوز التوقعات">جيد = يتجاوز التوقعات</option>
+              <option value="مرض = يفي بالتوقعات تماما">مرض = يفي بالتوقعات تماما</option>
+              <option value="غير ملائم = يفي بالتوقعات جزئيا">غير ملائم = يفي بالتوقعات جزئيا</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-sm font-bold block mb-1">اسم المعلم</label>
+            <select id="v_teacher" onchange="fillTeacherData()" class="w-full border p-2 rounded" required><option value="">اختر المعلم</option></select>
+          </div>
+          <div>
+            <label class="text-sm font-bold block mb-1">المادة/القسم</label>
+            <input type="text" id="v_subject" class="w-full border p-2 rounded bg-slate-100" readonly>
+            <input type="hidden" id="v_cpr">
+          </div>
+          <div>
+            <label class="text-sm font-bold block mb-1">اسم الزائر</label>
+            <select id="v_visitor" onchange="fillVisitorData()" class="w-full border p-2 rounded" required><option value="">اختر الزائر</option></select>
+          </div>
+          <div>
+            <label class="text-sm font-bold block mb-1">المسمى الوظيفي</label>
+            <input type="text" id="v_job" class="w-full border p-2 rounded bg-slate-100" readonly>
+          </div>
+        </div>
+
+        <!-- المعايير الـ 18 -->
+        <div id="criteriaContainer" class="space-y-2 mb-6"></div>
+
+        <!-- خيار إرسال الإيميل -->
+        <input type="hidden" id="v_email">
+        <div class="mb-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
+          <label class="flex items-center gap-3 font-bold text-slate-700 cursor-pointer">
+            <input type="checkbox" id="v_send_email" checked class="w-5 h-5 accent-red-700">
+            إرسال نسخة من التقرير فوراً إلى الإيميل الشخصي للمعلم
+          </label>
+          <p class="text-xs text-slate-500 mt-1 mr-8" id="teacherEmailDisplay">سيتم تحديد الإيميل تلقائياً عند اختيار المعلم.</p>
+        </div>
+
+        <button type="submit" id="saveBtn" class="bg-red-700 text-white px-8 py-3 rounded font-bold hover:bg-red-800 w-full md:w-auto transition">
+          <i class="fa-solid fa-save"></i> حفظ الزيارة السحابية
+        </button>
+      </form>
+    </section>
+
+    <!-- شاشة التقارير والطباعة -->
+    <section id="tab-reports" class="hidden">
+      <!-- أزرار الفلترة -->
+      <div class="bg-white p-4 rounded-lg shadow-sm mb-4 border border-slate-200 no-print flex gap-4 items-end flex-wrap">
+        <div>
+          <label class="text-sm font-bold block mb-1">نوع التقرير</label>
+          <select id="reportType" class="border p-2 rounded w-48 bg-slate-50">
+            <option value="all">إحصائية المدرسة كاملة</option>
+            <option value="dept">تحليل حسب القسم</option>
+            <option value="teacher">تحليل حسب المعلم</option>
+            <option value="visitor">تحليل حسب المقيم</option>
+          </select>
+        </div>
+        <button onclick="generateReport()" class="bg-amber-500 text-slate-900 px-6 py-2 rounded font-bold hover:bg-amber-600 shadow transition">استخراج التقرير</button>
+        <button onclick="window.print()" class="bg-slate-700 text-white px-6 py-2 rounded font-bold hover:bg-slate-800 shadow transition"><i class="fa-solid fa-print"></i> طباعة PDF</button>
+      </div>
+
+      <!-- منطقة التقرير المطبوع -->
+      <div id="printArea" class="bg-white p-8 rounded-lg shadow-sm border border-slate-200 min-h-[500px] text-slate-800">
+        <!-- الترويسة المخصصة للطباعة -->
+        <div class="print-header print-only">
+          <!-- الترويسة الذهبية -->
+          <img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt="ترويسة المدرسة" class="w-full h-auto mb-4 mx-auto" style="max-height: 160px; object-fit: contain;">
+          
+          <!-- عنوان التقرير -->
+          <h3 class="font-bold text-lg mt-4 text-center border-b-2 border-slate-300 pb-2 inline-block" id="printReportTitle">ملخص نتائج الزيارات الصفية للمدرسة للعام الدراسي</h3>
+        </div>
+        
+        <!-- الجدول -->
+        <div id="reportTableContainer" class="mt-4">
+          <p class="text-center text-slate-400 mt-10 no-print">اختر نوع التقرير واضغط "استخراج التقرير"</p>
+        </div>
+
+        <!-- التوقيعات -->
+        <div class="signatures print-only">
+          <div class="text-center">
+            <p class="font-bold mb-8">إدخال البيانات</p>
+            <p id="signEntry" class="text-sm"></p>
+          </div>
+          <div class="text-center">
+            <p class="font-bold mb-8" id="signViceTitle">المدير المساعد</p>
+            <p id="signViceName" class="text-sm"></p>
+          </div>
+          <div class="text-center">
+            <p class="font-bold mb-8" id="signPrincTitle">مدير المدرسة</p>
+            <p id="signPrincName" class="text-sm"></p>
+          </div>
+        </div>
+        <div class="print-only text-center text-[10px] mt-6 border-t pt-2 text-slate-500" id="footerText">
+          برنامج تحليل الزيارات الصفية
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // تم وضع الرابط الخاص بك بنجاح
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzty9WyGvvCLyOVI9XaDZxImseaSd4tanfPK4H9ZNWtEdYJUuTKlY7uo30ing_ARR8/exec";
+
+    let db = { visits: [], teachers: [], visitors: [], settings: {} };
+
+    const criteriaList = [
+      { id: 1, title: "اتساق تخطيط الدرس مع الكفايات التعليمية للمنهج، ومراعاته احتياجات الطلبة.", cat: "التخطيط وإدارة الموقف التعليمي" },
+      { id: 2, title: "توفير بيئة تعلم آمنة ومحفزة خالية من المخاطر لضمان إنتاجية التعلم.", cat: "التخطيط وإدارة الموقف التعليمي" },
+      { id: 3, title: "تضمين الموقف التعليمي إرشادات وتوجيهات واضحة.", cat: "التخطيط وإدارة الموقف التعليمي" },
+      { id: 4, title: "استثمار الوقت بما يحقق أهداف التعلم بصورة منتجة.", cat: "التخطيط وإدارة الموقف التعليمي" },
+      { id: 5, title: "تحفيز الطلبة ورفع دافعيتهم بأساليب تمكنهم من المشاركة في التعلم وبناء شخصيتهم.", cat: "التخطيط وإدارة الموقف التعليمي" },
+      { id: 6, title: "سلامة المادة العلمية ومراعاتها كفايات المنهج والمستويات المتوقعة للمرحلة التعليمية.", cat: "التعليم والتعلم والتقويم" },
+      { id: 7, title: "توظيف استراتيجيات تعليم وتعلم فاعلة، تسهم في دمج الطلبة على اختلاف احتياجاتهم.", cat: "التعليم والتعلم والتقويم" },
+      { id: 8, title: "توظيف التقويم والاستفادة من نتائجه في دعم جميع فئات الطلبة وفق احتياجاتهم.", cat: "التعليم والتعلم والتقويم" },
+      { id: 9, title: "تنمية مهارات التفكير العليا للطلبة وتحدي قدراتهم.", cat: "التعليم والتعلم والتقويم" },
+      { id: 10, title: "توظيف التعليم المتمايز لتلبية احتياجات الطلبة المتنوعة على اختلاف فئاتهم.", cat: "التعليم والتعلم والتقويم" },
+      { id: 11, title: "توظيف المصادر والموارد التعليمية والتكنولوجية في عمليات التعليم والتعلم.", cat: "المواد التعليمية والتكنولوجية" },
+      { id: 12, title: "تنمية مهارات الطلبة التكنولوجية ومهارات البحث والتعلم الذاتي، وتشجيعهم على إنتاج المحتوى.", cat: "المواد التعليمية والتكنولوجية" },
+      { id: 13, title: "إظهار الطلبة المعارف والمهارات الأساسية وفقًا لمرحلتهم التعليمية.", cat: "الإنجاز الأكاديمي" },
+      { id: 14, title: "تحقيق الطلبة التقدم خلال الدروس واكتسابهم مهارات التعلم.", cat: "الإنجاز الأكاديمي" },
+      { id: 15, title: "التزام الطلبة بالقيم الإسلامية، والوطنية، والرقمية، والاستعمال الآمن للتكنولوجيا.", cat: "التطور الشخصي للطلبة" },
+      { id: 16, title: "التزام الطلبة السلوك الإيجابي نحو التعلم، والانضباط الذاتي، وتحمل المسؤوليات المختلفة.", cat: "التطور الشخصي للطلبة" },
+      { id: 17, title: "قدرة الطلبة على التواصل والمشاركة الفاعلة خلال تعلمهم.", cat: "التطور الشخصي للطلبة" },
+      { id: 18, title: "إظهار الطلبة الثقة بالنفس والقدرة على القيادة، والمبادرة، والابتكار.", cat: "التطور الشخصي للطلبة" }
+    ];
+
+    const optionsHTML = `
+      <option value="ممتاز = يتجاوز التوقعات بكثير">ممتاز = يتجاوز التوقعات بكثير</option>
+      <option value="جيد = يتجاوز التوقعات">جيد = يتجاوز التوقعات</option>
+      <option value="مرض = يفي بالتوقعات تماما">مرض = يفي بالتوقعات تماما</option>
+      <option value="غير ملائم = يفي بالتوقعات جزئيا">غير ملائم = يفي بالتوقعات جزئيا</option>
+    `;
+
+    function buildCriteria() {
+      const container = document.getElementById('criteriaContainer');
+      let currentCat = "";
+      let html = "";
+      criteriaList.forEach(c => {
+        if (c.cat !== currentCat) {
+          html += `<div class="bg-slate-200 font-bold p-2 mt-4 text-center rounded text-sm">${c.cat}</div>`;
+          currentCat = c.cat;
+        }
+        html += `
+          <div class="flex flex-col md:flex-row items-center border-b pb-2 gap-4">
+            <div class="w-8 text-center font-bold text-red-700 bg-red-100 rounded">${c.id}</div>
+            <div class="flex-1 text-xs font-medium leading-relaxed">${c.title}</div>
+            <div class="w-full md:w-64">
+              <select id="q_${c.id}" class="w-full border p-1.5 rounded text-xs bg-white focus:ring-red-500 focus:border-red-500" required>
+                ${optionsHTML}
+              </select>
+            </div>
+          </div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    async function fetchData() {
+      try {
+        const res = await fetch(SCRIPT_URL);
+        db = await res.json();
+        
+        // تعبئة المعلمين
+        const tSelect = document.getElementById('v_teacher');
+        tSelect.innerHTML = '<option value="">اختر المعلم</option>';
+        db.teachers.forEach(t => tSelect.innerHTML += `<option value="${t.TeacherName}">${t.TeacherName}</option>`);
+        
+        // تعبئة المقيمين
+        const vSelect = document.getElementById('v_visitor');
+        vSelect.innerHTML = '<option value="">اختر الزائر</option>';
+        db.visitors.forEach(v => vSelect.innerHTML += `<option value="${v.VisitorName}">${v.VisitorName}</option>`);
+        
+        // إعدادات المدرسة
+        document.getElementById('schoolNameHeader').innerText = db.settings.SchoolName || "";
+        document.getElementById('v_year').value = db.settings.SchoolYear || "";
+        
+        // التوقيعات
+        document.getElementById('signEntry').innerText = db.settings.DataEntryName || "";
+        document.getElementById('signViceTitle').innerText = db.settings.VicePrincipalJob || "المدير المساعد";
+        document.getElementById('signViceName').innerText = db.settings.VicePrincipalName || "";
+        document.getElementById('signPrincTitle').innerText = db.settings.PrincipalJob || "مدير المدرسة";
+        document.getElementById('signPrincName').innerText = db.settings.PrincipalName || "";
+        document.getElementById('footerText').innerText = `برنامج تحليل الزيارات الصفية - تصميم وبرمجة مطورة - مديرة المدرسة: ${db.settings.PrincipalName || ""}`;
+        
+      } catch (e) { console.error("Error fetching data"); }
+    }
+
+    function fillTeacherData() {
+      const tName = document.getElementById('v_teacher').value;
+      const t = db.teachers.find(x => x.TeacherName === tName);
+      if(t) {
+        document.getElementById('v_subject').value = t.Subject;
+        document.getElementById('v_cpr').value = t.CPR;
+        
+        // جلب الإيميل
+        const email = t.PersonalEmail || t.MOEEmail || "";
+        document.getElementById('v_email').value = email;
+        
+        const emailDisplay = document.getElementById('teacherEmailDisplay');
+        if(email) {
+          emailDisplay.innerHTML = `<span class="text-emerald-600">سيتم الإرسال إلى: ${email}</span>`;
+        } else {
+          emailDisplay.innerHTML = `<span class="text-red-600">لا يوجد إيميل مسجل لهذا المعلم في قاعدة البيانات.</span>`;
+        }
+      }
+    }
+    
+    function fillVisitorData() {
+      const vName = document.getElementById('v_visitor').value;
+      const v = db.visitors.find(x => x.VisitorName === vName);
+      if(v) document.getElementById('v_job').value = v.Job;
+    }
+
+    async function saveVisit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('saveBtn');
+      btn.innerText = "جاري الحفظ والمزامنة السحابية..."; btn.disabled = true;
+
+      let payload = {
+        Year: document.getElementById('v_year').value,
+        Semester: document.getElementById('v_semester').value,
+        Date: document.getElementById('v_date').value,
+        TeacherName: document.getElementById('v_teacher').value,
+        Subject: document.getElementById('v_subject').value,
+        CPR: document.getElementById('v_cpr').value,
+        VisitorName: document.getElementById('v_visitor').value,
+        VisitorJob: document.getElementById('v_job').value,
+        FinalJudgment: document.getElementById('v_final').value,
+        SendEmail: document.getElementById('v_send_email').checked,
+        TeacherEmail: document.getElementById('v_email').value
+      };
+      
+      for(let i=1; i<=18; i++) payload["Q"+i] = document.getElementById('q_'+i).value;
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        alert("تم حفظ الزيارة بنجاح في جوجل شيت وإرسال البريد الإلكتروني (إن وجد)!");
+        e.target.reset();
+        document.getElementById('teacherEmailDisplay').innerHTML = `سيتم تحديد الإيميل تلقائياً عند اختيار المعلم.`;
+        fetchData();
+      } catch (err) { alert("حدث خطأ أثناء الحفظ."); }
+      btn.innerHTML = '<i class="fa-solid fa-save"></i> حفظ الزيارة السحابية'; btn.disabled = false;
+    }
+
+    function switchTab(tabId) {
+      ['tab-entry', 'tab-reports'].forEach(id => {
+        document.getElementById(id).classList.toggle('hidden', id !== tabId);
+      });
+    }
+
+    // بناء التقارير لتطابق تصميم الـ PDF
+    function generateReport() {
+      const type = document.getElementById('reportType').value;
+      const container = document.getElementById('reportTableContainer');
+      const baseTitle = `ملخص نتائج الزيارات الصفية للمدرسة للعام الدراسي ${db.settings.SchoolYear || ""}`;
+      
+      if(db.visits.length === 0) {
+        container.innerHTML = "<p class='text-center font-bold'>لا توجد زيارات مسجلة حتى الآن.</p>"; return;
+      }
+
+      const calcPercentages = (arr) => {
+        let counts = { m:0, g:0, s:0, p:0 };
+        arr.forEach(v => {
+          let j = v.FinalJudgment || "";
+          if(j.includes("بكثير")) counts.m++;
+          else if(j.includes("يتجاوز")) counts.g++;
+          else if(j.includes("تماما")) counts.s++;
+          else counts.p++;
+        });
+        let t = arr.length;
+        return {
+          total: t,
+          m: t ? ((counts.m/t)*100).toFixed(2)+'%' : '0%',
+          g: t ? ((counts.g/t)*100).toFixed(2)+'%' : '0%',
+          s: t ? ((counts.s/t)*100).toFixed(2)+'%' : '0%',
+          p: t ? ((counts.p/t)*100).toFixed(2)+'%' : '0%'
+        };
+      };
+
+      let thead = `<tr>
+        <th>ممتاز = يتجاوز<br>التوقعات بكثير</th>
+        <th>جيد يتجاوز<br>التوقعات</th>
+        <th>مرض يفي<br>بالتوقعات تمامًا</th>
+        <th>غير ملائم = يفي<br>بالتوقعات جزئيًا</th>
+        <th>مجموع<br>الزيارات</th>`;
+            
+      if(type === 'dept') thead += `<th>القسم / المادة</th>`;
+      if(type === 'teacher') thead += `<th>القسم</th><th>اسم المعلم</th>`;
+      if(type === 'visitor') thead += `<th>المسمى الوظيفي</th><th>اسم الزائر (المقيم)</th>`;
+      thead += `</tr>`;
+
+      let tbody = "";
+
+      if(type === 'all') {
+        document.getElementById('printReportTitle').innerText = baseTitle;
+        let stats = calcPercentages(db.visits);
+        tbody += `<tr><td>${stats.m}</td><td>${stats.g}</td><td>${stats.s}</td><td>${stats.p}</td><td class="font-bold">${stats.total}</td></tr>`;
+      } 
+      else if (type === 'dept') {
+        document.getElementById('printReportTitle').innerText = `${baseTitle} حسب الأقسام التعليمية`;
+        let grouped = {};
+        db.visits.forEach(v => { grouped[v.Subject] = grouped[v.Subject] || []; grouped[v.Subject].push(v); });
+        for(let dept of Object.keys(grouped).sort()) {
+          let stats = calcPercentages(grouped[dept]);
+          tbody += `<tr><td>${stats.m}</td><td>${stats.g}</td><td>${stats.s}</td><td>${stats.p}</td><td class="font-bold">${stats.total}</td><td class="font-bold">${dept}</td></tr>`;
+        }
+      }
+      else if (type === 'teacher') {
+         document.getElementById('printReportTitle').innerText = `${baseTitle} حسب المعلم`;
+         let grouped = {};
+         db.visits.forEach(v => { grouped[v.TeacherName] = grouped[v.TeacherName] || []; grouped[v.TeacherName].push(v); });
+         for(let t of Object.keys(grouped).sort()) {
+           let stats = calcPercentages(grouped[t]);
+           let dept = grouped[t][0].Subject || "";
+           tbody += `<tr><td>${stats.m}</td><td>${stats.g}</td><td>${stats.s}</td><td>${stats.p}</td><td class="font-bold">${stats.total}</td><td>${dept}</td><td class="font-bold">${t}</td></tr>`;
+         }
+      }
+      else if (type === 'visitor') {
+         document.getElementById('printReportTitle').innerText = `${baseTitle} حسب الزائر (المقيم)`;
+         let grouped = {};
+         db.visits.forEach(v => { grouped[v.VisitorName] = grouped[v.VisitorName] || []; grouped[v.VisitorName].push(v); });
+         for(let v of Object.keys(grouped).sort()) {
+           let stats = calcPercentages(grouped[v]);
+           let job = grouped[v][0].VisitorJob || "";
+           tbody += `<tr><td>${stats.m}</td><td>${stats.g}</td><td>${stats.s}</td><td>${stats.p}</td><td class="font-bold">${stats.total}</td><td>${job}</td><td class="font-bold">${v}</td></tr>`;
+         }
+      }
+      
+      container.innerHTML = `<table><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
+    }
+
+    buildCriteria();
+    fetchData();
+  </script>
+</body>
+</html>
