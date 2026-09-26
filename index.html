@@ -26,33 +26,34 @@
       .print-page:last-child { page-break-after: auto; }
 
       /* جداول الطباعة */
-      .official-table { width: 100%; border-collapse: collapse; direction: rtl; margin-bottom: 15px; }
-      .official-table th, .official-table td { border: 1.5px solid #000 !important; padding: 4px 6px; text-align: center; color: black !important; vertical-align: middle; font-size: 11px; }
+      .official-table { width: 100%; border-collapse: collapse; direction: rtl; margin-bottom: 10px; }
+      .official-table th, .official-table td { border: 1px solid #000 !important; padding: 4px 6px; text-align: center; color: black !important; vertical-align: middle; font-size: 11px; }
       .official-table th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; font-weight: bold; }
       
       .vertical-text { writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-weight: bold; white-space: nowrap; }
       .criteria-text { text-align: right !important; padding-right: 8px !important; }
       
       /* الترويسة العلوية للطباعة */
-      .print-moe-header { position: relative; text-align: center; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 10px; }
-      .print-moe-header img { height: 90px; object-fit: contain; margin: 0 auto; display: block; }
+      .print-moe-header { position: relative; text-align: center; margin-bottom: 10px; border-bottom: 2px solid #000; padding-bottom: 5px; }
+      .print-moe-header img { height: 75px; object-fit: contain; margin: 0 auto; display: block; }
       .print-date { position: absolute; right: 0; top: 0; font-size: 11px; font-weight: bold; }
 
-      .print-header-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; font-weight: bold; font-size: 12px; }
-      .print-header-grid div { display: flex; align-items: center; border-bottom: 1px dashed #000; padding-bottom: 3px; }
+      .print-header-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; font-weight: bold; font-size: 11px; }
+      .print-header-grid div { display: flex; align-items: center; border-bottom: 1px dashed #000; padding-bottom: 2px; }
       .print-header-grid span.val { font-weight: normal; margin-right: 5px; flex-grow: 1; text-align: center; }
 
       /* الصناديق في الصفحة الثانية */
-      .box-section { border: 1.5px solid #000; margin-bottom: 10px; page-break-inside: avoid; }
-      .box-header { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; border-bottom: 1.5px solid #000; padding: 5px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
-      .box-content { padding: 10px; }
-      .checkbox-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 11px; }
+      .box-section { border: 1px solid #000; margin-bottom: 8px; page-break-inside: avoid; }
+      .box-header { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; border-bottom: 1px solid #000; padding: 4px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+      .box-content { padding: 8px; }
+      .checkbox-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; font-size: 11px; }
       .checkbox-item { display: flex; align-items: center; gap: 5px; }
       .checkbox-box { width: 12px; height: 12px; border: 1px solid #000; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;}
       
-      .signatures-print { display: flex; justify-content: space-around; margin-top: 30px; text-align: center; font-weight: bold; page-break-inside: avoid; }
-      .signatures-print > div { flex: 0.4; }
-      .footer-credits { text-align: center; font-size: 10px; border: 1px solid #000; padding: 4px; margin-top: 20px; page-break-inside: avoid; }
+      /* تعديل التوقيعات لتكون في سطر واحد مضغوط */
+      .signatures-print { display: flex; justify-content: space-between; margin-top: 10px; text-align: center; font-weight: bold; page-break-inside: avoid; font-size: 11px; }
+      .signatures-print > div { flex: 1; }
+      .footer-credits { text-align: center; font-size: 9px; border: 1px solid #000; padding: 3px; margin-top: 8px; page-break-inside: avoid; }
     }
     .print-only { display: none; }
     input[type="radio"], input[type="checkbox"] { cursor: pointer; }
@@ -267,10 +268,10 @@
             <div class="text-center py-20 text-slate-400 no-print"><i class="fa-solid fa-magnifying-glass text-6xl mb-4 opacity-30"></i><p>اختر نوع التقرير واضغط "استخراج التقرير"</p></div>
           </div>
           
-          <!-- توقيعات الطباعة -->
+          <!-- توقيعات الطباعة (مضغوطة في سطر واحد) -->
           <div class="signatures-print print-only hidden" id="printSignatures">
-            <div>المدير المساعد<br><br>أ. خالد نواف أحمد / عبدالله دليم</div>
-            <div>مدير المدرسة<br><br>أ. محمد إبراهيم محمد ناصر</div>
+            <div style="text-align: right; margin-right: 20px;">المدير المساعد: أ. خالد نواف أحمد / أ. عبدالله دليم</div>
+            <div style="text-align: left; margin-left: 20px;">مدير المدرسة: أ. محمد إبراهيم محمد ناصر</div>
           </div>
           <div class="footer-credits print-only hidden" id="printFooter">
             برنامج تحليل الزيارات الصفية - تصميم وبرمجة أ. صبري محمد حمد 36864227 - مدرسة البلاد القديم الابتدائية الاعدادية للبنين
@@ -353,9 +354,8 @@
       { id: 18, domain: "التطور الشخصي للطلبة", title: "إظهار الطلبة الثقة بالنفس والقدرة على القيادة، والمبادرة، والابتكار." }
     ];
 
-    // تحديد التواريخ في شاشة الطباعة
     function updatePrintDate() {
-      let today = new Date().toLocaleDateString('en-GB'); // dd/mm/yyyy
+      let today = new Date().toLocaleDateString('en-GB'); 
       document.getElementById('printDateAr').innerText = today;
     }
 
@@ -375,7 +375,6 @@
 
     function switchTab(tabId) { ['tab-home', 'tab-entry', 'tab-reports'].forEach(id => document.getElementById(id).classList.toggle('hidden', id !== tabId)); }
 
-    // بناء جدول إدخال المعايير
     function buildCriteriaEntry() {
       let html = "";
       criteriaList.forEach(c => {
@@ -500,7 +499,6 @@
       selSpec.innerHTML = opts.map(o => `<option value="${o}">${o}</option>`).join('');
     }
 
-    // حساب النسب كسرية بدقة مع علامة %
     const formatPct = (count, total) => {
       if(total === 0) return '0%';
       let p = (count / total) * 100;
@@ -570,7 +568,6 @@
         return { total: t, raw: c, m: formatPct(c.m, t), g: formatPct(c.g, t), s: formatPct(c.s, t), p: formatPct(c.p, t) };
       };
 
-      // 1. تقرير الملخص (Summary)
       if(type === 'summary') {
         let thead = `<table class="official-table"><thead><tr>`;
         if(fBy === 'teacher') thead += `<th>اسم المعلم</th><th>القسم</th>`;
@@ -608,7 +605,6 @@
         container.innerHTML = thead + tbody + `</tbody></table>`;
       }
 
-      // 2. تقرير التحليل المفصل (Detailed)
       else if(type === 'detailed') {
         let titleSuffix = fBy === 'all' ? 'للمدرسة' : fBy === 'teacher' ? `لمعلم` : fBy === 'dept' ? `لقسم` : `لزائر / مقيم`;
         titleEl.innerText = `تحليل نتائج الزيارات الصفية ${titleSuffix} للعام الدراسي ${yr}`;
@@ -643,16 +639,15 @@
         let fin = calcStats(filtered);
         html += `</tbody></table>
                  <h4 class="font-bold mt-4 text-right mb-1 print-only">الحكم النهائي للزيارات الصفية:</h4>
-                 <table class="official-table"><thead><tr><th class="w-32">التقييم</th><th>ممتاز= يتجاوز التوقعات بكثير</th><th>جيد= يتجاوز التوقعات</th><th>مرض= يفي بالتوقعات تماما</th><th>غير ملائم= يفي بالتوقعات جزئيا</th></tr></thead>
+                 <table class="official-table"><thead><tr><th class="w-32">التقييم</th><th>غير ملائم= يفي بالتوقعات جزئيا</th><th>مرض= يفي بالتوقعات تماما</th><th>جيد= يتجاوز التوقعات</th><th>ممتاز= يتجاوز التوقعات بكثير</th></tr></thead>
                  <tbody>`;
-        if(fBy === 'all') html += `<tr><td class="font-bold bg-slate-100">عدد الزيارات</td><td>${fin.raw.m}</td><td>${fin.raw.g}</td><td>${fin.raw.s}</td><td>${fin.raw.p}</td></tr>`;
-        html += `<tr><td class="font-bold bg-slate-100">النسبة</td><td>${fin.m}</td><td>${fin.g}</td><td>${fin.s}</td><td>${fin.p}</td></tr></tbody></table>`;
+        if(fBy === 'all') html += `<tr><td class="font-bold bg-slate-100">عدد الزيارات</td><td>${fin.raw.p}</td><td>${fin.raw.s}</td><td>${fin.raw.g}</td><td>${fin.raw.m}</td></tr>`;
+        html += `<tr><td class="font-bold bg-slate-100">النسبة</td><td>${fin.p}</td><td>${fin.s}</td><td>${fin.g}</td><td>${fin.m}</td></tr></tbody></table>`;
         
         container.innerHTML = html;
       }
     }
 
-    // عرض زيارة فردية واحدة (علامة ✔ للطباعة مع المداولة)
     window.renderSinglePrint = function(visitId) {
       const v = db.visits.find(x => String(x.ID) === String(visitId));
       if(!v) return;
@@ -677,10 +672,10 @@
                 <th rowspan="2" class="w-8">المجالات</th><th rowspan="2" class="w-8">الرقم</th><th rowspan="2">المعايير</th><th colspan="4">مستويات التقييم</th>
               </tr>
               <tr>
-                <th class="w-12"><div class="vertical-text">يتجاوز التوقعات بكثير</div></th>
-                <th class="w-12"><div class="vertical-text">يتجاوز التوقعات</div></th>
-                <th class="w-12"><div class="vertical-text">يفي بالتوقعات تماماً</div></th>
                 <th class="w-12"><div class="vertical-text">يفي بالتوقعات جزئياً</div></th>
+                <th class="w-12"><div class="vertical-text">يفي بالتوقعات تماماً</div></th>
+                <th class="w-12"><div class="vertical-text">يتجاوز التوقعات</div></th>
+                <th class="w-12"><div class="vertical-text">يتجاوز التوقعات بكثير</div></th>
               </tr>
             </thead>
             <tbody>`;
@@ -697,7 +692,7 @@
           html += `<td rowspan="${domainRowspan}"><div class="vertical-text">${c.domain}</div></td>`;
           currentDomain = c.domain;
         }
-        html += `<td>${c.id}</td><td class="criteria-text">${c.title}</td><td class="font-bold text-lg">${mkM}</td><td class="font-bold text-lg">${mkG}</td><td class="font-bold text-lg">${mkS}</td><td class="font-bold text-lg">${mkP}</td></tr>`;
+        html += `<td>${c.id}</td><td class="criteria-text">${c.title}</td><td class="font-bold text-lg">${mkP}</td><td class="font-bold text-lg">${mkS}</td><td class="font-bold text-lg">${mkG}</td><td class="font-bold text-lg">${mkM}</td></tr>`;
       });
 
       let finM = v.FinalJudgment.includes("بكثير") ? "✔" : ""; let finG = v.FinalJudgment.includes("يتجاوز") && !finM ? "✔" : "";
@@ -707,10 +702,10 @@
           <table class="official-table" style="margin-top:0;">
             <tr>
               <th class="w-32">الحكم على الدرس:</th>
-              <td><div class="checkbox-box">${finM}</div> ممتاز = يتجاوز التوقعات بكثير</td>
-              <td><div class="checkbox-box">${finG}</div> جيد = يتجاوز التوقعات</td>
-              <td><div class="checkbox-box">${finS}</div> مرض = يفي بالتوقعات تماما</td>
               <td><div class="checkbox-box">${finP}</div> غير ملائم = يفي بالتوقعات جزئيا</td>
+              <td><div class="checkbox-box">${finS}</div> مرض = يفي بالتوقعات تماما</td>
+              <td><div class="checkbox-box">${finG}</div> جيد = يتجاوز التوقعات</td>
+              <td><div class="checkbox-box">${finM}</div> ممتاز = يتجاوز التوقعات بكثير</td>
             </tr>
           </table>`;
 
@@ -749,7 +744,7 @@
       `;
 
       document.getElementById('reportTableContainer').innerHTML = html;
-      document.getElementById('printSignatures').classList.add('hidden'); // التوقيعات هنا مدمجة في الورقة الثانية
+      document.getElementById('printSignatures').classList.add('hidden'); 
       document.getElementById('printFooter').classList.remove('hidden');
     }
 
