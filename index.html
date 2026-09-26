@@ -82,7 +82,7 @@
         <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('tab-home')">
           <i class="fa-solid fa-chart-pie text-3xl"></i>
           <div>
-            <h1 class="text-xl font-bold">مدرسة البلاد القديم الابتدائية الإعدادية للبنين</h1>
+            <h1 class="text-xl font-bold">مدرسة ابن رشد الابتدائية الإعدادية للبنين</h1>
             <p class="text-xs text-red-200">استمارة الملاحظة الصفية الموحدة</p>
           </div>
         </div>
@@ -157,7 +157,7 @@
           <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-200 mb-8">
             <label class="font-bold block text-red-800 dark:text-red-400 mb-2">الحكم العام على الدرس:</label>
             <div class="flex gap-4 flex-wrap">
-              <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="radio" name="v_final" value="ممتاز = يتجاوز التوقعات بكثير" required class="w-5 h-5 accent-red-600"> ممتاز</label>
+              <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="radio" name="v_final" value="ممتاز = يتجاوز التوقعات بكثير" class="w-5 h-5 accent-red-600"> ممتاز</label>
               <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="radio" name="v_final" value="جيد = يتجاوز التوقعات" class="w-5 h-5 accent-red-600"> جيد</label>
               <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="radio" name="v_final" value="مرض = يفي بالتوقعات تماما" class="w-5 h-5 accent-red-600"> مرض</label>
               <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="radio" name="v_final" value="غير ملائم = يفي بالتوقعات جزئيا" class="w-5 h-5 accent-red-600"> غير ملائم</label>
@@ -323,6 +323,13 @@
       { id: 18, domain: "التطور الشخصي للطلبة", title: "إظهار الطلبة الثقة بالنفس والقدرة على القيادة، والمبادرة، والابتكار." }
     ];
 
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark');
+      let isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    }
+    if(localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) toggleDarkMode();
+
     function checkLogin() {
       if (document.getElementById('loginPass').value === "2030") {
         document.getElementById('loginScreen').style.opacity = '0';
@@ -332,7 +339,7 @@
 
     function switchTab(tabId) { ['tab-home', 'tab-entry', 'tab-reports'].forEach(id => document.getElementById(id).classList.toggle('hidden', id !== tabId)); }
 
-    // بناء جدول إدخال المعايير بالـ Radio Buttons
+    // بناء جدول إدخال المعايير
     function buildCriteriaEntry() {
       let html = "";
       criteriaList.forEach(c => {
@@ -340,7 +347,7 @@
           <tr class="hover:bg-slate-50 dark:hover:bg-slate-800 transition">
             <td class="font-bold">${c.id}</td>
             <td class="text-right text-xs md:text-sm font-medium pr-2">${c.title}</td>
-            <td><input type="radio" name="q_${c.id}" value="ممتاز = يتجاوز التوقعات بكثير" required class="w-4 h-4 accent-red-600"></td>
+            <td><input type="radio" name="q_${c.id}" value="ممتاز = يتجاوز التوقعات بكثير" class="w-4 h-4 accent-red-600"></td>
             <td><input type="radio" name="q_${c.id}" value="جيد = يتجاوز التوقعات" class="w-4 h-4 accent-red-600"></td>
             <td><input type="radio" name="q_${c.id}" value="مرض = يفي بالتوقعات تماما" class="w-4 h-4 accent-red-600"></td>
             <td><input type="radio" name="q_${c.id}" value="غير ملائم = يفي بالتوقعات جزئيا" class="w-4 h-4 accent-red-600"></td>
@@ -387,36 +394,70 @@
       } catch (e) { console.error("Error fetching data", e); }
     }
 
+    // ========== التحديث الجوهري في دالة الحفظ (معالجة التعليق والسرعة) ==========
     async function saveVisit(e) {
       e.preventDefault();
-      const btn = document.getElementById('saveBtn'); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> جاري الحفظ..."; btn.disabled = true;
+      const btn = document.getElementById('saveBtn'); 
+      btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> جاري المعالجة..."; 
+      btn.disabled = true;
       
-      // جمع بيانات checkboxes
-      let skills = Array.from(document.querySelectorAll('#skillsCheckboxes input:checked')).map(i=>i.value).join('، ');
-      let sw = Array.from(document.querySelectorAll('#swCheckboxes input:checked')).map(i=>i.value).join('، ');
-      let support = Array.from(document.querySelectorAll('#supportCheckboxes input:checked')).filter(i=>i.id!=='chk_other').map(i=>i.value);
-      if(document.getElementById('chk_other').checked) support.push(document.getElementById('v_support_other').value);
-
-      let payload = {
-        Year: document.getElementById('v_year').value, Semester: "طوال العام", Date: document.getElementById('v_date').value,
-        TeacherName: document.getElementById('v_teacher').value, Subject: document.getElementById('v_subject').value,
-        VisitorName: document.getElementById('v_visitor').value, VisitorJob: document.getElementById('v_job').value,
-        FinalJudgment: document.querySelector('input[name="v_final"]:checked').value,
-        // (يتم إرسال البيانات كحقول إضافية أو دمجها في السيرفر لاحقاً)
-        Extra_Class: document.getElementById('v_class').value, Extra_VisitNo: document.getElementById('v_visitNo').value,
-        Extra_Lesson: document.getElementById('v_lesson').value, Extra_Skills: skills, Extra_SW: sw, Extra_Support: support.join('، ')
-      };
-      for(let i=1; i<=18; i++) payload["Q"+i] = document.querySelector(`input[name="q_${i}"]:checked`).value;
-      
-      // إضافة الزيارة محلياً مؤقتاً لتظهر في السجل مباشرة
-      payload.ID = Date.now();
-      db.visits.push(payload);
-
       try {
-        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-        alert("تم الحفظ في السجل بنجاح!"); e.target.reset(); switchTab('tab-reports'); updateFilterUI(); generateReport();
-      } catch (err) { alert("حدث خطأ."); }
-      btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> حفظ الزيارة في السجل'; btn.disabled = false;
+        // 1. التحقق من أن جميع التقييمات الـ 18 قد تم الإجابة عليها
+        for(let i=1; i<=18; i++) {
+          let checkedEl = document.querySelector(`input[name="q_${i}"]:checked`);
+          if (!checkedEl) throw new Error(`الرجاء إكمال التقييم للمعيار رقم ${i} في الجدول.`);
+        }
+
+        // 2. التحقق من اختيار الحكم النهائي للزيارة
+        let finalEl = document.querySelector('input[name="v_final"]:checked');
+        if (!finalEl) throw new Error("الرجاء اختيار الحكم العام على الدرس أسفل جدول المعايير.");
+
+        // جمع البيانات
+        let skills = Array.from(document.querySelectorAll('#skillsCheckboxes input:checked')).map(i=>i.value).join('، ');
+        let sw = Array.from(document.querySelectorAll('#swCheckboxes input:checked')).map(i=>i.value).join('، ');
+        let support = Array.from(document.querySelectorAll('#supportCheckboxes input:checked')).filter(i=>i.id!=='chk_other').map(i=>i.value);
+        if(document.getElementById('chk_other').checked) support.push(document.getElementById('v_support_other').value);
+
+        let payload = {
+          Year: "2026-2027", Semester: "طوال العام", Date: document.getElementById('v_date').value,
+          TeacherName: document.getElementById('v_teacher').value, Subject: document.getElementById('v_subject').value,
+          VisitorName: document.getElementById('v_visitor').value, VisitorJob: document.getElementById('v_job').value,
+          FinalJudgment: finalEl.value,
+          Extra_Class: document.getElementById('v_class').value, Extra_VisitNo: document.getElementById('v_visitNo').value,
+          Extra_Lesson: document.getElementById('v_lesson').value, Extra_Skills: skills, Extra_SW: sw, Extra_Support: support.join('، ')
+        };
+
+        for(let i=1; i<=18; i++) {
+          payload["Q"+i] = document.querySelector(`input[name="q_${i}"]:checked`).value;
+        }
+        
+        // حفظ محلي فوري
+        payload.ID = Date.now();
+        db.visits.push(payload);
+
+        // إرسال سحابي في الخلفية بدون تأخير المستخدم
+        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+            .catch(err => console.log('Sync Error:', err));
+
+        // تفريغ النموذج والعودة
+        alert("تم حفظ الزيارة بنجاح!"); 
+        e.target.reset(); 
+        switchTab('tab-reports'); 
+        updateFilterUI(); 
+        generateReport();
+
+      } catch (err) {
+        alert(err.message || "حدث خطأ غير متوقع.");
+      } finally {
+        // إعادة الزر لحالته الطبيعية دائماً
+        btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> حفظ الزيارة في السجل'; 
+        btn.disabled = false;
+      }
+    }
+
+    function toggleReportViews() {
+      // إخفاء الفلاتر الإضافية إذا كان التقرير المطلوب هو تحليل مفصل وليس سجل
+      // يمكن تطويرها لاحقاً
     }
 
     function updateFilterUI() {
@@ -446,26 +487,34 @@
       });
 
       if(type === 'log') {
-        let html = `<div class="text-sm font-bold mb-4 bg-slate-100 p-2 rounded">إجمالي الزيارات المسجلة: ${filtered.length}</div>
-                    <table class="w-full text-sm border-collapse border"><thead><tr class="bg-slate-200"><th class="border p-2">التاريخ</th><th class="border p-2">المعلم</th><th class="border p-2">المقيم</th><th class="border p-2">إجراء</th></tr></thead><tbody>`;
-        if(filtered.length === 0) html += `<tr><td colspan="4" class="text-center p-4">لا توجد زيارات.</td></tr>`;
+        let html = `<div class="text-sm font-bold mb-4 bg-slate-100 p-2 rounded border border-slate-300">إجمالي الزيارات المسجلة: ${filtered.length}</div>
+                    <table class="w-full text-sm border-collapse border border-slate-300">
+                      <thead><tr class="bg-slate-200"><th class="border p-2">التاريخ</th><th class="border p-2">المعلم</th><th class="border p-2">المقيم</th><th class="border p-2">إجراء</th></tr></thead>
+                      <tbody>`;
+        if(filtered.length === 0) html += `<tr><td colspan="4" class="text-center p-4">لا توجد زيارات مطابقة للبحث.</td></tr>`;
         filtered.forEach(v => {
-          html += `<tr><td class="border p-2 text-center">${v.Date}</td><td class="border p-2 text-center">${v.TeacherName}</td><td class="border p-2 text-center">${v.VisitorName}</td>
-                   <td class="border p-2 text-center no-print"><button onclick="renderSinglePrint('${v.ID}')" class="bg-amber-500 text-xs px-3 py-1 rounded text-white font-bold hover:bg-amber-600 shadow"><i class="fa-solid fa-print"></i> عرض وطباعة الاستمارة</button></td></tr>`;
+          html += `<tr class="hover:bg-slate-50">
+                    <td class="border p-2 text-center">${v.Date || ''}</td>
+                    <td class="border p-2 text-center font-bold">${v.TeacherName}</td>
+                    <td class="border p-2 text-center text-slate-500">${v.VisitorName}</td>
+                    <td class="border p-2 text-center no-print">
+                      <button onclick="renderSinglePrint('${v.ID}')" class="bg-amber-500 text-xs px-4 py-2 rounded text-white font-bold hover:bg-amber-600 shadow-md">
+                        <i class="fa-solid fa-print"></i> عرض وطباعة الاستمارة
+                      </button>
+                    </td>
+                   </tr>`;
         });
         html += `</tbody></table>`;
         container.innerHTML = html;
       }
     }
 
-    // بناء صفحة الطباعة الاحترافية المطابقة للصور تماماً (الورقة الأولى والثانية)
     window.renderSinglePrint = function(visitId) {
       const v = db.visits.find(x => String(x.ID) === String(visitId));
       if(!v) return;
 
       const container = document.getElementById('reportTableContainer');
       
-      // الورقة الأولى: جدول المعايير
       let html = `
         <div class="print-page">
           <div class="print-header-grid">
@@ -473,7 +522,6 @@
              <div>الصف / الشعبة: <span class="val">${v.Extra_Class || ''}</span> المادة/المقرر: <span class="val">${v.Subject}</span></div>
              <div>التاريخ: <span class="val">${v.Date}</span> رقم الزيارة: <span class="val">${v.Extra_VisitNo || '1'}</span> عنوان الدرس: <span class="val">${v.Extra_Lesson || ''}</span></div>
              <div>الحصة الدراسية: <span class="val">${v.Period || ''}</span> الزمن: من <span class="val">${(v.Extra_Time || '').split('-')[0] || ''}</span> إلى <span class="val">${(v.Extra_Time || '').split('-')[1] || ''}</span></div>
-             <div>عدد الطلبة: ( <span class="val">${v.StudentsCount || ''}</span> ) عدد الغياب: ( <span class="val">${v.AbsenceCount || ''}</span> )</div>
           </div>
           
           <table class="official-table">
@@ -524,7 +572,6 @@
         </div>
       `;
 
-      // الورقة الثانية: المداولة البعدية
       let sk = v.Extra_Skills || "";
       let chk = (str, val) => str.includes(val) ? "✔" : "";
       
