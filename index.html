@@ -82,8 +82,8 @@
         <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('tab-home')">
           <i class="fa-solid fa-chart-pie text-3xl"></i>
           <div>
-            <h1 class="text-xl font-bold">مدرسة البلاد القديم الابتدائية الإعدادية للبنين</h1>
-            <p class="text-xs text-red-200">استمارة الملاحظة الصفية الموحدة</p>
+            <h1 class="text-xl font-bold">مدرسة البلاد القديم الابتدائية الاعدادية للبنين</h1>
+            <p class="text-xs text-red-200 mt-1">استمارة الملاحظة الصفية الموحدة | تصميم صبري محمد حمد 36864227</p>
           </div>
         </div>
         <div class="flex gap-2 items-center">
@@ -248,6 +248,8 @@
           </div>
         </div>
       </section>
+      
+      <footer class="text-center p-6 text-sm text-slate-500 no-print mt-auto font-medium">إعداد وتصميم صبري محمد حمد 36864227</footer>
     </main>
   </div>
 
@@ -394,7 +396,6 @@
       } catch (e) { console.error("Error fetching data", e); }
     }
 
-    // ========== التحديث الجوهري في دالة الحفظ (معالجة التعليق والسرعة) ==========
     async function saveVisit(e) {
       e.preventDefault();
       const btn = document.getElementById('saveBtn'); 
@@ -402,17 +403,14 @@
       btn.disabled = true;
       
       try {
-        // 1. التحقق من أن جميع التقييمات الـ 18 قد تم الإجابة عليها
         for(let i=1; i<=18; i++) {
           let checkedEl = document.querySelector(`input[name="q_${i}"]:checked`);
           if (!checkedEl) throw new Error(`الرجاء إكمال التقييم للمعيار رقم ${i} في الجدول.`);
         }
 
-        // 2. التحقق من اختيار الحكم النهائي للزيارة
         let finalEl = document.querySelector('input[name="v_final"]:checked');
         if (!finalEl) throw new Error("الرجاء اختيار الحكم العام على الدرس أسفل جدول المعايير.");
 
-        // جمع البيانات
         let skills = Array.from(document.querySelectorAll('#skillsCheckboxes input:checked')).map(i=>i.value).join('، ');
         let sw = Array.from(document.querySelectorAll('#swCheckboxes input:checked')).map(i=>i.value).join('، ');
         let support = Array.from(document.querySelectorAll('#supportCheckboxes input:checked')).filter(i=>i.id!=='chk_other').map(i=>i.value);
@@ -431,15 +429,12 @@
           payload["Q"+i] = document.querySelector(`input[name="q_${i}"]:checked`).value;
         }
         
-        // حفظ محلي فوري
         payload.ID = Date.now();
         db.visits.push(payload);
 
-        // إرسال سحابي في الخلفية بدون تأخير المستخدم
         fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
             .catch(err => console.log('Sync Error:', err));
 
-        // تفريغ النموذج والعودة
         alert("تم حفظ الزيارة بنجاح!"); 
         e.target.reset(); 
         switchTab('tab-reports'); 
@@ -449,15 +444,13 @@
       } catch (err) {
         alert(err.message || "حدث خطأ غير متوقع.");
       } finally {
-        // إعادة الزر لحالته الطبيعية دائماً
         btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> حفظ الزيارة في السجل'; 
         btn.disabled = false;
       }
     }
 
     function toggleReportViews() {
-      // إخفاء الفلاتر الإضافية إذا كان التقرير المطلوب هو تحليل مفصل وليس سجل
-      // يمكن تطويرها لاحقاً
+      // Logic for changing view types if needed
     }
 
     function updateFilterUI() {
@@ -518,7 +511,7 @@
       let html = `
         <div class="print-page">
           <div class="print-header-grid">
-             <div>اسم المعلم المزور: <span class="val">${v.TeacherName}</span> اسم المدرسة: <span class="val">ابن رشد الابتدائية الإعدادية للبنين</span></div>
+             <div>اسم المعلم المزور: <span class="val">${v.TeacherName}</span> اسم المدرسة: <span class="val">البلاد القديم الابتدائية الاعدادية للبنين</span></div>
              <div>الصف / الشعبة: <span class="val">${v.Extra_Class || ''}</span> المادة/المقرر: <span class="val">${v.Subject}</span></div>
              <div>التاريخ: <span class="val">${v.Date}</span> رقم الزيارة: <span class="val">${v.Extra_VisitNo || '1'}</span> عنوان الدرس: <span class="val">${v.Extra_Lesson || ''}</span></div>
              <div>الحصة الدراسية: <span class="val">${v.Period || ''}</span> الزمن: من <span class="val">${(v.Extra_Time || '').split('-')[0] || ''}</span> إلى <span class="val">${(v.Extra_Time || '').split('-')[1] || ''}</span></div>
