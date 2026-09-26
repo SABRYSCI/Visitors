@@ -3,47 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>برنامج تحليل الزيارات الصفية المتطور</title>
+  <title>استمارة الملاحظة الصفية الموحدة - نظام إلكتروني</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: { extend: { fontFamily: { sans: ['Tajawal', 'sans-serif'] } } }
-    }
+    tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Tajawal', 'sans-serif'] } } } }
   </script>
-  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   
   <style>
     body { font-family: 'Tajawal', sans-serif; }
     
-    /* تنسيقات الطباعة الاحترافية */
+    /* تنسيقات الطباعة الاحترافية المطابقة للصور */
     @media print {
-      body, html { background: white !important; color: black !important; }
+      body, html { background: white !important; color: black !important; font-size: 12px; }
       .no-print { display: none !important; }
       .print-only { display: block !important; }
-      @page { margin: 1cm; size: A4 portrait; }
-      .print-header { text-align: center; margin-bottom: 20px; }
+      @page { margin: 10mm; size: A4 portrait; }
       
-      table { width: 100%; border-collapse: collapse; margin-top: 15px; direction: rtl; page-break-inside: auto; }
-      tr { page-break-inside: avoid; page-break-after: auto; }
-      th, td { border: 1px solid #000 !important; padding: 6px; text-align: center; font-size: 11px; color: black !important; }
-      th { background-color: #e2e8f0 !important; -webkit-print-color-adjust: exact; font-weight: bold;}
-      .criteria-text { text-align: right !important; padding-right: 10px !important; }
-      
-      .info-table { margin-bottom: 15px; }
-      .info-table th { background-color: #f1f5f9 !important; width: 15%; }
-      .info-table td { font-weight: bold; width: 35%; }
+      .print-page { page-break-after: always; padding-top: 10px; }
+      .print-page:last-child { page-break-after: auto; }
 
-      .signatures { display: flex; justify-content: space-between; margin-top: 40px; font-size: 12px; page-break-inside: avoid; }
-      .footer-credits { text-align: center; font-size: 10px; margin-top: 20px; border-top: 1px solid #ccc; padding-top: 5px; color: #555 !important; page-break-inside: avoid; }
+      /* جداول الطباعة */
+      .official-table { width: 100%; border-collapse: collapse; direction: rtl; margin-bottom: 15px; }
+      .official-table th, .official-table td { border: 1.5px solid #000 !important; padding: 4px 6px; text-align: center; color: black !important; vertical-align: middle; }
+      .official-table th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; font-weight: bold; }
+      
+      .vertical-text { writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-weight: bold; white-space: nowrap; }
+      .criteria-text { text-align: right !important; padding-right: 8px !important; font-size: 11px; }
+      
+      /* الترويسة العلوية للطباعة */
+      .print-header-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; font-weight: bold; font-size: 12px; }
+      .print-header-grid div { display: flex; align-items: center; border-bottom: 1px dashed #000; padding-bottom: 3px; }
+      .print-header-grid span.val { font-weight: normal; margin-right: 5px; flex-grow: 1; text-align: center; }
+
+      /* الصناديق في الصفحة الثانية */
+      .box-section { border: 1.5px solid #000; margin-bottom: 10px; page-break-inside: avoid; }
+      .box-header { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; border-bottom: 1.5px solid #000; padding: 5px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+      .box-content { padding: 10px; }
+      .checkbox-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 11px; }
+      .checkbox-item { display: flex; align-items: center; gap: 5px; }
+      .checkbox-box { width: 12px; height: 12px; border: 1px solid #000; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;}
+      
+      .signatures-print { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-top: 20px; text-align: center; border: 1.5px solid #000; }
+      .signatures-print > div { border-left: 1px solid #000; padding: 10px; min-height: 80px; }
+      .signatures-print > div:last-child { border-left: none; }
     }
     .print-only { display: none; }
-    
-    /* تنسيق خاص لقوائم datalist في بعض المتصفحات */
-    input::-webkit-calendar-picker-indicator { opacity: 0.5; cursor: pointer; }
+    input[type="radio"], input[type="checkbox"] { cursor: pointer; }
+    .form-grid-table { width: 100%; border-collapse: collapse; }
+    .form-grid-table th, .form-grid-table td { border: 1px solid #e2e8f0; padding: 8px; text-align: center; }
+    .dark .form-grid-table th, .dark .form-grid-table td { border-color: #334155; }
+    .form-grid-table th { background-color: #f8fafc; }
+    .dark .form-grid-table th { background-color: #0f172a; }
   </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col">
@@ -52,18 +65,16 @@
   <div id="loginScreen" class="fixed inset-0 bg-slate-100 dark:bg-slate-900 z-50 flex items-center justify-center px-4 transition-opacity duration-500">
     <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-slate-700">
       <img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt="ترويسة المدرسة" class="w-full h-auto mb-6 mx-auto" style="max-height: 110px; object-fit: contain;">
-      <h2 class="text-2xl font-bold mb-2 text-slate-800 dark:text-white">برنامج تحليل الزيارات الصفية المتطور</h2>
+      <h2 class="text-2xl font-bold mb-2 text-slate-800 dark:text-white">نظام الزيارات الصفية المطور</h2>
       <p class="text-sm text-slate-500 dark:text-slate-400 mb-8">الرجاء إدخال كلمة المرور للوصول للنظام</p>
       <input type="password" id="loginPass" class="w-full border border-slate-300 dark:border-slate-600 p-3 rounded-xl mb-4 text-center text-lg bg-slate-50 dark:bg-slate-700 focus:ring-2 focus:ring-red-600 outline-none" placeholder="كلمة المرور">
       <p id="loginError" class="text-red-500 text-sm mb-4 hidden font-bold">كلمة المرور غير صحيحة!</p>
       <button onclick="checkLogin()" class="w-full bg-gradient-to-r from-red-800 to-red-600 hover:from-red-900 hover:to-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition transform hover:scale-[1.02]">
         تسجيل الدخول <i class="fa-solid fa-arrow-right-to-bracket ml-2"></i>
       </button>
-      <div class="mt-8 pt-4 border-t border-slate-100 dark:border-slate-700 text-xs text-slate-400">إعداد وتصميم أ.صبري محمد حمد 36864227</div>
     </div>
   </div>
 
-  <!-- ================= واجهة النظام الرئيسية ================= -->
   <div id="mainApp" class="hidden flex-col flex-1">
     <!-- الشريط العلوي -->
     <header class="bg-gradient-to-r from-red-900 to-red-700 text-white shadow-md no-print">
@@ -71,8 +82,8 @@
         <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('tab-home')">
           <i class="fa-solid fa-chart-pie text-3xl"></i>
           <div>
-            <h1 class="text-xl font-bold">مدرسة ابن رشد الابتدائية الإعدادية للبنين</h1>
-            <p class="text-xs text-red-200">برنامج تحليل الزيارات الصفية المتطور</p>
+            <h1 class="text-xl font-bold">مدرسة البلاد القديم الابتدائية الإعدادية للبنين</h1>
+            <p class="text-xs text-red-200">استمارة الملاحظة الصفية الموحدة</p>
           </div>
         </div>
         <div class="flex gap-2 items-center">
@@ -82,224 +93,169 @@
           </button>
         </div>
       </div>
-      <div class="bg-red-950/40 text-center py-2 text-sm font-medium border-t border-white/10 backdrop-blur-sm">
-        <i class="fa-regular fa-calendar ml-1"></i> <span id="clockDisplay"></span>
-      </div>
     </header>
 
     <main class="max-w-7xl mx-auto p-4 w-full flex-1 flex flex-col">
-      <!-- شاشة الاختيار (الرئيسية) -->
+      <!-- شاشة الاختيار -->
       <section id="tab-home" class="flex-1 flex flex-col items-center justify-center py-10">
-        <h2 class="text-2xl font-bold mb-8 text-slate-700 dark:text-slate-200 text-center">أهلاً بك في النظام المطور، ماذا تريد أن تفعل؟</h2>
+        <h2 class="text-2xl font-bold mb-8 text-center">أهلاً بك في النظام المطور، ماذا تريد أن تفعل؟</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
-          <button onclick="switchTab('tab-entry')" class="group bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-100 dark:border-slate-700 flex flex-col items-center gap-4 transform hover:-translate-y-2">
-            <div class="w-24 h-24 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform"><i class="fa-solid fa-file-signature text-5xl text-red-700 dark:text-red-500"></i></div>
-            <span class="text-2xl font-bold text-slate-800 dark:text-white">إدخال زيارة صفية جديدة</span>
+          <button onclick="switchTab('tab-entry')" class="group bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col items-center gap-4 transform hover:-translate-y-1">
+            <div class="w-20 h-20 bg-red-50 text-red-700 rounded-full flex items-center justify-center text-4xl"><i class="fa-solid fa-file-signature"></i></div>
+            <span class="text-xl font-bold">إدخال زيارة صفية جديدة</span>
           </button>
-          <button onclick="switchTab('tab-reports'); updateFilterUI();" class="group bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-100 dark:border-slate-700 flex flex-col items-center gap-4 transform hover:-translate-y-2">
-            <div class="w-24 h-24 bg-amber-50 dark:bg-amber-900/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform"><i class="fa-solid fa-chart-line text-5xl text-amber-500"></i></div>
-            <span class="text-2xl font-bold text-slate-800 dark:text-white">لوحة التحليل والتقارير</span>
+          <button onclick="switchTab('tab-reports'); updateFilterUI();" class="group bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col items-center gap-4 transform hover:-translate-y-1">
+            <div class="w-20 h-20 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-4xl"><i class="fa-solid fa-print"></i></div>
+            <span class="text-xl font-bold">سجلات الزيارات والتقارير</span>
           </button>
         </div>
       </section>
 
       <!-- شاشة إدخال الزيارة -->
-      <section id="tab-entry" class="hidden bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-        <div class="flex justify-between items-center mb-6 border-b dark:border-slate-700 pb-4">
-          <h2 class="text-xl font-bold"><i class="fa-solid fa-file-signature text-red-700 dark:text-red-500"></i> إدخال زيارة صفية</h2>
-          <button onclick="switchTab('tab-home')" class="text-sm bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded font-bold hover:bg-slate-200">عودة</button>
+      <section id="tab-entry" class="hidden bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200">
+        <div class="flex justify-between items-center mb-6 border-b pb-4">
+          <h2 class="text-xl font-bold text-red-700"><i class="fa-solid fa-clipboard-check"></i> استمارة الملاحظة الصفية الموحدة</h2>
+          <button onclick="switchTab('tab-home')" class="text-sm bg-slate-100 px-3 py-1 rounded font-bold text-slate-700 hover:bg-slate-200">عودة</button>
         </div>
+        
         <form id="visitForm" onsubmit="saveVisit(event)">
-          
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-200 dark:border-slate-700 mb-6">
-            <!-- الصف الأول -->
-            <div>
-              <label class="text-sm font-bold block mb-1">العام الدراسي</label>
-              <input type="text" id="v_year" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700 font-bold" value="2026-2027" required>
-            </div>
-            <div>
-              <label class="text-sm font-bold block mb-1">الشهر/الفصل</label>
-              <select id="v_semester" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700 font-bold" required>
-                <option value="الفصل الدراسي الأول">الفصل الدراسي الأول</option>
-                <option value="الفصل الدراسي الثاني">الفصل الدراسي الثاني</option>
-                <option value="شهر 9">شهر 9</option><option value="شهر 10">شهر 10</option>
-                <option value="شهر 11">شهر 11</option><option value="شهر 12">شهر 12</option>
-                <option value="شهر 1">شهر 1</option><option value="شهر 2">شهر 2</option>
-                <option value="شهر 3">شهر 3</option><option value="شهر 4">شهر 4</option>
-                <option value="شهر 5">شهر 5</option><option value="شهر 6">شهر 6</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-sm font-bold block mb-1">التاريخ</label>
-              <input type="date" id="v_date" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700" required>
-            </div>
-            <div>
-              <label class="text-sm font-bold block mb-1 text-red-700">الحكم النهائي للزيارة</label>
-              <select id="v_final" class="w-full border p-2 rounded-lg font-bold text-red-700 bg-red-50 dark:bg-slate-700 outline-none focus:ring-2 focus:ring-red-500" required>
-                <option value="ممتاز = يتجاوز التوقعات بكثير">ممتاز = يتجاوز التوقعات بكثير</option>
-                <option value="جيد = يتجاوز التوقعات">جيد = يتجاوز التوقعات</option>
-                <option value="مرض = يفي بالتوقعات تماما">مرض = يفي بالتوقعات تماما</option>
-                <option value="غير ملائم = يفي بالتوقعات جزئيا">غير ملائم = يفي بالتوقعات جزئيا</option>
-              </select>
-            </div>
+          <!-- بيانات الزيارة الأساسية -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-200 mb-6 text-sm">
+            <div><label class="font-bold block mb-1">القسم</label><select id="v_dept" onchange="filterTeachers()" class="w-full border p-2 rounded bg-white dark:bg-slate-700"></select></div>
+            <div><label class="font-bold block mb-1">اسم المعلم</label><select id="v_teacher" onchange="fillTeacherDetails()" class="w-full border p-2 rounded bg-white dark:bg-slate-700" required><option value="">-- اختر القسم أولاً --</option></select></div>
+            <div><label class="font-bold block mb-1">المادة</label><input type="text" id="v_subject" class="w-full border p-2 rounded bg-slate-200" readonly><input type="hidden" id="v_cpr"></div>
+            <div><label class="font-bold block mb-1">الصف/الشعبة</label><input type="text" id="v_class" class="w-full border p-2 rounded bg-white dark:bg-slate-700" required></div>
+            
+            <div><label class="font-bold block mb-1">تاريخ الزيارة</label><input type="date" id="v_date" class="w-full border p-2 rounded bg-white dark:bg-slate-700" required></div>
+            <div><label class="font-bold block mb-1">رقم الزيارة</label><input type="number" id="v_visitNo" class="w-full border p-2 rounded bg-white dark:bg-slate-700" min="1" value="1" required></div>
+            <div class="md:col-span-2"><label class="font-bold block mb-1">عنوان الدرس</label><input type="text" id="v_lesson" class="w-full border p-2 rounded bg-white dark:bg-slate-700" required></div>
 
-            <!-- الصف الثاني -->
-            <div>
-              <label class="text-sm font-bold block mb-1 text-emerald-700 dark:text-emerald-400">القسم (لتسهيل البحث)</label>
-              <select id="v_dept" onchange="filterTeachers()" class="w-full border border-emerald-300 p-2 rounded-lg bg-emerald-50 dark:bg-slate-700">
-                <!-- يتم تعبئتها برمجياً -->
-              </select>
-            </div>
-            <div>
-              <label class="text-sm font-bold block mb-1">اسم المعلم</label>
-              <select id="v_teacher" onchange="fillTeacherDetails()" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700" required>
-                <option value="">-- اختر القسم أولاً --</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-sm font-bold block mb-1 text-slate-500">التخصص الفعلي</label>
-              <input type="text" id="v_subject" class="w-full border p-2 rounded-lg bg-slate-200 dark:bg-slate-600 font-bold" readonly placeholder="يُملأ تلقائياً">
-              <input type="hidden" id="v_cpr">
-            </div>
-            <div class="hidden md:block"></div> <!-- مسافة فارغة للترتيب -->
-
-            <!-- الصف الثالث -->
-            <div class="md:col-span-2">
-              <label class="text-sm font-bold block mb-1">اسم الزائر (المقيم)</label>
-              <!-- datalist تسمح بالاختيار أو الكتابة اليدوية -->
-              <input type="text" id="v_visitor" list="visitorsData" onchange="fillVisitorDetails()" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700" placeholder="اختر من القائمة أو اكتب اسماً جديداً..." required>
-              <datalist id="visitorsData"></datalist>
-            </div>
-            <div class="md:col-span-2">
-              <label class="text-sm font-bold block mb-1">المسمى الوظيفي</label>
-              <input type="text" id="v_job" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700" placeholder="يُملأ تلقائياً وقابل للتعديل يدوياً..." required>
-            </div>
+            <div><label class="font-bold block mb-1">الحصة الدراسية</label><input type="text" id="v_period" class="w-full border p-2 rounded bg-white dark:bg-slate-700" required></div>
+            <div><label class="font-bold block mb-1">الزمن (من - إلى)</label><input type="text" id="v_time" class="w-full border p-2 rounded bg-white dark:bg-slate-700" placeholder="مثال: 8:00 - 8:45" required></div>
+            <div><label class="font-bold block mb-1">عدد الطلبة</label><input type="number" id="v_students" class="w-full border p-2 rounded bg-white dark:bg-slate-700" min="0" required></div>
+            <div><label class="font-bold block mb-1">عدد الغياب</label><input type="number" id="v_absence" class="w-full border p-2 rounded bg-white dark:bg-slate-700" min="0" required></div>
           </div>
-          
-          <!-- المعايير -->
-          <div class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold p-3 mt-4 text-center rounded-lg text-sm mb-4">التخطيط وإدارة الموقف التعليمي والمعايير الأخرى</div>
-          <div id="criteriaContainer" class="space-y-3 mb-6"></div>
-          
-          <!-- خيارات الإرسال والإيميل الإضافي -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col justify-center">
-              <label class="flex items-center gap-3 font-bold cursor-pointer">
-                <input type="checkbox" id="v_send_email" checked class="w-5 h-5 accent-red-700"> إرسال التقرير للمعلم تلقائياً
-              </label>
-            </div>
-            <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
-              <label class="text-sm font-bold block mb-1">إرسال نسخة إلى إيميل آخر (اختياري)</label>
-              <input type="email" id="v_extra_email" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700" placeholder="مثال: principal@school.edu.bh">
+
+          <!-- جدول المعايير التفاعلي (18 معيار) -->
+          <h3 class="font-bold text-lg mb-2 text-slate-800 dark:text-white">المعايير والتقييم</h3>
+          <div class="overflow-x-auto mb-6">
+            <table class="form-grid-table text-sm w-full">
+              <thead>
+                <tr>
+                  <th class="w-10">الرقم</th>
+                  <th class="text-right">المعايير</th>
+                  <th class="w-20"><div class="rotate-180" style="writing-mode: vertical-rl;">يتجاوز التوقعات بكثير</div></th>
+                  <th class="w-20"><div class="rotate-180" style="writing-mode: vertical-rl;">يتجاوز التوقعات</div></th>
+                  <th class="w-20"><div class="rotate-180" style="writing-mode: vertical-rl;">يفي بالتوقعات تماماً</div></th>
+                  <th class="w-20"><div class="rotate-180" style="writing-mode: vertical-rl;">يفي بالتوقعات جزئياً</div></th>
+                </tr>
+              </thead>
+              <tbody id="criteriaEntryBody"></tbody>
+            </table>
+          </div>
+
+          <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-200 mb-8">
+            <label class="font-bold block text-red-800 dark:text-red-400 mb-2">الحكم العام على الدرس:</label>
+            <div class="flex gap-4 flex-wrap">
+              <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="radio" name="v_final" value="ممتاز = يتجاوز التوقعات بكثير" required class="w-5 h-5 accent-red-600"> ممتاز</label>
+              <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="radio" name="v_final" value="جيد = يتجاوز التوقعات" class="w-5 h-5 accent-red-600"> جيد</label>
+              <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="radio" name="v_final" value="مرض = يفي بالتوقعات تماما" class="w-5 h-5 accent-red-600"> مرض</label>
+              <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="radio" name="v_final" value="غير ملائم = يفي بالتوقعات جزئيا" class="w-5 h-5 accent-red-600"> غير ملائم</label>
             </div>
           </div>
 
-          <button type="submit" id="saveBtn" class="bg-red-700 text-white px-8 py-3 rounded-xl font-bold hover:bg-red-800 shadow-md transition w-full md:w-auto"><i class="fa-solid fa-cloud-arrow-up ml-2"></i> حفظ ومزامنة الزيارة</button>
+          <!-- الصفحة الثانية: المداولة البعدية -->
+          <h3 class="font-bold text-xl mb-4 text-slate-800 border-b pb-2">الجزء الخاص بالمداولة البعدية مع المعلم</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 text-sm">
+            <!-- مهارات القرن 21 -->
+            <div class="border p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50">
+              <h4 class="font-bold mb-3">1) مهارات القرن الحادي والعشرين التي تم توظيفها:</h4>
+              <div class="grid grid-cols-2 gap-2" id="skillsCheckboxes">
+                <label><input type="checkbox" value="التفكير الناقد وحل المشكلات"> التفكير الناقد وحل المشكلات</label>
+                <label><input type="checkbox" value="التعاون والتواصل"> التعاون والتواصل</label>
+                <label><input type="checkbox" value="الوعي العالمي والثقافي"> الوعي العالمي والثقافي</label>
+                <label><input type="checkbox" value="الإبداع والابتكار"> الإبداع والابتكار</label>
+                <label><input type="checkbox" value="القدرة على التكيف والمرونة"> القدرة على التكيف والمرونة</label>
+                <label><input type="checkbox" value="المعرفة المعلوماتية"> المعرفة المعلوماتية</label>
+                <label><input type="checkbox" value="الذكاء العاطفي"> الذكاء العاطفي</label>
+                <label><input type="checkbox" value="المعرفة الرقمية"> المعرفة الرقمية</label>
+              </div>
+            </div>
+            
+            <!-- متابعة أعمال الطلبة -->
+            <div class="border p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50">
+              <h4 class="font-bold mb-3">2) متابعة أعمال الطلبة:</h4>
+              <div class="flex items-center gap-2 mb-3">
+                <span>عدد العينات التي ينبغي فحصها: من</span>
+                <input type="number" id="sw_from" class="w-16 border rounded p-1 text-center" value="4">
+                <span>إلى</span>
+                <input type="number" id="sw_to" class="w-16 border rounded p-1 text-center" value="6">
+              </div>
+              <p class="font-bold mb-2">معايير متابعة أعمال الطلبة:</p>
+              <div class="flex flex-col gap-2" id="swCheckboxes">
+                <label><input type="checkbox" value="مناسبة كمية ونوعية الأنشطة"> مناسبة كمية ونوعية الأنشطة الكتابية والرقمية لتوافقها مع المطلوب.</label>
+                <label><input type="checkbox" value="مراعاة اختلاف مستويات الطلبة"> مراعاة اختلاف مستويات الطلبة الأكاديمية.</label>
+                <label><input type="checkbox" value="تنمية مهارات التفكير العليا"> تنمية مهارات التفكير العليا، وتحدي القدرات.</label>
+                <label><input type="checkbox" value="انتظام عمليات التصحيح"> انتظام عمليات التصحيح والتصويب لجميع الأنشطة.</label>
+                <label><input type="checkbox" value="تعزيز الأعمال المتميزة"> تعزيز الأعمال المتميزة وتقديم التغذية الراجعة البناءة.</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- التغذية الراجعة والدعم -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="border p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50">
+              <h4 class="font-bold mb-3">3) التغذية الراجعة:</h4>
+              <label class="block mb-1 font-bold text-sm">نجاحات المعلم:</label>
+              <textarea id="v_success" rows="3" class="w-full border rounded-lg p-2 mb-3 bg-white dark:bg-slate-700"></textarea>
+              <label class="block mb-1 font-bold text-sm">جوانب بحاجة إلى تطوير:</label>
+              <textarea id="v_improve" rows="3" class="w-full border rounded-lg p-2 bg-white dark:bg-slate-700"></textarea>
+            </div>
+            <div class="border p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50">
+              <h4 class="font-bold mb-3">4) أساليب الدعم والمساندة للمعلم المزور:</h4>
+              <div class="grid grid-cols-2 gap-3 text-sm" id="supportCheckboxes">
+                <label><input type="checkbox" value="لقاء فردي"> لقاء فردي</label>
+                <label><input type="checkbox" value="قراءة موجهة"> قراءة موجهة</label>
+                <label><input type="checkbox" value="زيارة تبادلية"> زيارة تبادلية</label>
+                <label><input type="checkbox" value="ورشة عمل"> ورشة عمل</label>
+                <label><input type="checkbox" value="توأمة ومجتمعات تعلم"> توأمة ومجتمعات تعلم</label>
+                <div class="flex items-center gap-2"><input type="checkbox" value="أخرى" id="chk_other"> أخرى: <input type="text" id="v_support_other" class="border rounded p-1 text-xs w-full bg-white dark:bg-slate-700"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-100 p-4 rounded-xl mb-6">
+            <div><label class="font-bold text-sm block mb-1">اسم الزائر (المقيم)</label><input type="text" id="v_visitor" list="visitorsData" onchange="fillVisitorDetails()" class="w-full border p-2 rounded bg-white" required></div>
+            <div><label class="font-bold text-sm block mb-1">المسمى الوظيفي</label><input type="text" id="v_job" class="w-full border p-2 rounded bg-white" required></div>
+          </div>
+
+          <button type="submit" id="saveBtn" class="bg-red-700 text-white px-8 py-3 rounded-xl font-bold hover:bg-red-800 shadow-md w-full md:w-auto"><i class="fa-solid fa-cloud-arrow-up"></i> حفظ الزيارة في السجل</button>
         </form>
       </section>
 
       <!-- شاشة التقارير والتحليل -->
-      <section id="tab-reports" class="hidden flex-col md:flex-row gap-6 items-start">
-        <!-- لوحة التحكم الجانبية -->
-        <div class="w-full md:w-1/4 bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 no-print sticky top-4">
-          <h3 class="font-bold text-lg mb-4 border-b pb-2 dark:border-slate-700"><i class="fa-solid fa-filter text-red-700"></i> لوحة التحكم</h3>
-          
-          <div class="space-y-4">
-            <div>
-              <label class="text-xs font-bold block mb-1 text-slate-500">العام الدراسي</label>
-              <input type="text" id="r_year" class="w-full border p-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-sm font-bold" value="2026-2027">
-            </div>
-            <div>
-              <label class="text-xs font-bold block mb-1 text-slate-500">الفصل / الشهر</label>
-              <select id="r_semester" class="w-full border p-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-sm">
-                <option value="الكل">طوال العام الدراسي</option>
-                <option value="الفصل الدراسي الأول">الفصل الدراسي الأول</option>
-                <option value="الفصل الدراسي الثاني">الفصل الدراسي الثاني</option>
-                <option value="شهر 9">شهر 9</option><option value="شهر 10">شهر 10</option>
-                <option value="شهر 11">شهر 11</option><option value="شهر 12">شهر 12</option>
-                <option value="شهر 1">شهر 1</option><option value="شهر 2">شهر 2</option>
-                <option value="شهر 3">شهر 3</option><option value="شهر 4">شهر 4</option>
-                <option value="شهر 5">شهر 5</option><option value="شهر 6">شهر 6</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-xs font-bold block mb-1 text-slate-500">نوع التقرير</label>
-              <select id="r_type" class="w-full border p-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-sm font-bold text-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-red-600">
-                <option value="summary">ملخص الزيارات (إحصائية عامة)</option>
-                <option value="detailed">تقرير مفصل (تحليل المعايير)</option>
-                <option value="log">سجل الزيارات (قائمة الزيارات)</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-xs font-bold block mb-1 text-slate-500">فرز حسب</label>
-              <select id="r_filterBy" onchange="updateFilterUI()" class="w-full border p-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-sm outline-none focus:ring-2 focus:ring-red-600">
-                <option value="all">جميع الزيارات (المدرسة)</option>
-                <option value="teacher">حسب المعلم</option>
-                <option value="dept">حسب القسم</option>
-                <option value="visitor">حسب المقيم</option>
-              </select>
-            </div>
-            <div id="div_specific" class="hidden">
-              <label class="text-xs font-bold block mb-1 text-red-600" id="label_specific">اختر:</label>
-              <select id="r_specific" class="w-full border border-red-300 p-2 rounded-lg bg-red-50 dark:bg-slate-700 text-sm outline-none focus:ring-2 focus:ring-red-600"></select>
-            </div>
-            
-            <div class="pt-4 flex flex-col gap-2">
-              <button onclick="generateReport()" class="w-full bg-amber-500 text-slate-900 py-2.5 rounded-lg font-bold hover:bg-amber-600 shadow transition"><i class="fa-solid fa-desktop ml-1"></i> عرض التقرير</button>
-              <button onclick="window.print()" class="w-full bg-slate-700 text-white py-2.5 rounded-lg font-bold hover:bg-slate-800 shadow transition"><i class="fa-solid fa-print ml-1"></i> طباعة / تصدير PDF</button>
-              <button onclick="switchTab('tab-home')" class="w-full mt-2 text-sm bg-slate-100 dark:bg-slate-700 py-2 rounded-lg font-bold hover:bg-slate-200 dark:hover:bg-slate-600">عودة للرئيسية</button>
-            </div>
-          </div>
+      <section id="tab-reports" class="hidden flex-col gap-6">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border flex flex-wrap gap-4 items-end no-print">
+          <div><label class="text-xs font-bold block mb-1">نوع العرض</label><select id="r_type" onchange="toggleReportViews()" class="border p-2 rounded-lg bg-slate-50"><option value="log">سجل الزيارات (بحث وطباعة فردية)</option><option value="detailed">تحليل مفصل (نسب مئوية للقسم/للمدرسة)</option></select></div>
+          <div><label class="text-xs font-bold block mb-1">فرز حسب</label><select id="r_filterBy" onchange="updateFilterUI()" class="border p-2 rounded-lg bg-slate-50"><option value="all">الكل</option><option value="teacher">المعلم</option><option value="dept">القسم</option></select></div>
+          <div id="div_specific" class="hidden"><label class="text-xs font-bold block mb-1 text-red-600">اختر:</label><select id="r_specific" class="border border-red-300 p-2 rounded-lg bg-red-50"></select></div>
+          <button onclick="generateReport()" class="bg-amber-500 text-slate-900 px-6 py-2 rounded-lg font-bold hover:bg-amber-600"><i class="fa-solid fa-search"></i> بحث</button>
         </div>
 
-        <!-- منطقة التقرير المستخرج (ورقة الطباعة) -->
-        <div id="printArea" class="w-full md:w-3/4 bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 min-h-[600px] text-slate-800">
-          
-          <!-- الترويسة -->
-          <div class="print-header print-only">
-            <img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt="ترويسة" class="w-full h-auto mb-4 mx-auto" style="max-height: 140px; object-fit: contain;">
-            <h3 class="font-bold text-lg mt-2 text-center inline-block border-b-2 border-slate-400 pb-1" id="printReportTitle">تحليل نتائج الزيارات الصفية</h3>
-          </div>
-          
-          <div id="dynamicHeaderInfo" class="hidden print-only mt-4"></div>
-
-          <div id="reportTableContainer" class="mt-4 overflow-x-auto w-full">
-            <div class="text-center py-32 text-slate-400 no-print">
-              <i class="fa-solid fa-file-invoice text-6xl mb-4 opacity-30"></i>
-              <p>حدد الخيارات من لوحة التحكم واضغط "عرض التقرير"</p>
-            </div>
-          </div>
-
-          <!-- التوقيعات -->
-          <div class="signatures print-only hidden" id="printSignatures">
-            <div class="text-center">
-              <p class="font-bold mb-10">إدخال البيانات</p>
-              <p id="signEntry" class="text-sm">أ. صبري محمد حمد</p>
-            </div>
-            <div class="text-center">
-              <p class="font-bold mb-10">المدير المساعد</p>
-              <p id="signVice" class="text-sm">أ. عبدالله أحمد دليم</p>
-            </div>
-            <div class="text-center">
-              <p class="font-bold mb-10">مدير المدرسة</p>
-              <p id="signPrinc" class="text-sm">أ. محمد إبراهيم محمد ناصر</p>
-            </div>
-          </div>
-          
-          <!-- الفوتر -->
-          <div class="footer-credits print-only hidden" id="printFooter">
-            برنامج تحليل الزيارات الصفية المتطور - مدرسة ابن رشد الابتدائية الإعدادية للبنين | إعداد وتصميم أ.صبري محمد حمد 36864227
+        <div id="printArea" class="w-full bg-white p-2 rounded shadow-sm text-slate-800">
+          <div id="reportTableContainer" class="min-h-[400px]">
+            <div class="text-center py-20 text-slate-400 no-print"><i class="fa-solid fa-magnifying-glass text-6xl mb-4 opacity-30"></i><p>اختر المعلم من الأعلى واضغط بحث</p></div>
           </div>
         </div>
       </section>
-      
-      <footer class="text-center p-6 text-sm text-slate-500 no-print mt-auto font-medium">إعداد وتصميم أ.صبري محمد حمد 36864227</footer>
     </main>
   </div>
+
+  <datalist id="visitorsData"></datalist>
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzty9WyGvvCLyOVI9XaDZxImseaSd4tanfPK4H9ZNWtEdYJUuTKlY7uo30ing_ARR8/exec";
     
-    // قواعد البيانات المحلية الأساسية (تضمن عمل القوائم بشكل فوري وكامل)
     const localTeachers = [
       { cpr: "781251907", name: "صبري محمد حمد السيد إبراهيم", subject: "العلوم" },
       { cpr: "000502286", name: "دانيال نادر محمد خورشيد", subject: "اللغة الإنجليزية" },
@@ -322,96 +278,50 @@
       { cpr: "661002705", name: "محمد علي محسن العلي", subject: "الرياضيات" },
       { cpr: "900905719", name: "محمد عبدالجبار جعفر العويناتي", subject: "اللغة العربية والتربية الإسلامية" },
       { cpr: "731201817", name: "جعفر حسن عبدالله الزاير", subject: "العلوم" },
-      { cpr: "980805341", name: "عبدالله أحمد إبراهيم دليم", subject: "المدير المساعد" },
       { cpr: "720202892", name: "باسم ناصر سعد رحال", subject: "اللغة العربية" },
       { cpr: "670639486", name: "محمد محمود محمد سليمان", subject: "العلوم" },
       { cpr: "700243232", name: "السيد البيلي السيد بيلي", subject: "المجالات العملية" },
-      { cpr: "990104885", name: "محمد عبدالنبي سلمان العويناتي", subject: "الرياضيات" },
-      { cpr: "701140356", name: "درويش يحيى زين الدين", subject: "المجالات العملية" },
-      { cpr: "781100712", name: "حسن حميد محسن علي", subject: "المجالات العملية" },
       { cpr: "820603350", name: "حسين راشد حبيب حسين الدرازي", subject: "التربية الرياضية" },
       { cpr: "680110836", name: "محمد إبراهيم علي آل طوق", subject: "اللغة العربية" },
       { cpr: "721137601", name: "ناصر ماهر احمد محمد", subject: "المواد الاجتماعية" },
-      { cpr: "720749492", name: "ايمن خضر السيد عيسي", subject: "المجالات العملية" },
       { cpr: "790708221", name: "عباس حسين فردان الفردان", subject: "التربية الرياضية" },
       { cpr: "770706231", name: "علي عبدالله أحمد علي", subject: "المواد الاجتماعية" },
-      { cpr: "750840269", name: "احمد فراج احمد مصطفى", subject: "المجالات العملية" },
-      { cpr: "780182618", name: "عاطف على التهامى بسيوني", subject: "المجالات العملية" },
       { cpr: "700202137", name: "موسى مدن حسين مدن عصفور", subject: "التربية الإسلامية" },
-      { cpr: "851248977", name: "احمد عبد المطلب علي عبد المطلب", subject: "تربية خاصة (صعوبات تعلم)" },
       { cpr: "700034056", name: "عدنان عبدالجليل عبدالحسين الحلواجي", subject: "اللغة العربية" },
-      { cpr: "770805647", name: "جاسم محمد جعفر الحداد", subject: "المجالات العملية" },
-      { cpr: "010312056", name: "عبدالرزاق محمد السالم", subject: "اللغة العربية والتربية الإسلامية" },
-      { cpr: "951106112", name: "عبدالله موفق احمد فارس فارس", subject: "تربية خاصة (صعوبات تعلم)" },
-      { cpr: "000101338", name: "محمد عبد العزيز عبد الحسين أحمد جعفر", subject: "التربية الإسلامية" },
-      { cpr: "750015586", name: "حسن علي محمد خميس", subject: "التربية الرياضية" },
-      { cpr: "980305322", name: "السيد محمد ضياء علي ابراهيم محمد", subject: "المواد الاجتماعية" },
-      { cpr: "660583879", name: "أحمد علي أحمد عبد الكريم", subject: "اللغة العربية" },
-      { cpr: "760408041", name: "عباس كاظم أحمد عبدالنبي", subject: "اللغة الإنجليزية" },
-      { cpr: "850902843", name: "حمزة ميرزا جعفر", subject: "الرياضيات" },
-      { cpr: "810704188", name: "عبدالله صالح هلال علي", subject: "المواد الاجتماعية" },
-      { cpr: "861106920", name: "احمد عبد العزيز عيسى شهاب", subject: "التربية الرياضية" },
       { cpr: "000000000", name: "عبدالرضا عبدالرسول", subject: "العلوم" },
       { cpr: "111111111", name: "جلال ابراهيم", subject: "المواد الاجتماعية" }
     ];
 
     const localVisitors = [
-      { name: "محمد إبراهيم محمد ناصر", job: "مدير المدرسة" },
-      { name: "عبدالله أحمد دليم", job: "المدير المساعد" },
-      { name: "د. عدنان عبدالجليل عبدالحسين الحلواجي", job: "معلم أول" },
-      { name: "محمد علي محسن العلي", job: "معلم أول" },
-      { name: "عبدالرضا عبدالرسول", job: "معلم أول" },
-      { name: "عباس كاظم أحمد عبدالنبي", job: "معلم أول" },
-      { name: "موسى مدن حسين مدن عصفور", job: "معلم أول" },
-      { name: "جلال ابراهيم", job: "معلم أول" },
-      { name: "حسين راشد حبيب حسين الدرازي", job: "منسق" },
-      { name: "عبدالله موفق احمد فارس فارس", job: "مسئول التربية الخاصة" }
+      { name: "محمد إبراهيم محمد ناصر", job: "مدير المدرسة" }, { name: "عبدالله أحمد دليم", job: "المدير المساعد" },
+      { name: "د. عدنان عبدالجليل عبدالحسين الحلواجي", job: "معلم أول" }, { name: "محمد علي محسن العلي", job: "معلم أول" },
+      { name: "عبدالرضا عبدالرسول", job: "معلم أول" }, { name: "عباس كاظم أحمد عبدالنبي", job: "معلم أول" },
+      { name: "موسى مدن حسين مدن عصفور", job: "معلم أول" }, { name: "جلال ابراهيم", job: "معلم أول" },
+      { name: "حسين راشد حبيب حسين الدرازي", job: "منسق" }, { name: "عبدالله موفق احمد فارس فارس", job: "مسئول التربية الخاصة" }
     ];
 
-    let db = { visits: [], teachers: localTeachers, visitors: localVisitors, settings: {} };
+    let db = { visits: [] };
 
     const criteriaList = [
-      { id: 1, title: "اتساق تخطيط الدرس مع الكفايات التعليمية للمنهج، ومراعاته احتياجات الطلبة." },
-      { id: 2, title: "توفير بيئة تعلم آمنة ومحفزة خالية من المخاطر لضمان إنتاجية التعلم." },
-      { id: 3, title: "تضمين الموقف التعليمي إرشادات وتوجيهات واضحة." },
-      { id: 4, title: "استثمار الوقت بما يحقق أهداف التعلم بصورة منتجة." },
-      { id: 5, title: "تحفيز الطلبة ورفع دافعيتهم بأساليب تمكنهم من المشاركة في التعلم وبناء شخصيتهم." },
-      { id: 6, title: "سلامة المادة العلمية ومراعاتها كفايات المنهج والمستويات المتوقعة للمرحلة التعليمية." },
-      { id: 7, title: "توظيف استراتيجيات تعليم وتعلم فاعلة، تسهم في دمج الطلبة على اختلاف احتياجاتهم." },
-      { id: 8, title: "توظيف التقويم والاستفادة من نتائجه في دعم جميع فئات الطلبة وفق احتياجاتهم." },
-      { id: 9, title: "تنمية مهارات التفكير العليا للطلبة وتحدي قدراتهم." },
-      { id: 10, title: "توظيف التعليم المتمايز لتلبية احتياجات الطلبة المتنوعة على اختلاف فئاتهم." },
-      { id: 11, title: "توظيف المصادر والموارد التعليمية والتكنولوجية في عمليات التعليم والتعلم." },
-      { id: 12, title: "تنمية مهارات الطلبة التكنولوجية ومهارات البحث والتعلم الذاتي، وتشجيعهم على إنتاج المحتوى التعليمي الرقمي." },
-      { id: 13, title: "إظهار الطلبة المعارف والمهارات الأساسية وفقًا لمرحلتهم التعليمية." },
-      { id: 14, title: "تحقيق الطلبة التقدم خلال الدروس واكتسابهم مهارات التعلم." },
-      { id: 15, title: "التزام الطلبة بالقيم الإسلامية، والوطنية، والرقمية، والاستعمال الآمن للتكنولوجيا." },
-      { id: 16, title: "التزام الطلبة السلوك الإيجابي نحو التعلم، والانضباط الذاتي، وتحمل المسؤوليات المختلفة." },
-      { id: 17, title: "قدرة الطلبة على التواصل والمشاركة الفاعلة خلال تعلمهم." },
-      { id: 18, title: "إظهار الطلبة الثقة بالنفس والقدرة على القيادة، والمبادرة، والابتكار." }
+      { id: 1, domain: "التخطيط وإدارة الموقف التعليمي", title: "اتساق تخطيط الدرس مع الكفايات التعليمية للمنهج، ومراعاته احتياجات الطلبة." },
+      { id: 2, domain: "التخطيط وإدارة الموقف التعليمي", title: "توفير بيئة تعلم آمنة ومحفزة خالية من المخاطر لضمان إنتاجية التعلم." },
+      { id: 3, domain: "التخطيط وإدارة الموقف التعليمي", title: "تضمين الموقف التعليمي إرشادات وتوجيهات واضحة." },
+      { id: 4, domain: "التخطيط وإدارة الموقف التعليمي", title: "استثمار الوقت بما يحقق أهداف التعلم بصورة منتجة." },
+      { id: 5, domain: "التخطيط وإدارة الموقف التعليمي", title: "تحفيز الطلبة ورفع دافعيتهم بأساليب تمكنهم من المشاركة في التعلم وبناء شخصيتهم." },
+      { id: 6, domain: "التعليم والتعلم والتقويم", title: "سلامة المادة العلمية ومراعاتها كفايات المنهج والمستويات المتوقعة للمرحلة التعليمية." },
+      { id: 7, domain: "التعليم والتعلم والتقويم", title: "توظيف استراتيجيات تعليم وتعلم فاعلة، تسهم في دمج الطلبة على اختلاف احتياجاتهم." },
+      { id: 8, domain: "التعليم والتعلم والتقويم", title: "توظيف التقويم والاستفادة من نتائجه في دعم جميع فئات الطلبة وفق احتياجاتهم." },
+      { id: 9, domain: "التعليم والتعلم والتقويم", title: "تنمية مهارات التفكير العليا للطلبة وتحدي قدراتهم." },
+      { id: 10, domain: "التعليم والتعلم والتقويم", title: "توظيف التعليم المتمايز لتلبية احتياجات الطلبة المتنوعة على اختلاف فئاتهم." },
+      { id: 11, domain: "الموارد التعليمية والتكنولوجية", title: "توظيف المصادر والموارد التعليمية والتكنولوجية في عمليات التعليم والتعلم." },
+      { id: 12, domain: "الموارد التعليمية والتكنولوجية", title: "تنمية مهارات الطلبة التكنولوجية ومهارات البحث والتعلم الذاتي، وتشجيعهم على إنتاج المحتوى التعليمي الرقمي." },
+      { id: 13, domain: "الإنجاز الأكاديمي", title: "إظهار الطلبة المعارف والمهارات الأساسية وفقًا لمرحلتهم التعليمية." },
+      { id: 14, domain: "الإنجاز الأكاديمي", title: "تحقيق الطلبة التقدم خلال الدروس واكتسابهم مهارات التعلم." },
+      { id: 15, domain: "التطور الشخصي للطلبة", title: "التزام الطلبة بالقيم الإسلامية، والوطنية، والرقمية، والاستعمال الآمن للتكنولوجيا." },
+      { id: 16, domain: "التطور الشخصي للطلبة", title: "التزام الطلبة السلوك الإيجابي نحو التعلم، والانضباط الذاتي، وتحمل المسؤوليات المختلفة." },
+      { id: 17, domain: "التطور الشخصي للطلبة", title: "قدرة الطلبة على التواصل والمشاركة الفاعلة خلال تعلمهم." },
+      { id: 18, domain: "التطور الشخصي للطلبة", title: "إظهار الطلبة الثقة بالنفس والقدرة على القيادة، والمبادرة، والابتكار." }
     ];
-
-    const optionsHTML = `
-      <option value="ممتاز = يتجاوز التوقعات بكثير">ممتاز = يتجاوز التوقعات بكثير</option>
-      <option value="جيد = يتجاوز التوقعات">جيد = يتجاوز التوقعات</option>
-      <option value="مرض = يفي بالتوقعات تماما">مرض = يفي بالتوقعات تماما</option>
-      <option value="غير ملائم = يفي بالتوقعات جزئيا">غير ملائم = يفي بالتوقعات جزئيا</option>
-    `;
-
-    function updateClock() {
-      const now = new Date();
-      const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-      document.getElementById('clockDisplay').innerText = `اليوم: ${days[now.getDay()]} | التاريخ: ${now.toLocaleDateString('ar-EG')} | الساعة: ${now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
-    }
-    setInterval(updateClock, 1000); updateClock();
-
-    function toggleDarkMode() {
-      document.documentElement.classList.toggle('dark');
-      let isDark = document.documentElement.classList.contains('dark');
-      document.getElementById('themeIcon').className = isDark ? "fa-solid fa-sun" : "fa-solid fa-moon";
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    }
-    if(localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) toggleDarkMode();
 
     function checkLogin() {
       if (document.getElementById('loginPass').value === "2030") {
@@ -419,68 +329,54 @@
         setTimeout(() => { document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('mainApp').classList.replace('hidden', 'flex'); }, 500);
       } else { document.getElementById('loginError').classList.remove('hidden'); }
     }
-    document.getElementById('loginPass').addEventListener('keypress', e => { if (e.key === 'Enter') checkLogin(); });
 
-    function buildCriteria() {
+    function switchTab(tabId) { ['tab-home', 'tab-entry', 'tab-reports'].forEach(id => document.getElementById(id).classList.toggle('hidden', id !== tabId)); }
+
+    // بناء جدول إدخال المعايير بالـ Radio Buttons
+    function buildCriteriaEntry() {
       let html = "";
       criteriaList.forEach(c => {
         html += `
-          <div class="flex flex-col md:flex-row items-center border-b dark:border-slate-700 pb-3 gap-4 pt-2">
-            <div class="w-8 text-center font-bold text-red-700 bg-red-100 rounded">${c.id}</div>
-            <div class="flex-1 text-sm font-medium">${c.title}</div>
-            <div class="w-full md:w-64">
-              <select id="q_${c.id}" class="w-full border p-2 rounded-lg text-sm bg-white dark:bg-slate-700" required>${optionsHTML}</select>
-            </div>
-          </div>`;
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+            <td class="font-bold">${c.id}</td>
+            <td class="text-right text-xs md:text-sm font-medium pr-2">${c.title}</td>
+            <td><input type="radio" name="q_${c.id}" value="ممتاز = يتجاوز التوقعات بكثير" required class="w-4 h-4 accent-red-600"></td>
+            <td><input type="radio" name="q_${c.id}" value="جيد = يتجاوز التوقعات" class="w-4 h-4 accent-red-600"></td>
+            <td><input type="radio" name="q_${c.id}" value="مرض = يفي بالتوقعات تماما" class="w-4 h-4 accent-red-600"></td>
+            <td><input type="radio" name="q_${c.id}" value="غير ملائم = يفي بالتوقعات جزئيا" class="w-4 h-4 accent-red-600"></td>
+          </tr>
+        `;
       });
-      document.getElementById('criteriaContainer').innerHTML = html;
+      document.getElementById('criteriaEntryBody').innerHTML = html;
     }
 
-    // تجهيز القوائم المنسدلة من البيانات المحلية
     function initDropdowns() {
-      // 1. أقسام المعلمين
       const depts = [...new Set(localTeachers.map(t => t.subject))].sort();
-      let dHtml = '<option value="">-- اختر القسم أولاً --</option><option value="all">عرض جميع المعلمين بدون فرز</option>';
+      let dHtml = '<option value="">-- اختر القسم أولاً --</option><option value="all">عرض جميع المعلمين</option>';
       depts.forEach(d => dHtml += `<option value="${d}">${d}</option>`);
       document.getElementById('v_dept').innerHTML = dHtml;
       
-      // 2. قائمة الزوار لـ datalist
-      let vHtml = '';
-      localVisitors.forEach(v => vHtml += `<option value="${v.name}">`);
+      let vHtml = ''; localVisitors.forEach(v => vHtml += `<option value="${v.name}">`);
       document.getElementById('visitorsData').innerHTML = vHtml;
-      
       filterTeachers();
     }
 
     function filterTeachers() {
       const dept = document.getElementById('v_dept').value;
-      const tSelect = document.getElementById('v_teacher');
       let html = '<option value="">-- اختر المعلم --</option>';
-      
-      let filtered = localTeachers;
-      if(dept && dept !== 'all') filtered = localTeachers.filter(t => t.subject === dept);
-      
-      filtered.sort((a,b) => a.name.localeCompare(b.name)).forEach(t => {
-        html += `<option value="${t.name}">${t.name}</option>`;
-      });
-      tSelect.innerHTML = html;
+      let filtered = (dept && dept !== 'all') ? localTeachers.filter(t => t.subject === dept) : localTeachers;
+      filtered.sort((a,b) => a.name.localeCompare(b.name)).forEach(t => html += `<option value="${t.name}">${t.name}</option>`);
+      document.getElementById('v_teacher').innerHTML = html;
       document.getElementById('v_subject').value = ""; document.getElementById('v_cpr').value = "";
     }
 
     function fillTeacherDetails() {
       const t = localTeachers.find(x => x.name === document.getElementById('v_teacher').value);
-      if(t) {
-        document.getElementById('v_subject').value = t.subject;
-        document.getElementById('v_cpr').value = t.cpr;
-      }
+      if(t) { document.getElementById('v_subject').value = t.subject; document.getElementById('v_cpr').value = t.cpr; }
     }
-
     function fillVisitorDetails() {
-      const vName = document.getElementById('v_visitor').value;
-      const v = localVisitors.find(x => x.name === vName);
-      if(v) {
-        document.getElementById('v_job').value = v.job; // تعبئة تلقائية لوظيفة الزائر
-      }
+      const v = localVisitors.find(x => x.name === document.getElementById('v_visitor').value);
+      if(v) document.getElementById('v_job').value = v.job;
     }
 
     async function fetchData() {
@@ -488,225 +384,186 @@
         const res = await fetch(SCRIPT_URL);
         const serverDb = await res.json();
         db.visits = serverDb.visits || [];
-        // دمج الإعدادات من السيرفر
-        if(serverDb.settings) db.settings = serverDb.settings;
-      } catch (e) { console.error("Error fetching remote data", e); }
+      } catch (e) { console.error("Error fetching data", e); }
     }
 
     async function saveVisit(e) {
       e.preventDefault();
       const btn = document.getElementById('saveBtn'); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> جاري الحفظ..."; btn.disabled = true;
-      let payload = {
-        Year: document.getElementById('v_year').value, Semester: document.getElementById('v_semester').value,
-        Date: document.getElementById('v_date').value, TeacherName: document.getElementById('v_teacher').value,
-        Subject: document.getElementById('v_subject').value, CPR: document.getElementById('v_cpr').value,
-        VisitorName: document.getElementById('v_visitor').value, VisitorJob: document.getElementById('v_job').value,
-        FinalJudgment: document.getElementById('v_final').value, SendEmail: document.getElementById('v_send_email').checked, 
-        TeacherEmail: "", ExtraEmail: document.getElementById('v_extra_email').value
-      };
-      for(let i=1; i<=18; i++) payload["Q"+i] = document.getElementById('q_'+i).value;
-      try {
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-        alert("تم الحفظ بنجاح!"); e.target.reset(); fetchData(); switchTab('tab-reports');
-      } catch (err) { alert("خطأ في الحفظ."); }
-      btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up ml-2"></i> حفظ ومزامنة الزيارة'; btn.disabled = false;
-    }
+      
+      // جمع بيانات checkboxes
+      let skills = Array.from(document.querySelectorAll('#skillsCheckboxes input:checked')).map(i=>i.value).join('، ');
+      let sw = Array.from(document.querySelectorAll('#swCheckboxes input:checked')).map(i=>i.value).join('، ');
+      let support = Array.from(document.querySelectorAll('#supportCheckboxes input:checked')).filter(i=>i.id!=='chk_other').map(i=>i.value);
+      if(document.getElementById('chk_other').checked) support.push(document.getElementById('v_support_other').value);
 
-    function switchTab(tabId) { ['tab-home', 'tab-entry', 'tab-reports'].forEach(id => document.getElementById(id).classList.toggle('hidden', id !== tabId)); }
+      let payload = {
+        Year: document.getElementById('v_year').value, Semester: "طوال العام", Date: document.getElementById('v_date').value,
+        TeacherName: document.getElementById('v_teacher').value, Subject: document.getElementById('v_subject').value,
+        VisitorName: document.getElementById('v_visitor').value, VisitorJob: document.getElementById('v_job').value,
+        FinalJudgment: document.querySelector('input[name="v_final"]:checked').value,
+        // (يتم إرسال البيانات كحقول إضافية أو دمجها في السيرفر لاحقاً)
+        Extra_Class: document.getElementById('v_class').value, Extra_VisitNo: document.getElementById('v_visitNo').value,
+        Extra_Lesson: document.getElementById('v_lesson').value, Extra_Skills: skills, Extra_SW: sw, Extra_Support: support.join('، ')
+      };
+      for(let i=1; i<=18; i++) payload["Q"+i] = document.querySelector(`input[name="q_${i}"]:checked`).value;
+      
+      // إضافة الزيارة محلياً مؤقتاً لتظهر في السجل مباشرة
+      payload.ID = Date.now();
+      db.visits.push(payload);
+
+      try {
+        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        alert("تم الحفظ في السجل بنجاح!"); e.target.reset(); switchTab('tab-reports'); updateFilterUI(); generateReport();
+      } catch (err) { alert("حدث خطأ."); }
+      btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> حفظ الزيارة في السجل'; btn.disabled = false;
+    }
 
     function updateFilterUI() {
       const fBy = document.getElementById('r_filterBy').value;
       const divSpec = document.getElementById('div_specific');
       const selSpec = document.getElementById('r_specific');
-      const lblSpec = document.getElementById('label_specific');
       
       if(fBy === 'all') { divSpec.classList.add('hidden'); return; }
       divSpec.classList.remove('hidden');
       
       let opts = [];
-      if(fBy === 'teacher') { lblSpec.innerText = "اختر المعلم:"; opts = [...new Set(db.visits.map(v=>v.TeacherName))].sort(); }
-      if(fBy === 'dept') { lblSpec.innerText = "اختر القسم:"; opts = [...new Set(db.visits.map(v=>v.Subject))].sort(); }
-      if(fBy === 'visitor') { lblSpec.innerText = "اختر المقيم:"; opts = [...new Set(db.visits.map(v=>v.VisitorName))].sort(); }
-      
+      if(fBy === 'teacher') opts = [...new Set(localTeachers.map(t=>t.name))].sort();
+      if(fBy === 'dept') opts = [...new Set(localTeachers.map(t=>t.subject))].sort();
       selSpec.innerHTML = opts.map(o => `<option value="${o}">${o}</option>`).join('');
     }
 
-    // منطق التقارير
     function generateReport() {
-      const yr = document.getElementById('r_year').value;
-      const sem = document.getElementById('r_semester').value;
       const type = document.getElementById('r_type').value;
       const fBy = document.getElementById('r_filterBy').value;
       const spec = document.getElementById('r_specific').value;
+      const container = document.getElementById('reportTableContainer');
 
-      document.getElementById('printSignatures').classList.remove('hidden');
-      document.getElementById('printFooter').classList.remove('hidden');
-      document.getElementById('dynamicHeaderInfo').classList.add('hidden');
-
-      // تصفية الزيارات
       let filtered = db.visits.filter(v => {
-        let mY = (yr === "" || v.Year === yr);
-        let mS = (sem === "الكل" || v.Semester === sem || v.Semester.includes(sem));
-        let mF = true;
-        if(fBy === 'teacher') mF = (v.TeacherName === spec);
-        if(fBy === 'dept') mF = (v.Subject === spec);
-        if(fBy === 'visitor') mF = (v.VisitorName === spec);
-        return mY && mS && mF;
+        if(fBy === 'teacher') return v.TeacherName === spec;
+        if(fBy === 'dept') return v.Subject === spec;
+        return true;
       });
 
-      const container = document.getElementById('reportTableContainer');
-      const titleEl = document.getElementById('printReportTitle');
-
-      if(filtered.length === 0) {
-        container.innerHTML = "<p class='text-center font-bold text-red-600 mt-10'>لا توجد زيارات مسجلة تطابق خياراتك.</p>";
-        return;
-      }
-
-      // مساعدة في حساب النسب
-      const calcStats = (arr) => {
-        let c = { m:0, g:0, s:0, p:0 };
-        arr.forEach(v => {
-          let j = v.FinalJudgment || "";
-          if(j.includes("بكثير")) c.m++; else if(j.includes("يتجاوز")) c.g++; else if(j.includes("تماما")) c.s++; else c.p++;
-        });
-        let t = arr.length;
-        return {
-          total: t,
-          m: t ? Math.round((c.m/t)*100)+'%' : '0%', g: t ? Math.round((c.g/t)*100)+'%' : '0%',
-          s: t ? Math.round((c.s/t)*100)+'%' : '0%', p: t ? Math.round((c.p/t)*100)+'%' : '0%',
-          raw: c
-        };
-      };
-
-      // 1. التقرير الملخص العام
-      if(type === 'summary') {
-        let thead = `<tr><th>ممتاز= يتجاوز<br>التوقعات بكثير</th><th>جيد= يتجاوز<br>التوقعات</th><th>مرض= يفي<br>بالتوقعات تمامًا</th><th>غير ملائم= يفي<br>بالتوقعات جزئيًا</th><th>مجموع<br>الزيارات</th>`;
-        let tbody = "";
-
-        if(fBy === 'all') {
-          titleEl.innerText = `ملخص نتائج الزيارات الصفية للمدرسة للعام الدراسي ${yr}`;
-          let s = calcStats(filtered);
-          tbody = `<tr><td>${s.m}</td><td>${s.g}</td><td>${s.s}</td><td>${s.p}</td><td class="font-bold">${s.total}</td></tr>`;
-        } 
-        else if(fBy === 'dept') {
-          titleEl.innerText = `ملخص نتائج الزيارات الصفية للمدرسة للعام الدراسي ${yr} حسب الأقسام`;
-          thead += `<th>القسم / المادة</th></tr>`;
-          let grouped = {}; filtered.forEach(v => { grouped[v.Subject] = grouped[v.Subject] || []; grouped[v.Subject].push(v); });
-          for(let k in grouped) { let s = calcStats(grouped[k]); tbody += `<tr><td>${s.m}</td><td>${s.g}</td><td>${s.s}</td><td>${s.p}</td><td class="font-bold">${s.total}</td><td class="font-bold">${k}</td></tr>`; }
-        }
-        else if(fBy === 'teacher') {
-          titleEl.innerText = `ملخص نتائج الزيارات الصفية للمدرسة للعام الدراسي ${yr} حسب المعلم`;
-          thead += `<th>القسم</th><th>اسم المعلم</th></tr>`;
-          let grouped = {}; filtered.forEach(v => { grouped[v.TeacherName] = grouped[v.TeacherName] || []; grouped[v.TeacherName].push(v); });
-          for(let k in grouped) { let s = calcStats(grouped[k]); let dept = grouped[k][0].Subject; tbody += `<tr><td>${s.m}</td><td>${s.g}</td><td>${s.s}</td><td>${s.p}</td><td class="font-bold">${s.total}</td><td>${dept}</td><td class="font-bold">${k}</td></tr>`; }
-        }
-        else if(fBy === 'visitor') {
-          titleEl.innerText = `ملخص نتائج الزيارات الصفية للمدرسة للعام الدراسي ${yr} حسب الزائر (المقيم)`;
-          thead += `<th>المسمى الوظيفي</th><th>اسم الزائر (المقيم)</th></tr>`;
-          let grouped = {}; filtered.forEach(v => { grouped[v.VisitorName] = grouped[v.VisitorName] || []; grouped[v.VisitorName].push(v); });
-          for(let k in grouped) { let s = calcStats(grouped[k]); let job = grouped[k][0].VisitorJob; tbody += `<tr><td>${s.m}</td><td>${s.g}</td><td>${s.s}</td><td>${s.p}</td><td class="font-bold">${s.total}</td><td>${job}</td><td class="font-bold">${k}</td></tr>`; }
-        }
-        container.innerHTML = `<table><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
-      }
-
-      // 2. التقرير المفصل (18 معيار بالنسب المئوية لعدة زيارات)
-      else if(type === 'detailed') {
-        let titleSuffix = fBy === 'all' ? 'للمدرسة' : fBy === 'teacher' ? `للمعلم (${spec})` : fBy === 'dept' ? `لقسم (${spec})` : `للمقيم (${spec})`;
-        titleEl.innerText = `تحليل نتائج الزيارات الصفية ${titleSuffix} للعام الدراسي ${yr}`;
-        
-        let html = `<table><thead><tr><th>يتجاوز<br>التوقعات<br>كثيرا</th><th>يتجاوز<br>التوقعات</th><th>يفي<br>بالتوقعات<br>تماما</th><th>يفي<br>بالتوقعات<br>جزئيا</th><th class="w-1/2">المعيار</th><th>الرقم</th></tr></thead><tbody>`;
-        
-        criteriaList.forEach(c => {
-          let counts = {m:0, g:0, s:0, p:0};
-          filtered.forEach(v => {
-            let ans = v["Q"+c.id] || "";
-            if(ans.includes("بكثير")) counts.m++; else if(ans.includes("يتجاوز")) counts.g++; else if(ans.includes("تماما")) counts.s++; else if(ans.includes("جزئيا")) counts.p++;
-          });
-          let t = filtered.length;
-          let pm = t ? Math.round((counts.m/t)*100)+'%' : '0%'; let pg = t ? Math.round((counts.g/t)*100)+'%' : '0%'; let ps = t ? Math.round((counts.s/t)*100)+'%' : '0%'; let pp = t ? Math.round((counts.p/t)*100)+'%' : '0%';
-          html += `<tr><td>${pm}</td><td>${pg}</td><td>${ps}</td><td>${pp}</td><td class="criteria-text">${c.title}</td><td>${c.id}</td></tr>`;
-        });
-        
-        // الحكم النهائي
-        let fin = calcStats(filtered);
-        html += `</tbody></table>
-                 <h4 class="font-bold mt-4 text-right mb-2 print-only">الحكم النهائي للزيارات:</h4>
-                 <table><thead><tr><th>ممتاز= يتجاوز التوقعات بكثير</th><th>جيد= يتجاوز التوقعات</th><th>مرض= يفي بالتوقعات تماما</th><th>غير ملائم= يفي بالتوقعات جزئيا</th><th>التقييم</th></tr></thead>
-                 <tbody><tr><td>${fin.raw.m}</td><td>${fin.raw.g}</td><td>${fin.raw.s}</td><td>${fin.raw.p}</td><td class="font-bold bg-slate-100">عدد الزيارات</td></tr>
-                 <tr><td>${fin.m}</td><td>${fin.g}</td><td>${fin.s}</td><td>${fin.p}</td><td class="font-bold bg-slate-100">النسبة</td></tr></tbody></table>`;
-        container.innerHTML = html;
-      }
-
-      // 3. سجل الزيارات (قائمة تتيح فتح زيارة فردية)
-      else if(type === 'log') {
-        titleEl.innerText = `سجل الزيارات: ${fBy !== 'all' ? spec : 'للمدرسة'} (${yr})`;
-        let html = `<div class="text-sm font-bold mb-2 text-slate-500">إجمالي الزيارات: ${filtered.length}</div>
-                    <table class="w-full text-sm"><thead><tr><th>التاريخ</th><th>المعلم</th><th>القسم</th><th>المقيم</th><th>الحكم النهائي</th><th class="no-print">إجراء</th></tr></thead><tbody>`;
+      if(type === 'log') {
+        let html = `<div class="text-sm font-bold mb-4 bg-slate-100 p-2 rounded">إجمالي الزيارات المسجلة: ${filtered.length}</div>
+                    <table class="w-full text-sm border-collapse border"><thead><tr class="bg-slate-200"><th class="border p-2">التاريخ</th><th class="border p-2">المعلم</th><th class="border p-2">المقيم</th><th class="border p-2">إجراء</th></tr></thead><tbody>`;
+        if(filtered.length === 0) html += `<tr><td colspan="4" class="text-center p-4">لا توجد زيارات.</td></tr>`;
         filtered.forEach(v => {
-          html += `<tr><td>${v.Date}</td><td>${v.TeacherName}</td><td>${v.Subject}</td><td>${v.VisitorName}</td><td class="font-bold text-red-700">${v.FinalJudgment}</td>
-                   <td class="no-print"><button onclick="renderSingleVisit('${v.ID}')" class="bg-amber-500 text-xs px-3 py-1 rounded text-white font-bold hover:bg-amber-600">فتح / طباعة الزيارة <i class="fa-solid fa-print"></i></button></td></tr>`;
+          html += `<tr><td class="border p-2 text-center">${v.Date}</td><td class="border p-2 text-center">${v.TeacherName}</td><td class="border p-2 text-center">${v.VisitorName}</td>
+                   <td class="border p-2 text-center no-print"><button onclick="renderSinglePrint('${v.ID}')" class="bg-amber-500 text-xs px-3 py-1 rounded text-white font-bold hover:bg-amber-600 shadow"><i class="fa-solid fa-print"></i> عرض وطباعة الاستمارة</button></td></tr>`;
         });
         html += `</tbody></table>`;
         container.innerHTML = html;
-        document.getElementById('printSignatures').classList.add('hidden');
       }
     }
 
-    // 4. عرض زيارة فردية واحدة (علامة ✔ للطباعة)
-    window.renderSingleVisit = function(visitId) {
+    // بناء صفحة الطباعة الاحترافية المطابقة للصور تماماً (الورقة الأولى والثانية)
+    window.renderSinglePrint = function(visitId) {
       const v = db.visits.find(x => String(x.ID) === String(visitId));
       if(!v) return;
 
-      document.getElementById('printReportTitle').innerText = `تحليل نتائج الزيارات الصفية لمعلم للعام الدراسي ${v.Year}`;
+      const container = document.getElementById('reportTableContainer');
       
-      const dynHeader = document.getElementById('dynamicHeaderInfo');
-      dynHeader.classList.remove('hidden');
-      dynHeader.innerHTML = `
-        <table class="info-table text-right w-full">
-          <tr>
-            <th>اسم المعلم</th><td>${v.TeacherName}</td>
-            <th>القسم / المادة</th><td>${v.Subject}</td>
-          </tr>
-          <tr>
-            <th>اسم الزائر/المقيم</th><td>${v.VisitorName}</td>
-            <th>المسمى الوظيفي</th><td>${v.VisitorJob}</td>
-          </tr>
-          <tr>
-            <th>التاريخ</th><td colspan="3">${v.Date}</td>
-          </tr>
-        </table>
+      // الورقة الأولى: جدول المعايير
+      let html = `
+        <div class="print-page">
+          <div class="print-header-grid">
+             <div>اسم المعلم المزور: <span class="val">${v.TeacherName}</span> اسم المدرسة: <span class="val">ابن رشد الابتدائية الإعدادية للبنين</span></div>
+             <div>الصف / الشعبة: <span class="val">${v.Extra_Class || ''}</span> المادة/المقرر: <span class="val">${v.Subject}</span></div>
+             <div>التاريخ: <span class="val">${v.Date}</span> رقم الزيارة: <span class="val">${v.Extra_VisitNo || '1'}</span> عنوان الدرس: <span class="val">${v.Extra_Lesson || ''}</span></div>
+             <div>الحصة الدراسية: <span class="val">${v.Period || ''}</span> الزمن: من <span class="val">${(v.Extra_Time || '').split('-')[0] || ''}</span> إلى <span class="val">${(v.Extra_Time || '').split('-')[1] || ''}</span></div>
+             <div>عدد الطلبة: ( <span class="val">${v.StudentsCount || ''}</span> ) عدد الغياب: ( <span class="val">${v.AbsenceCount || ''}</span> )</div>
+          </div>
+          
+          <table class="official-table">
+            <thead>
+              <tr>
+                <th rowspan="2" class="w-8">المجالات</th><th rowspan="2" class="w-8">الرقم</th><th rowspan="2">المعايير</th><th colspan="4">مستويات التقييم</th>
+              </tr>
+              <tr>
+                <th class="w-12"><div class="vertical-text">يتجاوز التوقعات بكثير</div></th>
+                <th class="w-12"><div class="vertical-text">يتجاوز التوقعات</div></th>
+                <th class="w-12"><div class="vertical-text">يفي بالتوقعات تماماً</div></th>
+                <th class="w-12"><div class="vertical-text">يفي بالتوقعات جزئياً</div></th>
+              </tr>
+            </thead>
+            <tbody>
       `;
 
-      let html = `<table><thead><tr><th>يتجاوز<br>التوقعات<br>كثيرا</th><th>يتجاوز<br>التوقعات</th><th>يفي<br>بالتوقعات<br>تماما</th><th>يفي<br>بالتوقعات<br>جزئيا</th><th class="w-1/2">المعيار</th><th>الرقم</th></tr></thead><tbody>`;
-      
+      let currentDomain = "";
       criteriaList.forEach(c => {
+        let domainRowspan = criteriaList.filter(x => x.domain === c.domain).length;
         let ans = v["Q"+c.id] || "";
-        let m = ans.includes("بكثير") ? "✔" : "";
-        let g = ans.includes("يتجاوز") && !m ? "✔" : "";
-        let s = ans.includes("تماما") ? "✔" : "";
-        let p = ans.includes("جزئيا") ? "✔" : "";
-        html += `<tr><td class="font-bold text-lg">${m}</td><td class="font-bold text-lg">${g}</td><td class="font-bold text-lg">${s}</td><td class="font-bold text-lg">${p}</td><td class="criteria-text">${c.title}</td><td>${c.id}</td></tr>`;
+        let mkM = ans.includes("بكثير") ? "✔" : ""; let mkG = ans.includes("يتجاوز") && !mkM ? "✔" : "";
+        let mkS = ans.includes("تماما") ? "✔" : ""; let mkP = ans.includes("جزئيا") ? "✔" : "";
+        
+        html += `<tr>`;
+        if(currentDomain !== c.domain) {
+          html += `<td rowspan="${domainRowspan}"><div class="vertical-text">${c.domain}</div></td>`;
+          currentDomain = c.domain;
+        }
+        html += `<td>${c.id}</td><td class="criteria-text">${c.title}</td><td class="font-bold text-lg">${mkM}</td><td class="font-bold text-lg">${mkG}</td><td class="font-bold text-lg">${mkS}</td><td class="font-bold text-lg">${mkP}</td></tr>`;
       });
 
-      let finM = v.FinalJudgment.includes("بكثير") ? "✔" : "";
-      let finG = v.FinalJudgment.includes("يتجاوز") && !finM ? "✔" : "";
-      let finS = v.FinalJudgment.includes("تماما") ? "✔" : "";
-      let finP = v.FinalJudgment.includes("جزئيا") ? "✔" : "";
+      let finM = v.FinalJudgment.includes("بكثير") ? "✔" : ""; let finG = v.FinalJudgment.includes("يتجاوز") && !finM ? "✔" : "";
+      let finS = v.FinalJudgment.includes("تماما") ? "✔" : ""; let finP = v.FinalJudgment.includes("جزئيا") ? "✔" : "";
 
-      html += `</tbody></table>
-               <h4 class="font-bold mt-4 text-right mb-2 print-only">الحكم النهائي للزيارة الصفية:</h4>
-               <table><thead><tr><th>ممتاز= يتجاوز التوقعات بكثير</th><th>جيد= يتجاوز التوقعات</th><th>مرض= يفي بالتوقعات تماما</th><th>غير ملائم= يفي بالتوقعات جزئيا</th><th>التقييم</th></tr></thead>
-               <tbody><tr><td class="font-bold text-xl">${finM}</td><td class="font-bold text-xl">${finG}</td><td class="font-bold text-xl">${finS}</td><td class="font-bold text-xl">${finP}</td><td class="font-bold bg-slate-100">النتيجة</td></tr></tbody></table>
-               <div class="text-center mt-6 no-print"><button onclick="window.print()" class="bg-slate-800 text-white px-8 py-2 rounded-xl font-bold shadow-lg hover:bg-slate-700 text-lg"><i class="fa-solid fa-print"></i> طباعة هذه الزيارة (PDF)</button></div>`;
+      html += `
+            </tbody>
+          </table>
+          <table class="official-table" style="margin-top:0;">
+            <tr>
+              <th class="w-32">الحكم على الدرس:</th>
+              <td><div class="checkbox-box">${finM}</div> ممتاز = يتجاوز التوقعات بكثير</td>
+              <td><div class="checkbox-box">${finG}</div> جيد = يتجاوز التوقعات</td>
+              <td><div class="checkbox-box">${finS}</div> مرض = يفي بالتوقعات تماما</td>
+              <td><div class="checkbox-box">${finP}</div> غير ملائم = يفي بالتوقعات جزئيا</td>
+            </tr>
+          </table>
+        </div>
+      `;
+
+      // الورقة الثانية: المداولة البعدية
+      let sk = v.Extra_Skills || "";
+      let chk = (str, val) => str.includes(val) ? "✔" : "";
       
-      document.getElementById('reportTableContainer').innerHTML = html;
-      document.getElementById('printSignatures').classList.remove('hidden');
-      document.getElementById('printFooter').classList.remove('hidden');
+      html += `
+        <div class="print-page mt-8 pt-8 border-t-2 border-dashed border-slate-300">
+          <div class="text-center font-bold text-sm mb-4 bg-slate-200 py-1 border border-black">الجزء الخاص بالمداولة البعدية مع المعلم المزور</div>
+          
+          <div class="box-section">
+            <div class="box-header">1). مهارات القرن الحادي والعشرين التي تم توظيفها في الموقف التعليمي:</div>
+            <div class="box-content checkbox-grid">
+              <div class="checkbox-item"><div class="checkbox-box">${chk(sk, 'التفكير الناقد')}</div> التفكير الناقد وحل المشكلات</div>
+              <div class="checkbox-item"><div class="checkbox-box">${chk(sk, 'التعاون والتواصل')}</div> التعاون والتواصل</div>
+              <div class="checkbox-item"><div class="checkbox-box">${chk(sk, 'الوعي العالمي')}</div> الوعي العالمي والثقافي</div>
+              <div class="checkbox-item"><div class="checkbox-box">${chk(sk, 'الإبداع والابتكار')}</div> الإبداع والابتكار</div>
+              <div class="checkbox-item"><div class="checkbox-box">${chk(sk, 'التكيف والمرونة')}</div> القدرة على التكيف والمرونة</div>
+              <div class="checkbox-item"><div class="checkbox-box">${chk(sk, 'المعرفة المعلوماتية')}</div> المعرفة المعلوماتية</div>
+              <div class="checkbox-item"><div class="checkbox-box">${chk(sk, 'الذكاء العاطفي')}</div> الذكاء العاطفي</div>
+              <div class="checkbox-item"><div class="checkbox-box">${chk(sk, 'المعرفة الرقمية')}</div> المعرفة الرقمية</div>
+            </div>
+          </div>
+          
+          <div class="signatures-print mt-10">
+            <div><p class="font-bold mb-10">اسم الزائر:</p><p>${v.VisitorName}</p></div>
+            <div><p class="font-bold mb-10">المسمى الوظيفي:</p><p>${v.VisitorJob}</p></div>
+            <div><p class="font-bold mb-10">توقيع الزائر:</p><p>................</p></div>
+            <div><p class="font-bold mb-10">توقيع المعلم:</p><p>................</p></div>
+          </div>
+          
+          <div class="text-center mt-6 no-print">
+            <button onclick="window.print()" class="bg-red-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-red-800 text-lg w-full"><i class="fa-solid fa-print"></i> طباعة الاستمارة الرسمية (ورقتين)</button>
+          </div>
+        </div>
+      `;
+
+      container.innerHTML = html;
     }
 
-    // التهيئة
+    buildCriteriaEntry();
     initDropdowns();
-    buildCriteria();
     fetchData();
   </script>
 </body>
