@@ -621,12 +621,12 @@
         html += `<table class="official-table">
                   <thead>
                     <tr>
-                      <th class="w-16">يتجاوز<br>التوقعات<br>كثيرا</th>
-                      <th class="w-16">يتجاوز<br>التوقعات</th>
-                      <th class="w-16">يفي<br>بالتوقعات<br>تماما</th>
-                      <th class="w-16">يفي<br>بالتوقعات<br>جزئيا</th>
-                      <th>المعيار</th>
                       <th class="w-10">الرقم</th>
+                      <th>المعيار</th>
+                      <th class="w-16">يفي<br>بالتوقعات<br>جزئيا</th>
+                      <th class="w-16">يفي<br>بالتوقعات<br>تماما</th>
+                      <th class="w-16">يتجاوز<br>التوقعات</th>
+                      <th class="w-16">يتجاوز<br>التوقعات<br>كثيرا</th>
                     </tr>
                   </thead><tbody>`;
         
@@ -637,16 +637,16 @@
             if(ans.includes("بكثير")) counts.m++; else if(ans.includes("يتجاوز")) counts.g++; else if(ans.includes("تماما")) counts.s++; else if(ans.includes("جزئيا")) counts.p++;
           });
           let t = filtered.length;
-          html += `<tr><td>${formatPct(counts.m,t)}</td><td>${formatPct(counts.g,t)}</td><td>${formatPct(counts.s,t)}</td><td>${formatPct(counts.p,t)}</td><td class="criteria-text">${c.title}</td><td>${c.id}</td></tr>`;
+          html += `<tr><td>${c.id}</td><td class="criteria-text">${c.title}</td><td>${formatPct(counts.p,t)}</td><td>${formatPct(counts.s,t)}</td><td>${formatPct(counts.g,t)}</td><td>${formatPct(counts.m,t)}</td></tr>`;
         });
         
         let fin = calcStats(filtered);
         html += `</tbody></table>
                  <h4 class="font-bold mt-4 text-right mb-1 print-only">الحكم النهائي للزيارات الصفية:</h4>
-                 <table class="official-table"><thead><tr><th>ممتاز= يتجاوز التوقعات بكثير</th><th>جيد= يتجاوز التوقعات</th><th>مرض= يفي بالتوقعات تماما</th><th>غير ملائم= يفي بالتوقعات جزئيا</th><th class="w-32">التقييم</th></tr></thead>
+                 <table class="official-table"><thead><tr><th class="w-32">التقييم</th><th>ممتاز= يتجاوز التوقعات بكثير</th><th>جيد= يتجاوز التوقعات</th><th>مرض= يفي بالتوقعات تماما</th><th>غير ملائم= يفي بالتوقعات جزئيا</th></tr></thead>
                  <tbody>`;
-        if(fBy === 'all') html += `<tr><td>${fin.raw.m}</td><td>${fin.raw.g}</td><td>${fin.raw.s}</td><td>${fin.raw.p}</td><td class="font-bold bg-slate-100">عدد الزيارات</td></tr>`;
-        html += `<tr><td>${fin.m}</td><td>${fin.g}</td><td>${fin.s}</td><td>${fin.p}</td><td class="font-bold bg-slate-100">النسبة</td></tr></tbody></table>`;
+        if(fBy === 'all') html += `<tr><td class="font-bold bg-slate-100">عدد الزيارات</td><td>${fin.raw.m}</td><td>${fin.raw.g}</td><td>${fin.raw.s}</td><td>${fin.raw.p}</td></tr>`;
+        html += `<tr><td class="font-bold bg-slate-100">النسبة</td><td>${fin.m}</td><td>${fin.g}</td><td>${fin.s}</td><td>${fin.p}</td></tr></tbody></table>`;
         
         container.innerHTML = html;
       }
