@@ -41,6 +41,9 @@
       .footer-credits { text-align: center; font-size: 10px; margin-top: 20px; border-top: 1px solid #ccc; padding-top: 5px; color: #555 !important; page-break-inside: avoid; }
     }
     .print-only { display: none; }
+    
+    /* تنسيق خاص لقوائم datalist في بعض المتصفحات */
+    input::-webkit-calendar-picker-indicator { opacity: 0.5; cursor: pointer; }
   </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col">
@@ -107,27 +110,89 @@
           <button onclick="switchTab('tab-home')" class="text-sm bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded font-bold hover:bg-slate-200">عودة</button>
         </div>
         <form id="visitForm" onsubmit="saveVisit(event)">
+          
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-200 dark:border-slate-700 mb-6">
-            <div><label class="text-sm font-bold block mb-1">العام الدراسي</label><input type="text" id="v_year" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700" value="2026-2027" required></div>
-            <div><label class="text-sm font-bold block mb-1">الشهر/الفصل</label><input type="text" id="v_semester" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700" placeholder="مثال: الفصل الأول" required></div>
-            <div><label class="text-sm font-bold block mb-1">التاريخ</label><input type="date" id="v_date" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700" required></div>
+            <!-- الصف الأول -->
             <div>
-              <label class="text-sm font-bold block mb-1 text-red-700">الحكم النهائي للزيارة</label>
-              <select id="v_final" class="w-full border p-2 rounded-lg font-bold text-red-700 bg-white dark:bg-slate-700" required>
-                <option value="ممتاز = يتجاوز التوقعات بكثير">ممتاز = يتجاوز التوقعات بكثير</option><option value="جيد = يتجاوز التوقعات">جيد = يتجاوز التوقعات</option><option value="مرض = يفي بالتوقعات تماما">مرض = يفي بالتوقعات تماما</option><option value="غير ملائم = يفي بالتوقعات جزئيا">غير ملائم = يفي بالتوقعات جزئيا</option>
+              <label class="text-sm font-bold block mb-1">العام الدراسي</label>
+              <input type="text" id="v_year" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700 font-bold" value="2026-2027" required>
+            </div>
+            <div>
+              <label class="text-sm font-bold block mb-1">الشهر/الفصل</label>
+              <select id="v_semester" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700 font-bold" required>
+                <option value="الفصل الدراسي الأول">الفصل الدراسي الأول</option>
+                <option value="الفصل الدراسي الثاني">الفصل الدراسي الثاني</option>
+                <option value="شهر 9">شهر 9</option><option value="شهر 10">شهر 10</option>
+                <option value="شهر 11">شهر 11</option><option value="شهر 12">شهر 12</option>
+                <option value="شهر 1">شهر 1</option><option value="شهر 2">شهر 2</option>
+                <option value="شهر 3">شهر 3</option><option value="شهر 4">شهر 4</option>
+                <option value="شهر 5">شهر 5</option><option value="شهر 6">شهر 6</option>
               </select>
             </div>
-            <div><label class="text-sm font-bold block mb-1">اسم المعلم</label><select id="v_teacher" onchange="fillTeacherData()" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700" required><option value="">اختر المعلم</option></select></div>
-            <div><label class="text-sm font-bold block mb-1">المادة/القسم</label><input type="text" id="v_subject" class="w-full border p-2 rounded-lg bg-slate-200 dark:bg-slate-600" readonly><input type="hidden" id="v_cpr"></div>
-            <div><label class="text-sm font-bold block mb-1">اسم الزائر</label><select id="v_visitor" onchange="fillVisitorData()" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700" required><option value="">اختر الزائر</option></select></div>
-            <div><label class="text-sm font-bold block mb-1">المسمى الوظيفي</label><input type="text" id="v_job" class="w-full border p-2 rounded-lg bg-slate-200 dark:bg-slate-600" readonly></div>
+            <div>
+              <label class="text-sm font-bold block mb-1">التاريخ</label>
+              <input type="date" id="v_date" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700" required>
+            </div>
+            <div>
+              <label class="text-sm font-bold block mb-1 text-red-700">الحكم النهائي للزيارة</label>
+              <select id="v_final" class="w-full border p-2 rounded-lg font-bold text-red-700 bg-red-50 dark:bg-slate-700 outline-none focus:ring-2 focus:ring-red-500" required>
+                <option value="ممتاز = يتجاوز التوقعات بكثير">ممتاز = يتجاوز التوقعات بكثير</option>
+                <option value="جيد = يتجاوز التوقعات">جيد = يتجاوز التوقعات</option>
+                <option value="مرض = يفي بالتوقعات تماما">مرض = يفي بالتوقعات تماما</option>
+                <option value="غير ملائم = يفي بالتوقعات جزئيا">غير ملائم = يفي بالتوقعات جزئيا</option>
+              </select>
+            </div>
+
+            <!-- الصف الثاني -->
+            <div>
+              <label class="text-sm font-bold block mb-1 text-emerald-700 dark:text-emerald-400">القسم (لتسهيل البحث)</label>
+              <select id="v_dept" onchange="filterTeachers()" class="w-full border border-emerald-300 p-2 rounded-lg bg-emerald-50 dark:bg-slate-700">
+                <!-- يتم تعبئتها برمجياً -->
+              </select>
+            </div>
+            <div>
+              <label class="text-sm font-bold block mb-1">اسم المعلم</label>
+              <select id="v_teacher" onchange="fillTeacherDetails()" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700" required>
+                <option value="">-- اختر القسم أولاً --</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-sm font-bold block mb-1 text-slate-500">التخصص الفعلي</label>
+              <input type="text" id="v_subject" class="w-full border p-2 rounded-lg bg-slate-200 dark:bg-slate-600 font-bold" readonly placeholder="يُملأ تلقائياً">
+              <input type="hidden" id="v_cpr">
+            </div>
+            <div class="hidden md:block"></div> <!-- مسافة فارغة للترتيب -->
+
+            <!-- الصف الثالث -->
+            <div class="md:col-span-2">
+              <label class="text-sm font-bold block mb-1">اسم الزائر (المقيم)</label>
+              <!-- datalist تسمح بالاختيار أو الكتابة اليدوية -->
+              <input type="text" id="v_visitor" list="visitorsData" onchange="fillVisitorDetails()" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700" placeholder="اختر من القائمة أو اكتب اسماً جديداً..." required>
+              <datalist id="visitorsData"></datalist>
+            </div>
+            <div class="md:col-span-2">
+              <label class="text-sm font-bold block mb-1">المسمى الوظيفي</label>
+              <input type="text" id="v_job" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700" placeholder="يُملأ تلقائياً وقابل للتعديل يدوياً..." required>
+            </div>
           </div>
+          
+          <!-- المعايير -->
+          <div class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold p-3 mt-4 text-center rounded-lg text-sm mb-4">التخطيط وإدارة الموقف التعليمي والمعايير الأخرى</div>
           <div id="criteriaContainer" class="space-y-3 mb-6"></div>
-          <input type="hidden" id="v_email">
-          <div class="mb-6 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200">
-            <label class="flex items-center gap-3 font-bold cursor-pointer"><input type="checkbox" id="v_send_email" checked class="w-5 h-5 accent-red-700"> إرسال نسخة من التقرير فوراً إلى الإيميل</label>
-            <p class="text-xs text-slate-500 mt-2 mr-8" id="teacherEmailDisplay">سيتم تحديد الإيميل تلقائياً.</p>
+          
+          <!-- خيارات الإرسال والإيميل الإضافي -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col justify-center">
+              <label class="flex items-center gap-3 font-bold cursor-pointer">
+                <input type="checkbox" id="v_send_email" checked class="w-5 h-5 accent-red-700"> إرسال التقرير للمعلم تلقائياً
+              </label>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+              <label class="text-sm font-bold block mb-1">إرسال نسخة إلى إيميل آخر (اختياري)</label>
+              <input type="email" id="v_extra_email" class="w-full border p-2 rounded-lg bg-white dark:bg-slate-700" placeholder="مثال: principal@school.edu.bh">
+            </div>
           </div>
+
           <button type="submit" id="saveBtn" class="bg-red-700 text-white px-8 py-3 rounded-xl font-bold hover:bg-red-800 shadow-md transition w-full md:w-auto"><i class="fa-solid fa-cloud-arrow-up ml-2"></i> حفظ ومزامنة الزيارة</button>
         </form>
       </section>
@@ -141,18 +206,19 @@
           <div class="space-y-4">
             <div>
               <label class="text-xs font-bold block mb-1 text-slate-500">العام الدراسي</label>
-              <input type="text" id="r_year" class="w-full border p-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-sm" value="2026-2027">
+              <input type="text" id="r_year" class="w-full border p-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-sm font-bold" value="2026-2027">
             </div>
             <div>
               <label class="text-xs font-bold block mb-1 text-slate-500">الفصل / الشهر</label>
               <select id="r_semester" class="w-full border p-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-sm">
                 <option value="الكل">طوال العام الدراسي</option>
-                <option value="الفصل الأول">الفصل الأول</option>
-                <option value="الفصل الثاني">الفصل الثاني</option>
-                <option value="9">شهر 9</option>
-                <option value="10">شهر 10</option>
-                <option value="11">شهر 11</option>
-                <option value="12">شهر 12</option>
+                <option value="الفصل الدراسي الأول">الفصل الدراسي الأول</option>
+                <option value="الفصل الدراسي الثاني">الفصل الدراسي الثاني</option>
+                <option value="شهر 9">شهر 9</option><option value="شهر 10">شهر 10</option>
+                <option value="شهر 11">شهر 11</option><option value="شهر 12">شهر 12</option>
+                <option value="شهر 1">شهر 1</option><option value="شهر 2">شهر 2</option>
+                <option value="شهر 3">شهر 3</option><option value="شهر 4">شهر 4</option>
+                <option value="شهر 5">شهر 5</option><option value="شهر 6">شهر 6</option>
               </select>
             </div>
             <div>
@@ -232,7 +298,77 @@
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzty9WyGvvCLyOVI9XaDZxImseaSd4tanfPK4H9ZNWtEdYJUuTKlY7uo30ing_ARR8/exec";
-    let db = { visits: [], teachers: [], visitors: [], settings: {} };
+    
+    // قواعد البيانات المحلية الأساسية (تضمن عمل القوائم بشكل فوري وكامل)
+    const localTeachers = [
+      { cpr: "781251907", name: "صبري محمد حمد السيد إبراهيم", subject: "العلوم" },
+      { cpr: "000502286", name: "دانيال نادر محمد خورشيد", subject: "اللغة الإنجليزية" },
+      { cpr: "730202976", name: "محمد إبراهيم محمد ناصر", subject: "نظام معلم فصل" },
+      { cpr: "791343197", name: "طه عاطف طه عبد اللطيف", subject: "الرياضيات" },
+      { cpr: "680839461", name: "عبدالباسط محمد السيد محمد", subject: "الرياضيات" },
+      { cpr: "710654782", name: "منتصر عثمان زيدان ابوزيد", subject: "اللغة الإنجليزية" },
+      { cpr: "820503207", name: "إبراهيم عبدالنبي أحمد علي ناصر", subject: "تربية خاصة (دمج)" },
+      { cpr: "670158887", name: "لطفي ابراهيم محمد ابراهيم", subject: "الرياضيات" },
+      { cpr: "750504897", name: "علي محسن علي سيف", subject: "المجالات العملية" },
+      { cpr: "910304823", name: "ياسر عبد الهادي عبد الله عيسى", subject: "اللغة العربية" },
+      { cpr: "820464350", name: "سفيان محمد نورفل", subject: "التربية الإسلامية" },
+      { cpr: "750802537", name: "عبدالله حسن عبدالله سند", subject: "المجالات العملية" },
+      { cpr: "741006316", name: "ماهر مهدي علي عمران", subject: "اللغة العربية" },
+      { cpr: "711242100", name: "ايمن محمد بكري احمد", subject: "اللغة الإنجليزية" },
+      { cpr: "820702366", name: "حسين سعيد جاسم علي", subject: "مصادر التعلم" },
+      { cpr: "860604241", name: "يوسف علي عبدالله عبدالحق", subject: "تقنية المعلومات" },
+      { cpr: "690246110", name: "صلاح فؤاد محمد السيد", subject: "تربية خاصة (نطق ولغة)" },
+      { cpr: "790306913", name: "حسين هلال ابراهيم احمد", subject: "تقنية المعلومات" },
+      { cpr: "661002705", name: "محمد علي محسن العلي", subject: "الرياضيات" },
+      { cpr: "900905719", name: "محمد عبدالجبار جعفر العويناتي", subject: "اللغة العربية والتربية الإسلامية" },
+      { cpr: "731201817", name: "جعفر حسن عبدالله الزاير", subject: "العلوم" },
+      { cpr: "980805341", name: "عبدالله أحمد إبراهيم دليم", subject: "المدير المساعد" },
+      { cpr: "720202892", name: "باسم ناصر سعد رحال", subject: "اللغة العربية" },
+      { cpr: "670639486", name: "محمد محمود محمد سليمان", subject: "العلوم" },
+      { cpr: "700243232", name: "السيد البيلي السيد بيلي", subject: "المجالات العملية" },
+      { cpr: "990104885", name: "محمد عبدالنبي سلمان العويناتي", subject: "الرياضيات" },
+      { cpr: "701140356", name: "درويش يحيى زين الدين", subject: "المجالات العملية" },
+      { cpr: "781100712", name: "حسن حميد محسن علي", subject: "المجالات العملية" },
+      { cpr: "820603350", name: "حسين راشد حبيب حسين الدرازي", subject: "التربية الرياضية" },
+      { cpr: "680110836", name: "محمد إبراهيم علي آل طوق", subject: "اللغة العربية" },
+      { cpr: "721137601", name: "ناصر ماهر احمد محمد", subject: "المواد الاجتماعية" },
+      { cpr: "720749492", name: "ايمن خضر السيد عيسي", subject: "المجالات العملية" },
+      { cpr: "790708221", name: "عباس حسين فردان الفردان", subject: "التربية الرياضية" },
+      { cpr: "770706231", name: "علي عبدالله أحمد علي", subject: "المواد الاجتماعية" },
+      { cpr: "750840269", name: "احمد فراج احمد مصطفى", subject: "المجالات العملية" },
+      { cpr: "780182618", name: "عاطف على التهامى بسيوني", subject: "المجالات العملية" },
+      { cpr: "700202137", name: "موسى مدن حسين مدن عصفور", subject: "التربية الإسلامية" },
+      { cpr: "851248977", name: "احمد عبد المطلب علي عبد المطلب", subject: "تربية خاصة (صعوبات تعلم)" },
+      { cpr: "700034056", name: "عدنان عبدالجليل عبدالحسين الحلواجي", subject: "اللغة العربية" },
+      { cpr: "770805647", name: "جاسم محمد جعفر الحداد", subject: "المجالات العملية" },
+      { cpr: "010312056", name: "عبدالرزاق محمد السالم", subject: "اللغة العربية والتربية الإسلامية" },
+      { cpr: "951106112", name: "عبدالله موفق احمد فارس فارس", subject: "تربية خاصة (صعوبات تعلم)" },
+      { cpr: "000101338", name: "محمد عبد العزيز عبد الحسين أحمد جعفر", subject: "التربية الإسلامية" },
+      { cpr: "750015586", name: "حسن علي محمد خميس", subject: "التربية الرياضية" },
+      { cpr: "980305322", name: "السيد محمد ضياء علي ابراهيم محمد", subject: "المواد الاجتماعية" },
+      { cpr: "660583879", name: "أحمد علي أحمد عبد الكريم", subject: "اللغة العربية" },
+      { cpr: "760408041", name: "عباس كاظم أحمد عبدالنبي", subject: "اللغة الإنجليزية" },
+      { cpr: "850902843", name: "حمزة ميرزا جعفر", subject: "الرياضيات" },
+      { cpr: "810704188", name: "عبدالله صالح هلال علي", subject: "المواد الاجتماعية" },
+      { cpr: "861106920", name: "احمد عبد العزيز عيسى شهاب", subject: "التربية الرياضية" },
+      { cpr: "000000000", name: "عبدالرضا عبدالرسول", subject: "العلوم" },
+      { cpr: "111111111", name: "جلال ابراهيم", subject: "المواد الاجتماعية" }
+    ];
+
+    const localVisitors = [
+      { name: "محمد إبراهيم محمد ناصر", job: "مدير المدرسة" },
+      { name: "عبدالله أحمد دليم", job: "المدير المساعد" },
+      { name: "د. عدنان عبدالجليل عبدالحسين الحلواجي", job: "معلم أول" },
+      { name: "محمد علي محسن العلي", job: "معلم أول" },
+      { name: "عبدالرضا عبدالرسول", job: "معلم أول" },
+      { name: "عباس كاظم أحمد عبدالنبي", job: "معلم أول" },
+      { name: "موسى مدن حسين مدن عصفور", job: "معلم أول" },
+      { name: "جلال ابراهيم", job: "معلم أول" },
+      { name: "حسين راشد حبيب حسين الدرازي", job: "منسق" },
+      { name: "عبدالله موفق احمد فارس فارس", job: "مسئول التربية الخاصة" }
+    ];
+
+    let db = { visits: [], teachers: localTeachers, visitors: localVisitors, settings: {} };
 
     const criteriaList = [
       { id: 1, title: "اتساق تخطيط الدرس مع الكفايات التعليمية للمنهج، ومراعاته احتياجات الطلبة." },
@@ -300,32 +436,61 @@
       document.getElementById('criteriaContainer').innerHTML = html;
     }
 
+    // تجهيز القوائم المنسدلة من البيانات المحلية
+    function initDropdowns() {
+      // 1. أقسام المعلمين
+      const depts = [...new Set(localTeachers.map(t => t.subject))].sort();
+      let dHtml = '<option value="">-- اختر القسم أولاً --</option><option value="all">عرض جميع المعلمين بدون فرز</option>';
+      depts.forEach(d => dHtml += `<option value="${d}">${d}</option>`);
+      document.getElementById('v_dept').innerHTML = dHtml;
+      
+      // 2. قائمة الزوار لـ datalist
+      let vHtml = '';
+      localVisitors.forEach(v => vHtml += `<option value="${v.name}">`);
+      document.getElementById('visitorsData').innerHTML = vHtml;
+      
+      filterTeachers();
+    }
+
+    function filterTeachers() {
+      const dept = document.getElementById('v_dept').value;
+      const tSelect = document.getElementById('v_teacher');
+      let html = '<option value="">-- اختر المعلم --</option>';
+      
+      let filtered = localTeachers;
+      if(dept && dept !== 'all') filtered = localTeachers.filter(t => t.subject === dept);
+      
+      filtered.sort((a,b) => a.name.localeCompare(b.name)).forEach(t => {
+        html += `<option value="${t.name}">${t.name}</option>`;
+      });
+      tSelect.innerHTML = html;
+      document.getElementById('v_subject').value = ""; document.getElementById('v_cpr').value = "";
+    }
+
+    function fillTeacherDetails() {
+      const t = localTeachers.find(x => x.name === document.getElementById('v_teacher').value);
+      if(t) {
+        document.getElementById('v_subject').value = t.subject;
+        document.getElementById('v_cpr').value = t.cpr;
+      }
+    }
+
+    function fillVisitorDetails() {
+      const vName = document.getElementById('v_visitor').value;
+      const v = localVisitors.find(x => x.name === vName);
+      if(v) {
+        document.getElementById('v_job').value = v.job; // تعبئة تلقائية لوظيفة الزائر
+      }
+    }
+
     async function fetchData() {
       try {
         const res = await fetch(SCRIPT_URL);
-        db = await res.json();
-        
-        let tHtml = '<option value="">اختر المعلم</option>';
-        db.teachers.forEach(t => tHtml += `<option value="${t.TeacherName}">${t.TeacherName}</option>`);
-        document.getElementById('v_teacher').innerHTML = tHtml;
-        
-        let vHtml = '<option value="">اختر الزائر</option>';
-        db.visitors.forEach(v => vHtml += `<option value="${v.VisitorName}">${v.VisitorName}</option>`);
-        document.getElementById('v_visitor').innerHTML = vHtml;
-      } catch (e) { console.error("Error fetching data", e); }
-    }
-
-    function fillTeacherData() {
-      const t = db.teachers.find(x => x.TeacherName === document.getElementById('v_teacher').value);
-      if(t) {
-        document.getElementById('v_subject').value = t.Subject; document.getElementById('v_cpr').value = t.CPR;
-        document.getElementById('v_email').value = t.PersonalEmail || t.MOEEmail || "";
-        document.getElementById('teacherEmailDisplay').innerHTML = t.PersonalEmail || t.MOEEmail ? `<span class="text-emerald-600">سيتم الإرسال إلى: ${t.PersonalEmail || t.MOEEmail}</span>` : `<span class="text-red-600">لا يوجد إيميل.</span>`;
-      }
-    }
-    function fillVisitorData() {
-      const v = db.visitors.find(x => x.VisitorName === document.getElementById('v_visitor').value);
-      if(v) document.getElementById('v_job').value = v.Job;
+        const serverDb = await res.json();
+        db.visits = serverDb.visits || [];
+        // دمج الإعدادات من السيرفر
+        if(serverDb.settings) db.settings = serverDb.settings;
+      } catch (e) { console.error("Error fetching remote data", e); }
     }
 
     async function saveVisit(e) {
@@ -336,7 +501,8 @@
         Date: document.getElementById('v_date').value, TeacherName: document.getElementById('v_teacher').value,
         Subject: document.getElementById('v_subject').value, CPR: document.getElementById('v_cpr').value,
         VisitorName: document.getElementById('v_visitor').value, VisitorJob: document.getElementById('v_job').value,
-        FinalJudgment: document.getElementById('v_final').value, SendEmail: document.getElementById('v_send_email').checked, TeacherEmail: document.getElementById('v_email').value
+        FinalJudgment: document.getElementById('v_final').value, SendEmail: document.getElementById('v_send_email').checked, 
+        TeacherEmail: "", ExtraEmail: document.getElementById('v_extra_email').value
       };
       for(let i=1; i<=18; i++) payload["Q"+i] = document.getElementById('q_'+i).value;
       try {
@@ -538,6 +704,8 @@
       document.getElementById('printFooter').classList.remove('hidden');
     }
 
+    // التهيئة
+    initDropdowns();
     buildCriteria();
     fetchData();
   </script>
