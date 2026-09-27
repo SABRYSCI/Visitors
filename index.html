@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>استمارة الملاحظة الصفية الموحدة - نظام إلكتروني</title>
+  <title>استمارة الملاحظة الصفية الموحدة - تحليل الزيارات</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -129,14 +129,51 @@
             <div><label class="font-bold block mb-1">القسم</label><select id="v_dept" onchange="filterTeachers()" class="w-full border p-2 rounded bg-white dark:bg-slate-700"></select></div>
             <div><label class="font-bold block mb-1">اسم المعلم</label><select id="v_teacher" onchange="fillTeacherDetails()" class="w-full border p-2 rounded bg-white dark:bg-slate-700" required><option value="">-- اختر القسم أولاً --</option></select></div>
             <div><label class="font-bold block mb-1">المادة</label><input type="text" id="v_subject" class="w-full border p-2 rounded bg-slate-200" readonly><input type="hidden" id="v_cpr"></div>
-            <div><label class="font-bold block mb-1">الصف/الشعبة</label><input type="text" id="v_class" class="w-full border p-2 rounded bg-white dark:bg-slate-700" required></div>
+            
+            <!-- قائمة منسدلة للصف/الشعبة -->
+            <div>
+              <label class="font-bold block mb-1">الصف/الشعبة</label>
+              <select id="v_class" onchange="updateTimeField()" class="w-full border p-2 rounded bg-white dark:bg-slate-700" required>
+                <option value="">-- اختر الصف --</option>
+                <option value="سادس ابتدائي / 1">سادس ابتدائي / 1</option>
+                <option value="سادس ابتدائي / 2">سادس ابتدائي / 2</option>
+                <option value="سادس ابتدائي / 3">سادس ابتدائي / 3</option>
+                <option value="أول إعدادي / 1">أول إعدادي / 1</option>
+                <option value="أول إعدادي / 2">أول إعدادي / 2</option>
+                <option value="أول إعدادي / 3">أول إعدادي / 3</option>
+                <option value="أول إعدادي / 4">أول إعدادي / 4</option>
+                <option value="ثاني إعدادي / 1">ثاني إعدادي / 1</option>
+                <option value="ثاني إعدادي / 2">ثاني إعدادي / 2</option>
+                <option value="ثاني إعدادي / 3">ثاني إعدادي / 3</option>
+                <option value="ثاني إعدادي / 4">ثاني إعدادي / 4</option>
+                <option value="ثالث إعدادي / 1">ثالث إعدادي / 1</option>
+                <option value="ثالث إعدادي / 2">ثالث إعدادي / 2</option>
+                <option value="ثالث إعدادي / 3">ثالث إعدادي / 3</option>
+                <option value="ثالث إعدادي / 4">ثالث إعدادي / 4</option>
+                <option value="ثالث إعدادي / 5">ثالث إعدادي / 5</option>
+              </select>
+            </div>
             
             <div><label class="font-bold block mb-1">تاريخ الزيارة</label><input type="date" id="v_date" class="w-full border p-2 rounded bg-white dark:bg-slate-700" required></div>
             <div><label class="font-bold block mb-1">رقم الزيارة</label><input type="number" id="v_visitNo" class="w-full border p-2 rounded bg-white dark:bg-slate-700" min="1" value="1" required></div>
             <div class="md:col-span-2"><label class="font-bold block mb-1">عنوان الدرس</label><input type="text" id="v_lesson" class="w-full border p-2 rounded bg-white dark:bg-slate-700" required></div>
 
-            <div><label class="font-bold block mb-1">الحصة الدراسية</label><input type="text" id="v_period" class="w-full border p-2 rounded bg-white dark:bg-slate-700" required></div>
-            <div><label class="font-bold block mb-1">الزمن (من - إلى)</label><input type="text" id="v_time" class="w-full border p-2 rounded bg-white dark:bg-slate-700" placeholder="مثال: 8:00 - 8:45" required></div>
+            <!-- قائمة منسدلة للحصة -->
+            <div>
+              <label class="font-bold block mb-1">الحصة الدراسية</label>
+              <select id="v_period" onchange="updateTimeField()" class="w-full border p-2 rounded bg-white dark:bg-slate-700" required>
+                <option value="">-- اختر الحصة --</option>
+                <option value="الأولى">الأولى</option>
+                <option value="الثانية">الثانية</option>
+                <option value="الثالثة">الثالثة</option>
+                <option value="الرابعة">الرابعة</option>
+                <option value="الخامسة">الخامسة</option>
+                <option value="السادسة">السادسة</option>
+                <option value="السابعة">السابعة</option>
+              </select>
+            </div>
+            <div><label class="font-bold block mb-1">الزمن (من - إلى)</label><input type="text" id="v_time" class="w-full border p-2 rounded bg-white dark:bg-slate-700" placeholder="يتم التحديد تلقائياً ويمكنك التعديل..." required></div>
+            
             <div><label class="font-bold block mb-1">عدد الطلبة</label><input type="number" id="v_students" class="w-full border p-2 rounded bg-white dark:bg-slate-700" min="0" required></div>
             <div><label class="font-bold block mb-1">عدد الغياب</label><input type="number" id="v_absence" class="w-full border p-2 rounded bg-white dark:bg-slate-700" min="0" required></div>
           </div>
@@ -261,7 +298,7 @@
 
         <div id="printArea" class="w-full bg-white p-2 rounded shadow-sm text-slate-800">
           
-          <!-- الترويسة المخصصة للطباعة -->
+          <!-- الترويسة المخصصة للطباعة المطابقة لوزارة التربية والتعليم -->
           <div class="print-moe-header print-only">
              <div class="print-date" id="printDateAr"></div>
              <img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt="Logo">
@@ -294,6 +331,27 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzty9WyGvvCLyOVI9XaDZxImseaSd4tanfPK4H9ZNWtEdYJUuTKlY7uo30ing_ARR8/exec";
     
+    // دالة تحديد التوقيت التلقائي بناءً على الجدول الزمني
+    function updateTimeField() {
+      const cls = document.getElementById('v_class').value;
+      const prd = document.getElementById('v_period').value;
+      const timeInput = document.getElementById('v_time');
+
+      if (!cls || !prd) return;
+
+      const schedule = {
+        "ابتدائي": { "الأولى": "7:15 - 8:05", "الثانية": "8:05 - 8:55", "الثالثة": "8:55 - 9:45", "الرابعة": "10:15 - 11:00", "الخامسة": "11:00 - 11:45", "السادسة": "11:45 - 12:30", "السابعة": "12:30 - 13:15" },
+        "إعدادي": { "الأولى": "7:15 - 8:05", "الثانية": "8:05 - 8:55", "الثالثة": "8:55 - 9:45", "الرابعة": "9:45 - 10:30", "الخامسة": "11:00 - 11:45", "السادسة": "11:45 - 12:30", "السابعة": "12:30 - 13:15" }
+      };
+
+      let stage = cls.includes('ابتدائي') ? 'ابتدائي' : 'إعدادي';
+      let newTime = schedule[stage][prd];
+      
+      if (newTime) {
+        timeInput.value = newTime;
+      }
+    }
+
     const localTeachers = [
       { cpr: "781251907", name: "صبري محمد حمد السيد إبراهيم", subject: "العلوم" },
       { cpr: "000502286", name: "دانيال نادر محمد خورشيد", subject: "اللغة الإنجليزية" },
