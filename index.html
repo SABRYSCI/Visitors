@@ -50,7 +50,7 @@
       .checkbox-item { display: flex; align-items: center; gap: 5px; }
       .checkbox-box { width: 12px; height: 12px; border: 1px solid #000; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;}
       
-      /* تعديل التوقيعات لتكون في سطر واحد مضغوط */
+      /* التوقيعات */
       .signatures-print { display: flex; justify-content: space-between; margin-top: 10px; text-align: center; font-weight: bold; page-break-inside: avoid; font-size: 11px; }
       .signatures-print > div { flex: 1; }
       .footer-credits { text-align: center; font-size: 9px; border: 1px solid #000; padding: 3px; margin-top: 8px; page-break-inside: avoid; }
@@ -142,17 +142,24 @@
           </div>
 
           <!-- جدول المعايير التفاعلي (18 معيار) -->
-          <h3 class="font-bold text-lg mb-2 text-slate-800 dark:text-white">المعايير والتقييم</h3>
+          <div class="flex items-center justify-between mb-2">
+             <h3 class="font-bold text-lg text-slate-800 dark:text-white">المعايير والتقييم</h3>
+          </div>
+          
+          <div class="bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 p-3 rounded-lg text-sm font-bold mb-3 border border-blue-200">
+             <i class="fa-solid fa-circle-info ml-1"></i> تنبيه هام: يرجى تقييم بنود (الإنجاز الأكاديمي) أولاً، ليتم فتح باقي بنود الاستمارة بناءً على مستوى أثر التعلم.
+          </div>
+
           <div class="overflow-x-auto mb-6">
             <table class="form-grid-table text-sm w-full">
               <thead>
                 <tr>
                   <th class="w-10">الرقم</th>
                   <th class="text-right">المعايير</th>
-                  <th class="w-20"><div class="rotate-180" style="writing-mode: vertical-rl;">يتجاوز التوقعات بكثير</div></th>
-                  <th class="w-20"><div class="rotate-180" style="writing-mode: vertical-rl;">يتجاوز التوقعات</div></th>
-                  <th class="w-20"><div class="rotate-180" style="writing-mode: vertical-rl;">يفي بالتوقعات تماماً</div></th>
                   <th class="w-20"><div class="rotate-180" style="writing-mode: vertical-rl;">يفي بالتوقعات جزئياً</div></th>
+                  <th class="w-20"><div class="rotate-180" style="writing-mode: vertical-rl;">يفي بالتوقعات تماماً</div></th>
+                  <th class="w-20"><div class="rotate-180" style="writing-mode: vertical-rl;">يتجاوز التوقعات</div></th>
+                  <th class="w-20"><div class="rotate-180" style="writing-mode: vertical-rl;">يتجاوز التوقعات بكثير</div></th>
                 </tr>
               </thead>
               <tbody id="criteriaEntryBody"></tbody>
@@ -245,7 +252,7 @@
             <label class="text-xs font-bold block mb-1">العام الدراسي</label>
             <input type="text" id="r_year" class="border p-2 rounded-lg bg-slate-50 w-24 font-bold text-center" value="2026-2027">
           </div>
-          <div><label class="text-xs font-bold block mb-1">نوع التقرير</label><select id="r_type" onchange="toggleReportViews()" class="border p-2 rounded-lg bg-slate-50"><option value="summary">ملخص الزيارات (إحصائية عامة)</option><option value="detailed">تحليل مفصل (نسب مئوية للتقييم)</option><option value="log">سجل الزيارات (بحث وطباعة فردية)</option></select></div>
+          <div><label class="text-xs font-bold block mb-1">نوع التقرير</label><select id="r_type" class="border p-2 rounded-lg bg-slate-50"><option value="summary">ملخص الزيارات (إحصائية عامة)</option><option value="detailed">تحليل مفصل (نسب مئوية للتقييم)</option><option value="log">سجل الزيارات (بحث وطباعة فردية)</option></select></div>
           <div><label class="text-xs font-bold block mb-1">فرز حسب</label><select id="r_filterBy" onchange="updateFilterUI()" class="border p-2 rounded-lg bg-slate-50"><option value="all">الكل (المدرسة)</option><option value="teacher">المعلم</option><option value="dept">القسم</option><option value="visitor">المقيم</option></select></div>
           <div id="div_specific" class="hidden"><label class="text-xs font-bold block mb-1 text-red-600">اختر:</label><select id="r_specific" class="border border-red-300 p-2 rounded-lg bg-red-50"></select></div>
           <button onclick="generateReport()" class="bg-amber-500 text-slate-900 px-6 py-2 rounded-lg font-bold hover:bg-amber-600"><i class="fa-solid fa-search"></i> استخراج التقرير</button>
@@ -254,7 +261,7 @@
 
         <div id="printArea" class="w-full bg-white p-2 rounded shadow-sm text-slate-800">
           
-          <!-- الترويسة المخصصة للطباعة المطابقة لوزارة التربية والتعليم -->
+          <!-- الترويسة المخصصة للطباعة -->
           <div class="print-moe-header print-only">
              <div class="print-date" id="printDateAr"></div>
              <img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt="Logo">
@@ -333,6 +340,7 @@
 
     let db = { visits: [] };
 
+    // القائمة الرسمية للتسلسل والطباعة
     const criteriaList = [
       { id: 1, domain: "التخطيط وإدارة الموقف التعليمي", title: "اتساق تخطيط الدرس مع الكفايات التعليمية للمنهج، ومراعاته احتياجات الطلبة." },
       { id: 2, domain: "التخطيط وإدارة الموقف التعليمي", title: "توفير بيئة تعلم آمنة ومحفزة خالية من المخاطر لضمان إنتاجية التعلم." },
@@ -375,21 +383,74 @@
 
     function switchTab(tabId) { ['tab-home', 'tab-entry', 'tab-reports'].forEach(id => document.getElementById(id).classList.toggle('hidden', id !== tabId)); }
 
+    // ==========================================
+    // الدالة السحرية لإدارة المنطق الشرطي (القفل)
+    // ==========================================
+    window.handleLockingLogic = function() {
+       let q13 = document.querySelector('input[name="q_13"]:checked');
+       let q14 = document.querySelector('input[name="q_14"]:checked');
+       let allOtherRadios = document.querySelectorAll('input[type="radio"].eval-radio:not([name="q_13"]):not([name="q_14"])');
+
+       // إذا لم يقم بتقييم الإنجاز الأكاديمي، اقفل كل شيء
+       if (!q13 || !q14) {
+           allOtherRadios.forEach(r => { r.disabled = true; r.checked = false; });
+           return;
+       }
+
+       let v13 = parseInt(q13.getAttribute('data-level'));
+       let v14 = parseInt(q14.getAttribute('data-level'));
+
+       // حساب النطاق المسموح (مستوى أقل وأعلى بدرجة واحدة)
+       let minAllowed = Math.max(1, Math.min(v13, v14) - 1);
+       let maxAllowed = Math.min(4, Math.max(v13, v14) + 1);
+
+       allOtherRadios.forEach(r => {
+           let lvl = parseInt(r.getAttribute('data-level'));
+           if (lvl >= minAllowed && lvl <= maxAllowed) {
+               r.disabled = false;
+           } else {
+               r.disabled = true;
+               r.checked = false;
+           }
+       });
+    }
+
+    // ==========================================
+    // بناء جدول الإدخال بترتيب مخصص يضع (الإنجاز الأكاديمي) أولاً
+    // ==========================================
     function buildCriteriaEntry() {
       let html = "";
-      criteriaList.forEach(c => {
-        html += `
-          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-            <td class="font-bold">${c.id}</td>
-            <td class="text-right text-xs md:text-sm font-medium pr-2">${c.title}</td>
-            <td><input type="radio" name="q_${c.id}" value="ممتاز = يتجاوز التوقعات بكثير" class="w-4 h-4 accent-red-600"></td>
-            <td><input type="radio" name="q_${c.id}" value="جيد = يتجاوز التوقعات" class="w-4 h-4 accent-red-600"></td>
-            <td><input type="radio" name="q_${c.id}" value="مرض = يفي بالتوقعات تماما" class="w-4 h-4 accent-red-600"></td>
-            <td><input type="radio" name="q_${c.id}" value="غير ملائم = يفي بالتوقعات جزئيا" class="w-4 h-4 accent-red-600"></td>
-          </tr>
-        `;
+      
+      const domainsOrder = [
+        { domain: "الإنجاز الأكاديمي", ids: [13, 14] },
+        { domain: "التخطيط وإدارة الموقف التعليمي", ids: [1, 2, 3, 4, 5] },
+        { domain: "التعليم والتعلم والتقويم", ids: [6, 7, 8, 9, 10] },
+        { domain: "الموارد التعليمية والتكنولوجية", ids: [11, 12] },
+        { domain: "التطور الشخصي للطلبة", ids: [15, 16, 17, 18] }
+      ];
+
+      domainsOrder.forEach(grp => {
+        html += `<tr class="bg-slate-200 dark:bg-slate-700 font-bold"><td colspan="6" class="text-right text-red-800 dark:text-red-400 p-2">المجال: ${grp.domain}</td></tr>`;
+        
+        grp.ids.forEach(id => {
+          let c = criteriaList.find(x => x.id === id);
+          let isKey = (id === 13 || id === 14);
+          let dis = isKey ? "" : "disabled"; // جميع المعايير مغلقة افتراضياً ما عدا 13 و 14
+          
+          html += `
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+              <td class="font-bold">${c.id}</td>
+              <td class="text-right text-xs md:text-sm font-medium pr-2">${c.title}</td>
+              <td><input type="radio" name="q_${c.id}" value="غير ملائم = يفي بالتوقعات جزئيا" data-level="1" onchange="handleLockingLogic()" class="eval-radio w-4 h-4 accent-red-600" ${dis}></td>
+              <td><input type="radio" name="q_${c.id}" value="مرض = يفي بالتوقعات تماما" data-level="2" onchange="handleLockingLogic()" class="eval-radio w-4 h-4 accent-red-600" ${dis}></td>
+              <td><input type="radio" name="q_${c.id}" value="جيد = يتجاوز التوقعات" data-level="3" onchange="handleLockingLogic()" class="eval-radio w-4 h-4 accent-red-600" ${dis}></td>
+              <td><input type="radio" name="q_${c.id}" value="ممتاز = يتجاوز التوقعات بكثير" data-level="4" onchange="handleLockingLogic()" class="eval-radio w-4 h-4 accent-red-600" ${dis}></td>
+            </tr>
+          `;
+        });
       });
       document.getElementById('criteriaEntryBody').innerHTML = html;
+      handleLockingLogic(); // للتأكد من القفل في البداية
     }
 
     function initDropdowns() {
@@ -438,7 +499,7 @@
       try {
         for(let i=1; i<=18; i++) {
           let checkedEl = document.querySelector(`input[name="q_${i}"]:checked`);
-          if (!checkedEl) throw new Error(`الرجاء إكمال التقييم للمعيار رقم ${i} في الجدول.`);
+          if (!checkedEl) throw new Error(`تنبيه: يجب تقييم المعيار رقم (${i}). (تذكر أن تقييم الإنجاز الأكاديمي أولاً يفتح لك الخيارات المسموحة)`);
         }
 
         let finalEl = document.querySelector('input[name="v_final"]:checked');
@@ -470,6 +531,7 @@
 
         alert("تم حفظ الزيارة بنجاح!"); 
         e.target.reset(); 
+        handleLockingLogic(); // إعادة قفل الحقول للزيارة الجديدة
         switchTab('tab-reports'); 
         updateFilterUI(); 
         generateReport();
@@ -481,8 +543,6 @@
         btn.disabled = false;
       }
     }
-
-    function toggleReportViews() {}
 
     function updateFilterUI() {
       const fBy = document.getElementById('r_filterBy').value;
@@ -626,6 +686,7 @@
                     </tr>
                   </thead><tbody>`;
         
+        // عند الطباعة، تعود المعايير لترتيبها التسلسلي الأصلي الرسمي
         criteriaList.forEach(c => {
           let counts = {m:0, g:0, s:0, p:0};
           filtered.forEach(v => {
@@ -648,6 +709,7 @@
       }
     }
 
+    // عرض زيارة فردية واحدة (علامة ✔ للطباعة مع المداولة)
     window.renderSinglePrint = function(visitId) {
       const v = db.visits.find(x => String(x.ID) === String(visitId));
       if(!v) return;
