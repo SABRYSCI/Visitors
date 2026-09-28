@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>استمارة الملاحظة الصفية الموحدة - تحليل الزيارات</title>
+  <title>استمارة الملاحظة الصفية الموحدة - نظام إلكتروني</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -58,7 +58,7 @@
     .print-only { display: none; }
     input[type="radio"], input[type="checkbox"] { cursor: pointer; }
     .form-grid-table { width: 100%; border-collapse: collapse; }
-    .form-grid-table th, .form-grid-table td { border: 1px solid #e2e8f0; padding: 8px; text-align: center; }
+    .form-grid-table th, .form-grid-table td { border: 1px solid #e2e8f0; padding: 6px; text-align: center; }
     .dark .form-grid-table th, .dark .form-grid-table td { border-color: #334155; }
     .form-grid-table th { background-color: #f8fafc; }
     .dark .form-grid-table th { background-color: #0f172a; }
@@ -183,8 +183,10 @@
              <h3 class="font-bold text-lg text-slate-800 dark:text-white">المعايير والتقييم</h3>
           </div>
           
-          <div class="bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 p-3 rounded-lg text-sm font-bold mb-3 border border-blue-200">
-             <i class="fa-solid fa-circle-info ml-1"></i> تنبيه هام: يرجى تقييم بنود (الإنجاز الأكاديمي) أولاً، ليتم فتح باقي بنود الاستمارة بناءً على مستوى أثر التعلم.
+          <div class="bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 p-3 rounded-lg text-sm font-bold mb-3 border border-blue-200 leading-relaxed">
+             <i class="fa-solid fa-circle-info ml-1"></i> تنبيه هام جداً: بناءً على توجيهات اللجنة الفنية وضمان الجودة، 
+             <span class="text-red-600">يجب تقييم بنود (الإنجاز الأكاديمي) أولاً!</span> 
+             النظام سيقفل ويفتح الخيارات في باقي الاستمارة تلقائياً بحيث لا يتجاوز الفارق بين الممارسات وأثر التعلم أكثر من درجة واحدة.
           </div>
 
           <div class="overflow-x-auto mb-6">
@@ -193,10 +195,10 @@
                 <tr>
                   <th class="w-10">الرقم</th>
                   <th class="text-right">المعايير</th>
-                  <th class="w-20"><div class="rotate-180" style="writing-mode: vertical-rl;">يفي بالتوقعات جزئياً</div></th>
-                  <th class="w-20"><div class="rotate-180" style="writing-mode: vertical-rl;">يفي بالتوقعات تماماً</div></th>
-                  <th class="w-20"><div class="rotate-180" style="writing-mode: vertical-rl;">يتجاوز التوقعات</div></th>
-                  <th class="w-20"><div class="rotate-180" style="writing-mode: vertical-rl;">يتجاوز التوقعات بكثير</div></th>
+                  <th class="w-20 bg-red-50 dark:bg-red-900/20"><div class="rotate-180" style="writing-mode: vertical-rl;">يفي بالتوقعات جزئياً</div></th>
+                  <th class="w-20 bg-orange-50 dark:bg-orange-900/20"><div class="rotate-180" style="writing-mode: vertical-rl;">يفي بالتوقعات تماماً</div></th>
+                  <th class="w-20 bg-blue-50 dark:bg-blue-900/20"><div class="rotate-180" style="writing-mode: vertical-rl;">يتجاوز التوقعات</div></th>
+                  <th class="w-20 bg-emerald-50 dark:bg-emerald-900/20"><div class="rotate-180" style="writing-mode: vertical-rl;">يتجاوز التوقعات بكثير</div></th>
                 </tr>
               </thead>
               <tbody id="criteriaEntryBody"></tbody>
@@ -298,7 +300,7 @@
 
         <div id="printArea" class="w-full bg-white p-2 rounded shadow-sm text-slate-800">
           
-          <!-- الترويسة المخصصة للطباعة المطابقة لوزارة التربية والتعليم -->
+          <!-- الترويسة المخصصة للطباعة -->
           <div class="print-moe-header print-only">
              <div class="print-date" id="printDateAr"></div>
              <img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt="Logo">
@@ -331,7 +333,6 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzty9WyGvvCLyOVI9XaDZxImseaSd4tanfPK4H9ZNWtEdYJUuTKlY7uo30ing_ARR8/exec";
     
-    // دالة تحديد التوقيت التلقائي بناءً على الجدول الزمني
     function updateTimeField() {
       const cls = document.getElementById('v_class').value;
       const prd = document.getElementById('v_period').value;
@@ -442,34 +443,70 @@
     function switchTab(tabId) { ['tab-home', 'tab-entry', 'tab-reports'].forEach(id => document.getElementById(id).classList.toggle('hidden', id !== tabId)); }
 
     // ==========================================
-    // الدالة السحرية لإدارة المنطق الشرطي (القفل)
+    // الدالة السحرية لإدارة المنطق الشرطي (القفل الديناميكي الشامل)
     // ==========================================
     window.handleLockingLogic = function() {
        let q13 = document.querySelector('input[name="q_13"]:checked');
        let q14 = document.querySelector('input[name="q_14"]:checked');
-       let allOtherRadios = document.querySelectorAll('input[type="radio"].eval-radio:not([name="q_13"]):not([name="q_14"])');
+       
+       let allNames = criteriaList.map(c => 'q_' + c.id);
 
-       // إذا لم يقم بتقييم الإنجاز الأكاديمي، اقفل كل شيء
+       // 1. إذا لم يقم المقيم بتقييم 13 و 14، اقفل جميع المعايير الأخرى تماماً
        if (!q13 || !q14) {
-           allOtherRadios.forEach(r => { r.disabled = true; r.checked = false; });
+           allNames.forEach(name => {
+               if (name !== 'q_13' && name !== 'q_14') {
+                   document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                       r.disabled = true;
+                       r.checked = false;
+                   });
+               }
+           });
+           
+           // تقييد 13 و 14 تجاه بعضهما البعض لتطبيق القاعدة الذهبية (فارق درجة واحدة)
+           let checkedCore = [q13, q14].filter(Boolean);
+           if (checkedCore.length === 1) {
+               let coreVal = parseInt(checkedCore[0].getAttribute('data-level'));
+               ['q_13', 'q_14'].forEach(name => {
+                   document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                       let lvl = parseInt(r.getAttribute('data-level'));
+                       r.disabled = Math.abs(lvl - coreVal) > 1; // يمنع اختيار تباين أعلى من درجة
+                   });
+               });
+           } else {
+               // إذا تم إلغاء التحديد، افتح خيارات 13 و 14 بالكامل
+               ['q_13', 'q_14'].forEach(name => {
+                   document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.disabled = false);
+               });
+           }
            return;
        }
 
-       let v13 = parseInt(q13.getAttribute('data-level'));
-       let v14 = parseInt(q14.getAttribute('data-level'));
+       // 2. إذا تم تقييم 13 و 14، طبق "القاعدة الذهبية" ديناميكياً على كل الاستمارة
+       allNames.forEach(rowName => {
+           // ابحث عن كل القيم المختارة في *بقية* الصفوف (باستثناء الصف الحالي لتتمكن من تغيير رأيك)
+           let otherCheckedValues = [];
+           allNames.forEach(otherName => {
+               if (otherName !== rowName) {
+                   let chk = document.querySelector(`input[name="${otherName}"]:checked`);
+                   if (chk) otherCheckedValues.push(parseInt(chk.getAttribute('data-level')));
+               }
+           });
 
-       // حساب النطاق المسموح (مستوى أقل وأعلى بدرجة واحدة)
-       let minAllowed = Math.max(1, Math.min(v13, v14) - 1);
-       let maxAllowed = Math.min(4, Math.max(v13, v14) + 1);
+           let c_min = Math.min(...otherCheckedValues);
+           let c_max = Math.max(...otherCheckedValues);
 
-       allOtherRadios.forEach(r => {
-           let lvl = parseInt(r.getAttribute('data-level'));
-           if (lvl >= minAllowed && lvl <= maxAllowed) {
-               r.disabled = false;
-           } else {
-               r.disabled = true;
-               r.checked = false;
-           }
+           // قيم الخيارات المتاحة للصف الحالي لضمان عدم كسر القاعدة (الفارق <= 1)
+           document.querySelectorAll(`input[name="${rowName}"]`).forEach(r => {
+               let lvl = parseInt(r.getAttribute('data-level'));
+               let new_min = Math.min(c_min, lvl);
+               let new_max = Math.max(c_max, lvl);
+               
+               if (new_max - new_min > 1) {
+                   r.disabled = true;
+               } else {
+                   r.disabled = false;
+               }
+           });
        });
     }
 
@@ -488,7 +525,7 @@
       ];
 
       domainsOrder.forEach(grp => {
-        html += `<tr class="bg-slate-200 dark:bg-slate-700 font-bold"><td colspan="6" class="text-right text-red-800 dark:text-red-400 p-2">المجال: ${grp.domain}</td></tr>`;
+        html += `<tr class="bg-slate-200 dark:bg-slate-700"><td colspan="6" class="text-right text-red-800 dark:text-red-400 p-2 font-extrabold text-base border border-slate-300">المجال: ${grp.domain}</td></tr>`;
         
         grp.ids.forEach(id => {
           let c = criteriaList.find(x => x.id === id);
@@ -499,10 +536,10 @@
             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800 transition">
               <td class="font-bold">${c.id}</td>
               <td class="text-right text-xs md:text-sm font-medium pr-2">${c.title}</td>
-              <td><input type="radio" name="q_${c.id}" value="غير ملائم = يفي بالتوقعات جزئيا" data-level="1" onchange="handleLockingLogic()" class="eval-radio w-4 h-4 accent-red-600" ${dis}></td>
-              <td><input type="radio" name="q_${c.id}" value="مرض = يفي بالتوقعات تماما" data-level="2" onchange="handleLockingLogic()" class="eval-radio w-4 h-4 accent-red-600" ${dis}></td>
-              <td><input type="radio" name="q_${c.id}" value="جيد = يتجاوز التوقعات" data-level="3" onchange="handleLockingLogic()" class="eval-radio w-4 h-4 accent-red-600" ${dis}></td>
-              <td><input type="radio" name="q_${c.id}" value="ممتاز = يتجاوز التوقعات بكثير" data-level="4" onchange="handleLockingLogic()" class="eval-radio w-4 h-4 accent-red-600" ${dis}></td>
+              <td><input type="radio" name="q_${c.id}" value="غير ملائم = يفي بالتوقعات جزئيا" data-level="1" onchange="handleLockingLogic()" class="eval-radio w-5 h-5 accent-red-600" ${dis}></td>
+              <td><input type="radio" name="q_${c.id}" value="مرض = يفي بالتوقعات تماما" data-level="2" onchange="handleLockingLogic()" class="eval-radio w-5 h-5 accent-orange-500" ${dis}></td>
+              <td><input type="radio" name="q_${c.id}" value="جيد = يتجاوز التوقعات" data-level="3" onchange="handleLockingLogic()" class="eval-radio w-5 h-5 accent-blue-600" ${dis}></td>
+              <td><input type="radio" name="q_${c.id}" value="ممتاز = يتجاوز التوقعات بكثير" data-level="4" onchange="handleLockingLogic()" class="eval-radio w-5 h-5 accent-emerald-600" ${dis}></td>
             </tr>
           `;
         });
@@ -601,6 +638,8 @@
         btn.disabled = false;
       }
     }
+
+    function toggleReportViews() {}
 
     function updateFilterUI() {
       const fBy = document.getElementById('r_filterBy').value;
