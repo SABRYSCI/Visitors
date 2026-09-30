@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>استمارة الملاحظة الصفية الموحدة</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-:root{--br:#8f1d1d;--ink:#1e293b;--mut:#64748b;--ln:#dfe4ec;--bg:#f1f3f7;--cd:#fff;--soft:#f8fafc;--l1:#dc2626;--l2:#ea8a0c;--l3:#2563eb;--l4:#059669}
-.dark{--ink:#e5eaf3;--mut:#94a3b8;--ln:#2b3648;--bg:#0c1320;--cd:#152033;--soft:#101a2b}
+:root{--br:#8f1d1d;--ink:#1e293b;--mut:#64748b;--ln:#dfe4ec;--bg:#f1f3f7;--cd:#fff;--soft:#f8fafc;--bd:#1e293b;--l1:#dc2626;--l2:#ea8a0c;--l3:#2563eb;--l4:#059669}
+:root.dark{--ink:#e5eaf3;--mut:#94a3b8;--ln:#2b3648;--bg:#0c1320;--cd:#152033;--soft:#101a2b;--bd:#64748b}
 *{box-sizing:border-box}
 body{margin:0;font:15px/1.7 Tajawal,sans-serif;background:var(--bg);color:var(--ink)}
 button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:9px 16px;font-weight:700;color:#fff;background:var(--br)}
@@ -40,7 +41,7 @@ h2{margin:0 0 12px;font-size:19px}h3{margin:0 0 10px;font-size:16px}
 .stat b{display:block;font-size:26px;line-height:1.2}.stat span{color:var(--mut);font-size:12px}
 .bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--ln);margin:8px 0}
 .leg{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--mut)}.leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-left:4px}
-.chip{display:inline-block;padding:1px 9px;border-radius:99px;color:#fff;font-size:12px;font-weight:700}
+.chip{display:inline-block;padding:1px 9px;border-radius:99px;color:#fff;font-size:12px;font-weight:700;white-space:nowrap}
 .note{background:#2563eb14;border:1px solid #2563eb44;color:var(--l3);border-radius:10px;padding:8px 12px;font-size:13px;font-weight:700;margin-bottom:10px}
 .dark .note{color:#93c5fd}
 #prog{position:sticky;top:58px;z-index:10;background:var(--cd);border:1px solid var(--ln);border-radius:10px;padding:6px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700}
@@ -63,28 +64,42 @@ tr:has(.eval:checked) td.t{background:#8f1d1d0a}
 .jr{display:flex;gap:16px;flex-wrap:wrap}.jr label{font-size:15px;display:flex;gap:6px;align-items:center;cursor:pointer}
 table.lg{width:100%;border-collapse:collapse;font-size:14px}table.lg th,table.lg td{border-bottom:1px solid var(--ln);padding:8px;text-align:center}table.lg th{background:var(--soft)}
 .tools{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}.tools>div{min-width:130px}
-.rc2{font-size:14px}
+.bad{border-color:var(--l1)!important;outline:3px solid #dc262633}
+
 /* الاستمارة الرسمية والتقارير */
 .sw{overflow-x:auto}
-.sheet{width:794px;min-height:1120px;margin:0 auto 14px;padding:26px 34px;background:#fff;color:#000;font:11px/1.5 Tajawal,sans-serif;box-shadow:0 2px 14px #0002;direction:rtl}
+.sheet{--ink:#000;--mut:#000;--bd:#000;width:794px;min-height:1122px;margin:0 auto 14px;padding:26px 34px;background:#fff;color:#000;font:11px/1.5 Tajawal,sans-serif;box-shadow:0 2px 14px #0002;direction:rtl;letter-spacing:0}
 .sheet .hdr{text-align:center;border-bottom:2px solid #000;padding-bottom:5px;margin-bottom:6px}.sheet .hdr img{height:74px}
 .sheet .ttl{font-weight:800;font-size:15px;margin-top:2px}
 .ot{width:100%;border-collapse:collapse;margin-bottom:8px}
-.ot th,.ot td{border:1.4px solid #000;padding:3px 6px;text-align:center;font-size:10.5px;color:#000}.ot th{background:#e9edf3;font-weight:800}
-.ot .cr{text-align:right}.ot .dm{text-align:right;background:#fdeeee;color:#7f1d1d;font-weight:800}.ot .mk{font-size:14px;font-weight:800;width:56px}
+.ot th,.ot td{border:1.4px solid var(--bd);padding:3px 6px;text-align:center;font-size:10.5px}
+.ot th{background:#e9edf3;font-weight:800;color:#000}.ot td{color:var(--ink)}
+.ot .cr{text-align:right}.ot .dm{text-align:right;background:#fdeeee;color:#7f1d1d;font-weight:800}.sheet .ot td.dm{color:#7f1d1d}
+.ot .mk{font-size:14px;font-weight:800;width:56px}
 .inf{width:100%;border-collapse:collapse;margin-bottom:8px;font-size:11px}.inf td{padding:4px 5px;border-bottom:1px dashed #000;width:50%}
 .bx{border:1.4px solid #000;margin-bottom:8px;break-inside:avoid}.bx>b{display:block;background:#e9edf3;border-bottom:1.4px solid #000;padding:3px 8px}.bx>div{padding:6px 8px}
-.ck{display:grid;grid-template-columns:1fr 1fr;gap:4px}.ck span:before{content:"";display:inline-block;width:12px;height:12px;border:1.2px solid #000;margin-left:6px;vertical-align:-2px;text-align:center;line-height:10px;font-size:11px}.ck span.y:before{content:"✔"}
+.ck{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.cb{display:inline-block;width:12px;height:12px;border:1.2px solid #000;margin-left:6px;vertical-align:-2px;text-align:center;line-height:10px;font-size:10px;font-style:normal;font-weight:800}
 .sg{width:100%;border-collapse:collapse;text-align:center;margin-top:22px}.sg td{padding:4px}
 .cred{text-align:center;font-size:9px;border-top:1px solid #000;margin-top:14px;padding-top:3px}
-.offscreen{position:fixed;left:-10000px;top:0;width:794px}
 .rp .ot th,.rp .ot td{font-size:12px;padding:6px}
 #repHead{display:none;text-align:center}#repHead img{height:80px}
+
+/* PDF */
+#pdfHost{position:fixed;left:0;top:0;width:794px;z-index:9998;background:#fff}
+#pdfHost .sheet{margin:0;box-shadow:none}
+#pdfOv{display:none;position:fixed;inset:0;background:#0f172af5;color:#fff;z-index:10000;align-items:center;justify-content:center;flex-direction:column;gap:14px;font-weight:800;font-size:18px}
+.spin{width:44px;height:44px;border:5px solid #fff4;border-top-color:#fff;border-radius:50%;animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+#toasts{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:10001;display:flex;flex-direction:column;gap:8px;align-items:center;width:min(92vw,540px);pointer-events:none}
+.toast{background:#0f172a;color:#fff;padding:10px 16px;border-radius:10px;font-weight:700;font-size:14px;box-shadow:0 4px 18px #0005;width:100%;text-align:center}
+.toast.ok{background:#047857}.toast.err{background:#b91c1c}
+
 @media(max-width:700px){.span2{grid-column:auto}.hd small{display:none}}
 @media print{
  @page{size:A4;margin:8mm}
- body{background:#fff}.np,.hd,#home,#entry,#loginScreen,.tools{display:none!important}
- main{padding:0;max-width:none}.card{border:0;box-shadow:none;padding:0}
+ :root,:root.dark{--ink:#000;--bg:#fff;--cd:#fff;--soft:#f8fafc;--ln:#ccc;--bd:#000;--mut:#333}
+ body{background:#fff;color:#000}.np,.hd,#home,#entry,#loginScreen,.tools,#toasts,#pdfOv,#pdfHost{display:none!important}
+ main{padding:0;max-width:none}.card{border:0;box-shadow:none;padding:0;background:#fff}
  .sheet{width:auto;min-height:0;padding:0;box-shadow:none;margin:0}.sheet2{break-before:page}
  .ot tr{break-inside:avoid}.ot thead{display:table-header-group}
  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -137,13 +152,13 @@ table.lg{width:100%;border-collapse:collapse;font-size:14px}table.lg th,table.lg
  </div>
 
  <div class="card">
-  <h3>المعايير والتقييم</h3>
-  <div class="note">ابدأ بتقييم بندي «الإنجاز الأكاديمي» (13 و14)، وبعدها تُفتح بقية البنود. يجب ألا يزيد الفرق بين أعلى وأدنى تقييم على درجة واحدة.</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">المعايير والتقييم</h3><button class="sec sm" onclick="resetRatings()">↺ إعادة تعيين التقييمات</button></div>
+  <div class="note" style="margin-top:10px">ابدأ بتقييم بندي «الإنجاز الأكاديمي» (13 و14)، وبعدها تُفتح بقية البنود. يجب ألا يزيد الفرق بين أعلى وأدنى تقييم على درجة واحدة.</div>
   <div id="prog"><span id="progT">0 / 18</span><div><i id="progB"></i></div></div>
   <div class="tw"><table class="cr"><thead><tr><th style="width:34px;background:var(--mut)">#</th><th style="background:var(--mut)">المعيار</th>
    <th style="background:var(--l1)">يفي جزئياً</th><th style="background:var(--l2)">يفي تماماً</th><th style="background:var(--l3)">يتجاوز</th><th style="background:var(--l4)">يتجاوز بكثير</th></tr></thead>
    <tbody id="critBody"></tbody></table></div>
-  <div style="margin-top:14px;background:#8f1d1d0d;border:1px solid #8f1d1d33;border-radius:12px;padding:12px">
+  <div style="margin-top:14px;background:#8f1d1d0d;border:1px solid #8f1d1d33;border-radius:12px;padding:12px" id="finalWrap">
    <label class="req" style="color:var(--br)">الحكم العام على الدرس</label>
    <div class="jr" id="finalBox"></div>
   </div>
@@ -162,10 +177,13 @@ table.lg{width:100%;border-collapse:collapse;font-size:14px}table.lg th,table.lg
 
  <div class="card" style="border-color:#059669aa">
   <div class="g g2">
-   <div><label class="req">اسم الزائر (المقيم)</label><input id="v_visitor" list="visitorsData" onchange="fillVisitor()"></div>
-   <div><label class="req">المسمى الوظيفي</label><input id="v_job" readonly></div>
+   <div><label class="req">اسم الزائر (المقيم)</label><input id="v_visitor" list="visitorsData" oninput="fillVisitor()" onchange="fillVisitor()"></div>
+   <div><label class="req">المسمى الوظيفي</label><input id="v_job" placeholder="يُعبأ تلقائياً للأسماء المسجلة"></div>
    <div class="span2"><label>إيميل المقيم (يصله ملف PDF بعد الحفظ)</label><input type="email" id="v_visitor_email" placeholder="يُعبأ تلقائياً ويمكن تعديله"></div>
-   <div class="span2"><label style="display:flex;gap:8px;align-items:center;margin:0"><input type="checkbox" id="send_to_teacher" style="width:auto"> إرسال نسخة PDF للمعلم المزور أيضاً</label></div>
+   <div class="span2" style="display:flex;gap:18px;flex-wrap:wrap">
+    <label style="display:flex;gap:8px;align-items:center;margin:0"><input type="checkbox" id="send_pdf" style="width:auto" checked> إنشاء PDF وإرساله بالبريد بعد الحفظ</label>
+    <label style="display:flex;gap:8px;align-items:center;margin:0"><input type="checkbox" id="send_to_teacher" style="width:auto"> إرسال نسخة PDF للمعلم المزور أيضاً</label>
+   </div>
   </div>
   <button id="saveBtn" style="margin-top:14px;padding:13px 28px;font-size:16px" onclick="validateAndSave()">حفظ الزيارة وإرسال PDF</button>
  </div>
@@ -173,14 +191,15 @@ table.lg{width:100%;border-collapse:collapse;font-size:14px}table.lg th,table.lg
 
 <section id="reports" class="tab">
  <div class="card tools np">
-  <div><label>العام الدراسي</label><input id="r_year" value="2026-2027" style="width:110px;text-align:center;font-weight:700"></div>
+  <div><label>العام الدراسي</label><input id="r_year" style="width:110px;text-align:center;font-weight:700" onchange="renderHome()"></div>
   <div><label>نوع التقرير</label><select id="r_type"><option value="summary">ملخص الزيارات</option><option value="detailed">تحليل مفصل (نسب التقييم)</option><option value="log">سجل الزيارات</option></select></div>
   <div><label>فرز حسب</label><select id="r_filterBy" onchange="updateFilterUI()"><option value="all">الكل (المدرسة)</option><option value="teacher">المعلم</option><option value="dept">القسم</option><option value="visitor">المقيم</option></select></div>
   <div id="div_specific" style="display:none"><label>اختر</label><select id="r_specific"></select></div>
   <div><label>بحث في السجل</label><input id="r_q" placeholder="معلم / مقيم / درس"></div>
   <button onclick="generateReport()">استخراج التقرير</button>
   <button class="sec" onclick="refreshData()">تحديث من السحابة</button>
-  <button class="sec grow" style="max-width:150px;margin-right:auto" onclick="window.print()">طباعة / PDF</button>
+  <button class="sec" onclick="exportCSV()">تصدير Excel</button>
+  <button class="sec" onclick="window.print()">طباعة / PDF</button>
  </div>
  <div class="card rp" id="printArea">
   <div id="repHead"><img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt=""><div id="repDate" style="text-align:right;font-weight:700"></div><h3 id="repTitle" style="text-align:center;font-size:17px"></h3></div>
@@ -190,6 +209,8 @@ table.lg{width:100%;border-collapse:collapse;font-size:14px}table.lg th,table.lg
 </main>
 </div>
 <datalist id="visitorsData"></datalist>
+<div id="pdfOv"><div class="spin"></div><div>جارٍ تجهيز ملف PDF...</div></div>
+<div id="toasts"></div>
 
 <script>
 const localTeachers = [
@@ -217,7 +238,7 @@ const localTeachers = [
   { cpr: "720202892", name: "باسم ناصر سعد رحال", subject: "اللغة العربية", email: "" },
   { cpr: "670639486", name: "محمد محمود محمد سليمان", subject: "العلوم", email: "" },
   { cpr: "700243232", name: "السيد البيلي السيد بيلي", subject: "المجالات العملية", email: "" },
-  { cpr: "820603350", name: "حسين راشد حبيب حسين الدرازي", subject: "الالتربية الرياضية", email: "" },
+  { cpr: "820603350", name: "حسين راشد حبيب حسين الدرازي", subject: "التربية الرياضية", email: "" },
   { cpr: "680110836", name: "محمد إبراهيم علي آل طوق", subject: "اللغة العربية", email: "" },
   { cpr: "721137601", name: "ناصر ماهر احمد محمد", subject: "المواد الاجتماعية", email: "" },
   { cpr: "790708221", name: "عباس حسين فردان الفردان", subject: "التربية الرياضية", email: "" },
@@ -242,9 +263,10 @@ const localVisitors = [
 ];
 
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzty9WyGvvCLyOVI9XaDZxImseaSd4tanfPK4H9ZNWtEdYJUuTKlY7uo30ing_ARR8/exec";
+const PASS="2030"; // يجب أن تطابق KEY في السكربت
 const ADMIN="amirasabry80@gmail.com", LOGO="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png";
 const $=id=>document.getElementById(id);
-const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])).replace(/\n/g,'<br>');
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])).replace(/\n/g,'<br>');
 const LV=[{t:'غير ملائم = يفي بالتوقعات جزئيا',s:'يفي جزئياً',c:'--l1'},{t:'مرض = يفي بالتوقعات تماما',s:'يفي تماماً',c:'--l2'},{t:'جيد = يتجاوز التوقعات',s:'يتجاوز',c:'--l3'},{t:'ممتاز = يتجاوز التوقعات بكثير',s:'يتجاوز بكثير',c:'--l4'}];
 const lvl=a=>{a=a||'';return a.includes('بكثير')?3:a.includes('يتجاوز')?2:a.includes('تماما')?1:a.includes('جزئيا')?0:-1};
 const CR=[[1,"التخطيط وإدارة الموقف التعليمي","اتساق تخطيط الدرس مع الكفايات التعليمية للمنهج، ومراعاته احتياجات الطلبة."],[2,"التخطيط وإدارة الموقف التعليمي","توفير بيئة تعلم آمنة ومحفزة خالية من المخاطر لضمان إنتاجية التعلم."],[3,"التخطيط وإدارة الموقف التعليمي","تضمين الموقف التعليمي إرشادات وتوجيهات واضحة."],[4,"التخطيط وإدارة الموقف التعليمي","استثمار الوقت بما يحقق أهداف التعلم بصورة منتجة."],[5,"التخطيط وإدارة الموقف التعليمي","تحفيز الطلبة ورفع دافعيتهم بأساليب تمكنهم من المشاركة في التعلم وبناء شخصيتهم."],[6,"التعليم والتعلم والتقويم","سلامة المادة العلمية ومراعاتها كفايات المنهج والمستويات المتوقعة للمرحلة التعليمية."],[7,"التعليم والتعلم والتقويم","توظيف استراتيجيات تعليم وتعلم فاعلة، تسهم في دمج الطلبة على اختلاف احتياجاتهم."],[8,"التعليم والتعلم والتقويم","توظيف التقويم والاستفادة من نتائجه في دعم جميع فئات الطلبة وفق احتياجاتهم."],[9,"التعليم والتعلم والتقويم","تنمية مهارات التفكير العليا للطلبة وتحدي قدراتهم."],[10,"التعليم والتعلم والتقويم","توظيف التعليم المتمايز لتلبية احتياجات الطلبة المتنوعة على اختلاف فئاتهم."],[11,"الموارد التعليمية والتكنولوجية","توظيف المصادر والموارد التعليمية والتكنولوجية في عمليات التعليم والتعلم."],[12,"الموارد التعليمية والتكنولوجية","تنمية مهارات الطلبة التكنولوجية ومهارات البحث والتعلم الذاتي، وتشجيعهم على إنتاج المحتوى التعليمي الرقمي."],[13,"الإنجاز الأكاديمي","إظهار الطلبة المعارف والمهارات الأساسية وفقًا لمرحلتهم التعليمية."],[14,"الإنجاز الأكاديمي","تحقيق الطلبة التقدم خلال الدروس واكتسابهم مهارات التعلم."],[15,"التطور الشخصي للطلبة","التزام الطلبة بالقيم الإسلامية، والوطنية، والرقمية، والاستعمال الآمن للتكنولوجيا."],[16,"التطور الشخصي للطلبة","التزام الطلبة السلوك الإيجابي نحو التعلم، والانضباط الذاتي، وتحمل المسؤوليات المختلفة."],[17,"التطور الشخصي للطلبة","قدرة الطلبة على التواصل والمشاركة الفاعلة خلال تعلمهم."],[18,"التطور الشخصي للطلبة","إظهار الطلبة الثقة بالنفس والقدرة على القيادة، والمبادرة، والابتكار."]];
@@ -256,18 +278,37 @@ const SUP=["لقاء فردي","قراءة موجهة","زيارة تبادلي�
 const CLASSES=[["سادس ابتدائي",3],["أول إعدادي",4],["ثاني إعدادي",4],["ثالث إعدادي",5]];
 const PERIODS=["الأولى","الثانية","الثالثة","الرابعة","الخامسة","السادسة","السابعة"];
 const SCHED={"ابتدائي":["7:15 - 8:05","8:05 - 8:55","8:55 - 9:45","10:15 - 11:00","11:00 - 11:45","11:45 - 12:30","12:30 - 13:15"],"إعدادي":["7:15 - 8:05","8:05 - 8:55","8:55 - 9:45","9:45 - 10:30","11:00 - 11:45","11:45 - 12:30","12:30 - 13:15"]};
-let db={visits:[]}, curSheet=null;
+let db={visits:[]}, curSheet=null, logoData=null;
 
+/* ---------- أدوات عامة ---------- */
+function toast(m,t){const e=document.createElement('div');e.className='toast '+(t||'');e.textContent=m;$('toasts').appendChild(e);setTimeout(()=>e.remove(),t==='err'?7000:3800)}
+const todayStr=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const defYear=()=>{const d=new Date(),y=d.getFullYear();return d.getMonth()>=7?y+'-'+(y+1):(y-1)+'-'+y};
+function normDate(s){
+  s=String(s||'').trim();if(/^\d{4}-\d{2}-\d{2}/.test(s))return s.slice(0,10);
+  const m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/);
+  if(m){let d=+m[1],mo=+m[2];if(mo>12){[d,mo]=[mo,d]}return m[3]+'-'+String(mo).padStart(2,'0')+'-'+String(d).padStart(2,'0')}
+  return s;
+}
+const normVisit=v=>({...v,Date:normDate(v.Date)});
+async function api(o){
+  const r=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({...o,key:PASS})});
+  const j=await r.json();if(j.status!=='success')throw new Error(j.error||'خطأ غير معروف');return j;
+}
+
+/* ---------- الدخول والمظهر ---------- */
+function enter(){$('loginScreen').style.display='none';$('app').style.display='block';loadLogo();fetchData().then(renderHome)}
 function checkLogin(){
-  if($('loginPass').value==="2030"){$('loginScreen').style.display='none';$('app').style.display='block';fetchData().then(renderHome)}
+  if($('loginPass').value===PASS){try{sessionStorage.setItem('ok','1')}catch(e){}enter()}
   else $('loginError').style.display='block';
 }
-function toggleDark(){document.documentElement.classList.toggle('dark');const d=document.documentElement.classList.contains('dark');localStorage.setItem('theme',d?'dark':'light');$('themeBtn').textContent=d?'☀️':'🌙'}
-if(localStorage.getItem('theme')==='dark')toggleDark();
+function toggleDark(){document.documentElement.classList.toggle('dark');const d=document.documentElement.classList.contains('dark');try{localStorage.setItem('theme',d?'dark':'light')}catch(e){}$('themeBtn').textContent=d?'☀️':'🌙'}
+try{if(localStorage.getItem('theme')==='dark')toggleDark()}catch(e){}
 function go(id){['home','entry','reports'].forEach(t=>$(t).classList.toggle('on',t===id));if(id==='home')renderHome();window.scrollTo(0,0)}
-const post=o=>fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(o)}).then(r=>r.json());
 
+/* ---------- بناء الواجهة ---------- */
 function buildStatic(){
+  $('r_year').value=defYear();
   $('v_class').innerHTML='<option value="">-- اختر الصف --</option>'+CLASSES.map(([n,c])=>Array.from({length:c},(_,i)=>`<option>${n} / ${i+1}</option>`).join('')).join('');
   $('v_period').innerHTML='<option value="">-- اختر الحصة --</option>'+PERIODS.map(p=>`<option>${p}</option>`).join('');
   $('finalBox').innerHTML=LV.slice().reverse().map(l=>`<label><input type="radio" name="v_final" value="${l.t}"> ${l.t.split(' =')[0]}</label>`).join('');
@@ -285,6 +326,8 @@ function buildStatic(){
   $('visitorsData').innerHTML=localVisitors.map(v=>`<option value="${v.name}">`).join('');
   filterTeachers();lockLogic();
 }
+
+/* منطق قفل التقييمات: الفرق بين أعلى وأدنى تقييم ≤ 1 */
 function lockLogic(){
   const names=CR.map(c=>'q_'+c[0]),R=n=>document.querySelectorAll(`input[name="${n}"]`),chk=n=>document.querySelector(`input[name="${n}"]:checked`);
   const q13=chk('q_13'),q14=chk('q_14');
@@ -298,6 +341,7 @@ function lockLogic(){
   });
   const done=names.filter(n=>chk(n)).length;$('progT').textContent=done+' / 18';$('progB').style.width=(done/18*100)+'%';
 }
+function resetRatings(){document.querySelectorAll('.eval').forEach(r=>r.checked=false);lockLogic()}
 function updateTime(){
   const c=$('v_class').value,p=$('v_period').value;if(!c||!p)return;
   $('v_time').value=SCHED[c.includes('ابتدائي')?'ابتدائي':'إعدادي'][PERIODS.indexOf(p)]||'';
@@ -305,22 +349,28 @@ function updateTime(){
 function filterTeachers(){
   const d=$('v_dept').value,list=(d&&d!=='all')?localTeachers.filter(t=>t.subject===d):localTeachers;
   $('v_teacher').innerHTML='<option value="">-- اختر المعلم --</option>'+list.slice().sort((a,b)=>a.name.localeCompare(b.name,'ar')).map(t=>`<option>${t.name}</option>`).join('');
-  $('v_subject').value='';
+  $('v_subject').value='';$('v_teacher_email').value='';
 }
 function fillTeacher(){const t=localTeachers.find(x=>x.name===$('v_teacher').value);if(t){$('v_subject').value=t.subject;$('v_teacher_email').value=t.email||''}}
 function fillVisitor(){const v=localVisitors.find(x=>x.name===$('v_visitor').value);if(v){$('v_job').value=v.job;$('v_visitor_email').value=v.email||''}}
 
+/* ---------- إدخال / تعديل ---------- */
 function openNew(){
-  ['v_teacher','v_subject','v_class','v_date','v_lesson','v_period','v_time','v_students','v_absence','v_visitor','v_job','v_visitor_email','v_teacher_email','v_success','v_improve','v_support_other','edit_visit_id'].forEach(i=>$(i).value='');$('v_visitNo').value=1;filterTeachers();
+  ['v_dept','v_teacher','v_subject','v_class','v_date','v_lesson','v_period','v_time','v_students','v_absence','v_visitor','v_job','v_visitor_email','v_teacher_email','v_success','v_improve','v_support_other','edit_visit_id'].forEach(i=>$(i).value='');
+  $('v_visitNo').value=1;$('v_date').value=todayStr();filterTeachers();
   document.querySelectorAll('#entry input[type=checkbox],#entry input[type=radio]').forEach(i=>i.checked=false);
+  $('send_pdf').checked=true;
+  document.querySelectorAll('#entry .bad').forEach(e=>e.classList.remove('bad'));
   $('formTitle').textContent='إدخال زيارة صفية جديدة';$('saveBtn').textContent='حفظ الزيارة وإرسال PDF';lockLogic();go('entry');
 }
-function setRadio(n,val){const r=document.querySelector(`input[name="q_${n}"][value="${val}"]`);if(r&&val){r.disabled=false;r.checked=true;return true}}
+function setRadio(n,val){const r=Array.from(document.querySelectorAll(`input[name="q_${n}"]`)).find(x=>x.value===val);if(r&&val){r.disabled=false;r.checked=true;return true}}
 function editVisit(id){
   const v=db.visits.find(x=>String(x.ID)===String(id));if(!v)return;
   openNew();
   $('edit_visit_id').value=v.ID;$('formTitle').textContent='تعديل الزيارة الصفية';$('saveBtn').textContent='تحديث الزيارة وإرسال PDF';
-  $('v_teacher').innerHTML=`<option>${v.TeacherName}</option>`;
+  $('v_dept').value='all';filterTeachers();
+  if(!Array.from($('v_teacher').options).some(o=>o.value===v.TeacherName))$('v_teacher').insertAdjacentHTML('beforeend',`<option>${esc(v.TeacherName)}</option>`);
+  $('v_teacher').value=v.TeacherName;
   const m={v_subject:'Subject',v_class:'Extra_Class',v_date:'Date',v_visitNo:'Extra_VisitNo',v_lesson:'Extra_Lesson',v_period:'Period',v_time:'Extra_Time',v_students:'StudentsCount',v_absence:'AbsenceCount',v_visitor:'VisitorName',v_job:'VisitorJob',v_visitor_email:'VisitorEmail',v_success:'Extra_Success',v_improve:'Extra_Improve'};
   for(const k in m)$(k).value=v[m[k]]||'';
   const t=localTeachers.find(x=>x.name===v.TeacherName);$('v_teacher_email').value=t?t.email||'':'';
@@ -330,95 +380,164 @@ function editVisit(id){
   if(oth){$('chk_other').checked=true;$('v_support_other').value=oth}
   setRadio(13,v.Q13);setRadio(14,v.Q14);lockLogic();
   for(let i=1;i<=18;i++)if(i!==13&&i!==14){setRadio(i,v['Q'+i]);lockLogic()}
-  const f=document.querySelector(`input[name="v_final"][value="${v.FinalJudgment}"]`);if(f)f.checked=true;
+  const f=Array.from(document.querySelectorAll('input[name="v_final"]')).find(x=>x.value===v.FinalJudgment);if(f)f.checked=true;
 }
 
 function validateAndSave(){
+  document.querySelectorAll('#entry .bad').forEach(e=>e.classList.remove('bad'));
   const req=[['v_teacher','اسم المعلم'],['v_class','الصف/الشعبة'],['v_date','تاريخ الزيارة'],['v_visitNo','رقم الزيارة'],['v_lesson','عنوان الدرس'],['v_period','الحصة'],['v_time','الزمن'],['v_students','عدد الطلبة'],['v_absence','عدد الغياب'],['v_visitor','اسم الزائر'],['v_job','المسمى الوظيفي']];
-  const miss=req.filter(([i])=>!String($(i).value).trim()).map(x=>x[1]);
-  for(let i=1;i<=18;i++)if(!document.querySelector(`input[name="q_${i}"]:checked`))miss.push('تقييم المعيار رقم '+i);
-  const fin=document.querySelector('input[name="v_final"]:checked');if(!fin)miss.push('الحكم العام على الدرس');
-  if(miss.length)return alert('⚠️ أكمل البيانات التالية قبل الحفظ:\n\n- '+miss.join('\n- '));
-  if(+$('v_absence').value>+$('v_students').value)return alert('⚠️ عدد الغياب أكبر من عدد الطلبة.');
+  const miss=[];
+  req.forEach(([i,l])=>{if(!String($(i).value).trim()){miss.push([l,$(i)]);$(i).classList.add('bad')}});
+  for(let i=1;i<=18;i++)if(!document.querySelector(`input[name="q_${i}"]:checked`))miss.push(['تقييم المعيار رقم '+i,document.querySelector(`input[name="q_${i}"]`)]);
+  const fin=document.querySelector('input[name="v_final"]:checked');if(!fin){miss.push(['الحكم العام على الدرس',$('finalWrap')]);}
+  if(miss.length){miss[0][1].scrollIntoView({behavior:'smooth',block:'center'});return alert('⚠️ أكمل البيانات التالية قبل الحفظ:\n\n- '+miss.map(x=>x[0]).join('\n- '))}
+  if(+$('v_absence').value>+$('v_students').value){$('v_absence').classList.add('bad');return alert('⚠️ عدد الغياب أكبر من عدد الطلبة.')}
+  const em=$('v_visitor_email').value.trim();
+  if(em&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){$('v_visitor_email').classList.add('bad');return alert('⚠️ بريد المقيم غير صحيح.')}
   save(fin);
 }
 const vals=sel=>Array.from(document.querySelectorAll(sel+':checked')).map(i=>i.value);
 async function save(fin){
-  const btn=$('saveBtn');btn.disabled=true;btn.textContent='جارٍ الحفظ وتجهيز PDF...';
+  const btn=$('saveBtn'),oldTxt=btn.textContent;btn.disabled=true;btn.textContent='جارٍ الحفظ...';
   try{
     const sup=vals('#supBox input');if($('chk_other').checked&&$('v_support_other').value.trim())sup.push($('v_support_other').value.trim());
-    const editId=$('edit_visit_id').value;
-    const p={ID:editId||Date.now().toString(),Year:$('r_year').value\vert{}\vert{}"2026-2027",Semester:"طوال العام",Date:$('v_date').value,TeacherName:$('v_teacher').value,Subject:$('v_subject').value,
-      VisitorName:$('v_visitor').value,VisitorJob:$('v_job').value,VisitorEmail:$('v_visitor_email').value,TeacherEmail:$('send_to_teacher').checked?$('v_teacher_email').value:"",AdminEmail:ADMIN,
-      FinalJudgment:fin.value,Extra_Class:$('v_class').value,Extra_VisitNo:$('v_visitNo').value,Extra_Lesson:$('v_lesson').value,Period:$('v_period').value,Extra_Time:$('v_time').value,
+    const editId=$('edit_visit_id').value,old=editId?db.visits.find(x=>String(x.ID)===String(editId)):null;
+    const p={ID:editId||Date.now().toString(),Year:(old&&old.Year)||$('r_year').value||defYear(),Semester:"طوال العام",Date:$('v_date').value,TeacherName:$('v_teacher').value,Subject:$('v_subject').value,
+      VisitorName:$('v_visitor').value.trim(),VisitorJob:$('v_job').value.trim(),VisitorEmail:$('v_visitor_email').value.trim(),TeacherEmail:$('send_to_teacher').checked?$('v_teacher_email').value:"",AdminEmail:ADMIN,
+      FinalJudgment:fin.value,Extra_Class:$('v_class').value,Extra_VisitNo:$('v_visitNo').value,Extra_Lesson:$('v_lesson').value.trim(),Period:$('v_period').value,Extra_Time:$('v_time').value,
       StudentsCount:$('v_students').value,AbsenceCount:$('v_absence').value,Extra_Skills:vals('#skillsBox input').join('، '),Extra_SW:vals('#swBox input').join('، '),
       Extra_Success:$('v_success').value,Extra_Improve:$('v_improve').value,Extra_Support:sup.join('، ')};
     for(let i=1;i<=18;i++)p['Q'+i]=document.querySelector(`input[name="q_${i}"]:checked`).value;
     const i=db.visits.findIndex(x=>String(x.ID)===String(p.ID));if(i>-1)db.visits[i]=p;else db.visits.push(p);
-    let msg='';
+    cacheVisits();
+
+    let pdfObj=null,warn='';
+    if($('send_pdf').checked){
+      btn.textContent='جارٍ تجهيز PDF...';
+      try{pdfObj=await makePdf(p)}catch(e){console.error(e);warn=' (تعذر إنشاء PDF: '+e.message+')'}
+    }
+    btn.textContent='جارٍ الإرسال للسحابة...';
     try{
-      const pdf=await makePdf(p);
-      const r=await post({...p,Pdf:pdf.b64,PdfName:pdf.name});
-      msg=r.status==='success'?'تم حفظ الزيارة وإرسال ملف PDF إلى: '+((r.sent||[]).join('، ')||'لا يوجد مستلمون'):'تم إرسال الزيارة لكن حدث خطأ: '+r.error;
-    }catch(e){msg='تعذر التأكد من وصول الزيارة للسحابة ('+e.message+'). اضغط «تحديث من السحابة» في التقارير للتحقق.'}
-    alert(msg);go('reports');updateFilterUI();generateReport();
-  }finally{btn.disabled=false;btn.textContent='حفظ الزيارة وإرسال PDF'}
+      const r=await api({...p,...(pdfObj?{Pdf:pdfObj.b64,PdfName:pdfObj.name}:{})});
+      let msg='✅ تم حفظ الزيارة.';
+      if(pdfObj)msg+=r.sent&&r.sent.length?' أُرسل PDF إلى: '+r.sent.join('، '):' لم يُرسل PDF (لا توجد عناوين بريد صحيحة).';
+      if(r.failed&&r.failed.length)msg+=' فشل الإرسال إلى: '+r.failed.join('، ');
+      toast(msg+warn,warn||(r.failed&&r.failed.length)?'err':'ok');
+    }catch(e){toast('تعذر التأكد من وصول الزيارة للسحابة ('+e.message+'). اضغط «تحديث من السحابة» للتحقق.','err')}
+    $('r_type').value='log';go('reports');updateFilterUI();generateReport();
+  }finally{btn.disabled=false;btn.textContent=oldTxt.includes('تحديث')?'تحديث الزيارة وإرسال PDF':'حفظ الزيارة وإرسال PDF'}
+}
+
+async function delVisit(btn,id){
+  const v=db.visits.find(x=>String(x.ID)===String(id));if(!v)return;
+  if(!confirm(`حذف زيارة المعلم «${v.TeacherName}» بتاريخ ${v.Date}؟ لا يمكن التراجع.`))return;
+  btn.disabled=true;
+  try{await api({action:'delete',ID:id});db.visits=db.visits.filter(x=>String(x.ID)!==String(id));cacheVisits();toast('تم حذف الزيارة','ok');generateReport()}
+  catch(e){toast('تعذر الحذف: '+e.message,'err');btn.disabled=false}
+}
+
+/* ---------- PDF ---------- */
+async function loadLogo(){
+  if(logoData)return logoData;
+  try{
+    const b=await (await fetch(LOGO,{mode:'cors'})).blob();
+    logoData=await new Promise((res,rej)=>{const f=new FileReader();f.onload=()=>res(f.result);f.onerror=rej;f.readAsDataURL(b)});
+  }catch(e){logoData=null}
+  return logoData;
 }
 async function makePdf(v){
-  await document.fonts.ready;
-  const host=document.createElement('div');host.className='offscreen';host.innerHTML=sheetHTML(v);document.body.appendChild(host);
+  const ov=$('pdfOv');ov.style.display='flex';
+  const logo=await loadLogo();
+  const host=document.createElement('div');host.id='pdfHost';host.innerHTML=sheetHTML(v,logo||LOGO);document.body.appendChild(host);
   try{
-    const pdf=await html2pdf().set({margin:0,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true,backgroundColor:'#fff'},jsPDF:{unit:'mm',format:'a4'},pagebreak:{mode:['css'],before:'.sheet2'}}).from(host).toPdf().get('pdf');
-    return {b64:pdf.output('datauristring').split(',')[1],name:('استمارة_'+v.TeacherName+'_'+v.Date).replace(/[\\\/:*?"<>|\s]+/g,'_')+'.pdf'};
-  }finally{host.remove()}
+    await document.fonts.ready;
+    try{await Promise.all(['400','500','700','800'].map(w=>document.fonts.load(w+' 11px Tajawal')))}catch(e){}
+    await Promise.all(Array.from(host.querySelectorAll('img')).map(im=>im.complete?0:new Promise(r=>{im.onload=im.onerror=r;setTimeout(r,4000)})));
+    await new Promise(r=>setTimeout(r,120));
+    const pdf=new window.jspdf.jsPDF({unit:'mm',format:'a4',compress:true});
+    const sheets=host.querySelectorAll('.sheet');
+    for(let i=0;i<sheets.length;i++){
+      const c=await html2canvas(sheets[i],{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false,scrollX:0,scrollY:0,windowWidth:794});
+      let w=210,h=c.height*210/c.width,x=0;
+      if(h>297){const k=297/h;w=210*k;h=297;x=(210-w)/2}
+      if(i>0)pdf.addPage();
+      pdf.addImage(c.toDataURL('image/jpeg',.9),'JPEG',x,0,w,h,undefined,'FAST');
+    }
+    const name=('استمارة_'+v.TeacherName+'_'+v.Date).replace(/[\\\/:*?"<>|\s]+/g,'_')+'.pdf';
+    return {pdf,name,b64:pdf.output('datauristring').split(',')[1]};
+  }finally{host.remove();ov.style.display='none'}
 }
 async function pdfAction(btn,id,mode){
   const v=db.visits.find(x=>String(x.ID)===String(id));if(!v)return;
   let to='';if(mode==='send'){to=prompt('أدخل البريد الإلكتروني (يمكن فصل عدة عناوين بفاصلة):',v.VisitorEmail||v.TeacherEmail||'');if(!to)return}
   const h=btn.innerHTML;btn.disabled=true;btn.textContent='جارٍ التجهيز...';
   try{
-    const pdf=await makePdf(v);
-    if(mode==='send'){const r=await post({action:'emailPdf',to,Pdf:pdf.b64,PdfName:pdf.name,TeacherName:v.TeacherName,Subject:v.Subject,Date:v.Date,FinalJudgment:v.FinalJudgment});
-      if(r.status!=='success')throw new Error(r.error);alert(r.sent.length?'تم إرسال PDF إلى:\n'+r.sent.join('\n'):'لم يُرسل الملف، تحقق من العنوان.')}
-    else{const a=document.createElement('a');a.href='data:application/pdf;base64,'+pdf.b64;a.download=pdf.name;a.click()}
-  }catch(e){alert('تعذر تنفيذ العملية: '+e.message)}finally{btn.disabled=false;btn.innerHTML=h}
+    const o=await makePdf(v);
+    if(mode==='send'){
+      const r=await api({action:'emailPdf',to,Pdf:o.b64,PdfName:o.name,TeacherName:v.TeacherName,Subject:v.Subject,Date:v.Date,FinalJudgment:v.FinalJudgment});
+      toast(r.sent.length?'تم إرسال PDF إلى: '+r.sent.join('، '):'لم يُرسل الملف، تحقق من العنوان.',r.sent.length?'ok':'err');
+    }else{o.pdf.save(o.name);toast('تم تحميل الملف','ok')}
+  }catch(e){toast('تعذر تنفيذ العملية: '+e.message,'err')}finally{btn.disabled=false;btn.innerHTML=h}
 }
 
-async function fetchData(){try{const r=await fetch(SCRIPT_URL+'?t='+Date.now());db.visits=(await r.json()).visits||[]}catch(e){console.error(e)}}
-async function refreshData(){await fetchData();generateReport();renderHome();alert('تم جلب أحدث البيانات من السحابة')}
+/* ---------- البيانات ---------- */
+function cacheVisits(){try{localStorage.setItem('visitsCache',JSON.stringify(db.visits))}catch(e){}}
+async function fetchData(){
+  try{
+    const r=await fetch(SCRIPT_URL+'?key='+encodeURIComponent(PASS)+'&t='+Date.now());
+    const j=await r.json();if(j.status==='error')throw new Error(j.error);
+    db.visits=(j.visits||[]).map(normVisit);cacheVisits();return true;
+  }catch(e){
+    console.error(e);
+    try{const c=JSON.parse(localStorage.getItem('visitsCache')||'[]');if(c.length&&!db.visits.length)db.visits=c}catch(_){}
+    toast('تعذر الاتصال بالسحابة ('+e.message+'). يتم عرض آخر بيانات محفوظة.','err');return false;
+  }
+}
+async function refreshData(){
+  const ok=await fetchData();generateReport();renderHome();
+  if(ok)toast('تم جلب أحدث البيانات من السحابة','ok');
+}
 
+/* ---------- الإحصاءات ---------- */
 const statsOf=arr=>{const c=[0,0,0,0];arr.forEach(v=>{const l=lvl(v.FinalJudgment);c[l<0?0:l]++});return c};
 const pct=(n,t)=>{if(!t)return '0%';const p=n/t*100;return Number.isInteger(p)?p+'%':p.toFixed(2)+'%'};
 function renderHome(){
-  const yr=$('r_year').value,vs=db.visits.filter(v=>!yr\vert{}\vert{}v.Year===yr);$('hYear').textContent=yr;
+  const yr=$('r_year').value,vs=db.visits.filter(v=>!yr||v.Year===yr);$('hYear').textContent=yr;
   if(!vs.length){$('homeStats').innerHTML='<p style="color:var(--mut)">لا توجد زيارات مسجلة لهذا العام بعد.</p>';return}
-  const c=statsOf(vs),t=vs.length,teachers=new Set(vs.map(v=>v.TeacherName)).size,by={};
+  const c=statsOf(vs),t=vs.length,visited=new Set(vs.map(v=>v.TeacherName)),by={};
   vs.forEach(v=>by[v.Subject]=(by[v.Subject]||0)+1);
+  const notVisited=localTeachers.filter(x=>!visited.has(x.name)).length;
   const last=vs.slice().sort((a,b)=>String(b.Date).localeCompare(String(a.Date))).slice(0,5);
-  $('homeStats').innerHTML=`<div class="stat"><div><b>${t}</b><span>إجمالي الزيارات</span></div><div><b>${teachers}</b><span>معلمون تمت زيارتهم</span></div><div><b>${pct(c[2]+c[3],t)}</b><span>جيد وأعلى</span></div><div><b>${Object.keys(by).length}</b><span>أقسام</span></div></div>
-  <div class="bar">${c.map((n,i)=>`<span style="width:${n/t*100}\%;background:var(${LV[i].c})"></span>`).join('')}</div>
+  $('homeStats').innerHTML=`<div class="stat"><div><b>${t}</b><span>إجمالي الزيارات</span></div><div><b>${visited.size}</b><span>معلمون تمت زيارتهم</span></div><div><b>${notVisited}</b><span>لم تتم زيارتهم</span></div><div><b>${pct(c[2]+c[3],t)}</b><span>جيد وأعلى</span></div><div><b>${Object.keys(by).length}</b><span>أقسام</span></div></div>
+  <div class="bar">${c.map((n,i)=>`<span style="width:${n/t*100}%;background:var(${LV[i].c})"></span>`).join('')}</div>
   <div class="leg">${LV.map((l,i)=>`<span><i style="background:var(${l.c})"></i>${l.t.split(' =')[0]}: ${c[i]} (${pct(c[i],t)})</span>`).join('')}</div>
-  <h3 style="margin-top:16px">آخر الزيارات</h3><table class="lg"><tr><th>التاريخ</th><th>المعلم</th><th>المادة</th><th>الحكم</th></tr>${last.map(v=>{const l=lvl(v.FinalJudgment);return `<tr><td>${esc(v.Date)}</td><td>${esc(v.TeacherName)}</td><td>${esc(v.Subject)}</td><td><span class="chip" style="background:var(${LV[l<0?0:l].c})">${LV[l<0?0:l].t.split(' =')[0]}</span></td></tr>`}).join('')}</table>`;
+  <h3 style="margin-top:16px">آخر الزيارات</h3><div class="tw"><table class="lg"><tr><th>التاريخ</th><th>المعلم</th><th>المادة</th><th>الحكم</th></tr>${last.map(v=>{const l=lvl(v.FinalJudgment);return `<tr><td>${esc(v.Date)}</td><td>${esc(v.TeacherName)}</td><td>${esc(v.Subject)}</td><td><span class="chip" style="background:var(${LV[l<0?0:l].c})">${LV[l<0?0:l].t.split(' =')[0]}</span></td></tr>`}).join('')}</table></div>`;
 }
 
+/* ---------- التقارير ---------- */
 function updateFilterUI(){
   const f=$('r_filterBy').value;$('div_specific').style.display=f==='all'?'none':'block';if(f==='all')return;
   const o=f==='teacher'?localTeachers.map(t=>t.name):f==='dept'?localTeachers.map(t=>t.subject):localVisitors.map(v=>v.name);
-  $('r_specific').innerHTML=[...new Set(o)].sort().map(x=>`<option>${x}</option>`).join('');
+  $('r_specific').innerHTML=[...new Set(o)].sort((a,b)=>a.localeCompare(b,'ar')).map(x=>`<option>${x}</option>`).join('');
 }
-function generateReport(){
-  const type=$('r_type').value,f=$('r_filterBy').value,spec=$('r_specific').value,yr=$('r_year').value,q=$('r_q').value.trim();
-  $('repDate').textContent=new Date().toLocaleDateString('en-GB');$('repHead').style.display='block';curSheet=null;
-  const rows=db.visits.filter(v=>{
+function getRows(){
+  const f=$('r_filterBy').value,spec=$('r_specific').value,yr=$('r_year').value,q=$('r_q').value.trim();
+  return db.visits.filter(v=>{
     if(yr&&v.Year!==yr)return false;
     if(f==='teacher'&&v.TeacherName!==spec)return false;if(f==='dept'&&v.Subject!==spec)return false;if(f==='visitor'&&v.VisitorName!==spec)return false;
-    return !q||[v.TeacherName,v.VisitorName,v.Extra_Lesson].join(' ').includes(q)});
+    return !q||[v.TeacherName,v.VisitorName,v.Extra_Lesson,v.Subject].join(' ').includes(q)});
+}
+function generateReport(){
+  const type=$('r_type').value,f=$('r_filterBy').value,spec=$('r_specific').value,yr=$('r_year').value;
+  $('repDate').textContent=new Date().toLocaleDateString('en-GB');$('repHead').style.display='block';curSheet=null;
+  const rows=getRows();
   const title=$('repTitle'),out=$('out'),who=f==='all'?'للمدرسة':spec;
   if(type==='log'){
     title.textContent=`سجل الزيارات: ${who} (${yr})`;
-    out.innerHTML=`<p><b>إجمالي الزيارات: ${rows.length}</b></p><div class="tw"><table class="lg"><tr><th>التاريخ</th><th>المعلم</th><th>المقيم</th><th>الحكم</th><th class="np">إجراءات</th></tr>`+
-    (rows.length?rows.map(v=>{const l=lvl(v.FinalJudgment);return `<tr><td>${esc(v.Date)}</td><td><b>${esc(v.TeacherName)}</b></td><td>${esc(v.VisitorName)}</td><td><span class="chip" style="background:var(${LV[l<0?0:l].c})">${LV[l<0?0:l].t.split(' =')[0]}</span></td>
-      <td class="np"><button class="sm" onclick="editVisit('${v.ID}')">تعديل</button> <button class="sm" style="background:#d97706" onclick="showSheet('${v.ID}')">عرض وطباعة</button> <button class="sm" style="background:#059669" onclick="pdfAction(this,'${v.ID}','send')">إرسال PDF</button> <button class="sm" style="background:#475569" onclick="pdfAction(this,'${v.ID}','download')">تحميل PDF</button></td></tr>`}).join(''):'<tr><td colspan="5">لا توجد زيارات مطابقة.</td></tr>')+'</table></div>';return;
+    const sorted=rows.slice().sort((a,b)=>String(b.Date).localeCompare(String(a.Date)));
+    out.innerHTML=`<p><b>إجمالي الزيارات: ${sorted.length}</b></p><div class="tw"><table class="lg"><tr><th>التاريخ</th><th>المعلم</th><th>المادة</th><th>المقيم</th><th>الحكم</th><th class="np">إجراءات</th></tr>`+
+    (sorted.length?sorted.map(v=>{const l=lvl(v.FinalJudgment),id=esc(v.ID);return `<tr><td>${esc(v.Date)}</td><td><b>${esc(v.TeacherName)}</b></td><td>${esc(v.Subject)}</td><td>${esc(v.VisitorName)}</td><td><span class="chip" style="background:var(${LV[l<0?0:l].c})">${LV[l<0?0:l].t.split(' =')[0]}</span></td>
+      <td class="np"><button class="sm" data-act="edit" data-id="${id}">تعديل</button> <button class="sm" style="background:#d97706" data-act="view" data-id="${id}">عرض وطباعة</button> <button class="sm" style="background:#059669" data-act="send" data-id="${id}">إرسال PDF</button> <button class="sm" style="background:#475569" data-act="dl" data-id="${id}">تحميل PDF</button> <button class="sm" style="background:#b91c1c" data-act="del" data-id="${id}">حذف</button></td></tr>`}).join(''):'<tr><td colspan="6">لا توجد زيارات مطابقة.</td></tr>')+'</table></div>';return;
   }
   if(!rows.length){out.innerHTML='<p style="text-align:center;color:var(--l1);font-weight:700;padding:40px">لا توجد زيارات مطابقة.</p>';return}
   const head=LV.map(l=>l.t.replace(' = ',' =<br>'));
@@ -429,27 +548,35 @@ function generateReport(){
     const extra=f==='teacher'?'<th>القسم</th>':f==='visitor'?'<th>المسمى الوظيفي</th>':'';
     let b='';for(const k in grp){const c=statsOf(grp[k]),t=grp[k].length,e=f==='teacher'?`<td>${esc(grp[k][0].Subject)}</td>`:f==='visitor'?`<td>${esc(grp[k][0].VisitorJob)}</td>`:'';
       b+=`<tr>${key?`<td><b>${esc(k)}</b></td>`:''}${e}<td><b>${t}</b></td>${c.map(n=>`<td>${pct(n,t)}</td>`).join('')}</tr>`}
-    out.innerHTML=`<table class="ot"><thead><tr>${key?'<th>'+({teacher:'اسم المعلم',dept:'القسم / المادة',visitor:'اسم الزائر (المقيم)'}[f])+'</th>':''}${extra}<th>مجموع<br>الزيارات</th>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${b}</tbody></table>`;
+    out.innerHTML=`<div class="tw"><table class="ot"><thead><tr>${key?'<th>'+({teacher:'اسم المعلم',dept:'القسم / المادة',visitor:'اسم الزائر (المقيم)'}[f])+'</th>':''}${extra}<th>مجموع<br>الزيارات</th>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${b}</tbody></table></div>`;
   }else{
     title.textContent=`تحليل نتائج الزيارات الصفية ${{all:'للمدرسة',teacher:'لمعلم',dept:'لقسم',visitor:'لزائر / مقيم'}[f]} للعام الدراسي ${yr}`;
     let h=f==='teacher'?`<table class="ot"><tr><th>اسم المعلم</th><td><b>${esc(spec)}</b></td><th>القسم/المادة</th><td><b>${esc(rows[0].Subject)}</b></td></tr></table>`:f==='visitor'?`<table class="ot"><tr><th>اسم الزائر</th><td><b>${esc(spec)}</b></td><th>المسمى الوظيفي</th><td><b>${esc(rows[0].VisitorJob)}</b></td></tr></table>`:f==='dept'?`<table class="ot"><tr><th>القسم/المادة</th><td><b>${esc(spec)}</b></td></tr></table>`:'';
-    h+=`<table class="ot"><thead><tr><th>الرقم</th><th>المعيار</th><th>يفي<br>بالتوقعات<br>جزئيا</th><th>يفي<br>بالتوقعات<br>تماما</th><th>يتجاوز<br>التوقعات</th><th>يتجاوز<br>التوقعات<br>كثيرا</th></tr></thead><tbody>`;
+    h+=`<div class="tw"><table class="ot"><thead><tr><th>الرقم</th><th>المعيار</th><th>يفي<br>بالتوقعات<br>جزئيا</th><th>يفي<br>بالتوقعات<br>تماما</th><th>يتجاوز<br>التوقعات</th><th>يتجاوز<br>التوقعات<br>كثيرا</th></tr></thead><tbody>`;
     CR.forEach(c=>{const n=[0,0,0,0];rows.forEach(v=>{const l=lvl(v['Q'+c[0]]);if(l>-1)n[l]++});h+=`<tr><td>${c[0]}</td><td class="cr">${c[2]}</td>${n.map(x=>`<td>${pct(x,rows.length)}</td>`).join('')}</tr>`});
     const c=statsOf(rows);
-    h+=`</tbody></table><h4 style="margin:10px 0 4px">الحكم النهائي للزيارات الصفية:</h4><table class="ot"><thead><tr><th>التقييم</th>${LV.map(l=>`<th>${l.t.replace('=',' = ')}</th>`).join('')}</tr></thead><tbody>${f==='all'?`<tr><th>عدد الزيارات</th>${c.map(n=>`<td>${n}</td>`).join('')}</tr>`:''}<tr><th>النسبة</th>${c.map(n=>`<td>${pct(n,rows.length)}</td>`).join('')}</tr></tbody></table>`;
+    h+=`</tbody></table></div><h4 style="margin:10px 0 4px">الحكم النهائي للزيارات الصفية:</h4><div class="tw"><table class="ot"><thead><tr><th>التقييم</th>${LV.map(l=>`<th>${l.t.replace('=',' = ')}</th>`).join('')}</tr></thead><tbody>${f==='all'?`<tr><th>عدد الزيارات</th>${c.map(n=>`<td>${n}</td>`).join('')}</tr>`:''}<tr><th>النسبة</th>${c.map(n=>`<td>${pct(n,rows.length)}</td>`).join('')}</tr></tbody></table></div>`;
     out.innerHTML=h;
   }
 }
+function exportCSV(){
+  const rows=getRows();if(!rows.length)return toast('لا توجد بيانات للتصدير','err');
+  const cols=[['Date','التاريخ'],['TeacherName','المعلم'],['Subject','المادة'],['Extra_Class','الصف/الشعبة'],['Extra_Lesson','عنوان الدرس'],['Period','الحصة'],['Extra_Time','الزمن'],['Extra_VisitNo','رقم الزيارة'],['StudentsCount','عدد الطلبة'],['AbsenceCount','عدد الغياب'],['VisitorName','المقيم'],['VisitorJob','المسمى الوظيفي'],['FinalJudgment','الحكم النهائي'],...CR.map(c=>['Q'+c[0],'معيار '+c[0]]),['Extra_Skills','المهارات'],['Extra_Success','النجاحات'],['Extra_Improve','جوانب التطوير'],['Extra_Support','الدعم']];
+  const cell=x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"';
+  const csv='\ufeff'+[cols.map(c=>cell(c[1])).join(',')].concat(rows.map(v=>cols.map(c=>cell(v[c[0]])).join(','))).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='الزيارات_الصفية_'+$('r_year').value+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
 
-function sheetHTML(v){
-  const t=String(v.Extra_Time||'').split('-'),J=lvl(v.FinalJudgment),has=(s,x)=>String(s||'').includes(x);
+/* ---------- الاستمارة الرسمية ---------- */
+function sheetHTML(v,logo){
+  const t=String(v.Extra_Time||'').split('-'),J=lvl(v.FinalJudgment),has=(s,x)=>String(s||'').split('، ').includes(x);
   let rows='',cur='';
   CR.forEach(([id,d,ti])=>{if(d!==cur){cur=d;rows+=`<tr><td colspan="6" class="dm">المجال: ${d}</td></tr>`}
     const l=lvl(v['Q'+id]);rows+=`<tr><td>${id}</td><td class="cr">${ti}</td>${[0,1,2,3].map(i=>`<td class="mk">${l===i?'✔':''}</td>`).join('')}</tr>`});
   const inf=(a,b,c,d)=>`<tr><td><b>${a}</b> ${b}</td><td><b>${c}</b> ${d}</td></tr>`;
-  const list=(all,sel,full)=>`<div class="ck">${all.map((s,i)=>`<span class="${has(sel,s)?'y':''}">${full?full[i]:s}</span>`).join('')}</div>`;
+  const list=(all,sel,full)=>`<div class="ck">${all.map((s,i)=>`<span><i class="cb">${has(sel,s)?'✔':''}</i>${full?full[i]:s}</span>`).join('')}</div>`;
   const oth=String(v.Extra_Support||'').split('، ').filter(x=>x.trim()&&!SUP.includes(x)).join('، ');
-  return `<div class="sheet"><div class="hdr"><img src="${LOGO}" crossorigin="anonymous" alt=""><div class="ttl">استمارة الملاحظة الصفية الموحدة</div></div>
+  return `<div class="sheet"><div class="hdr">${logo?`<img src="${logo}" alt="" onerror="this.style.display='none'">`:''}<div class="ttl">استمارة الملاحظة الصفية الموحدة</div></div>
   <table class="inf">${inf('اسم المعلم المزور:',esc(v.TeacherName),'اسم المدرسة:','البلاد القديم الابتدائية الاعدادية للبنين')}${inf('الصف / الشعبة:',esc(v.Extra_Class),'المادة / المقرر:',esc(v.Subject))}
    ${inf('التاريخ:',esc(v.Date)+' &nbsp;|&nbsp; رقم الزيارة: '+esc(v.Extra_VisitNo||1),'عنوان الدرس:',esc(v.Extra_Lesson))}${inf('الحصة:',esc(v.Period)+' &nbsp;|&nbsp; الطلبة: '+esc(v.StudentsCount)+' &nbsp;|&nbsp; الغياب: '+esc(v.AbsenceCount),'الزمن:','من '+esc((t[0]||'').trim())+' إلى '+esc((t[1]||'').trim()))}</table>
   <table class="ot"><thead><tr><th rowspan="2" style="width:30px">الرقم</th><th rowspan="2">المعايير</th><th colspan="4">مستويات التقييم</th></tr><tr>${LV.map(l=>`<th>${l.s.replace(' ','<br>')}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>
@@ -465,11 +592,21 @@ function sheetHTML(v){
 }
 function showSheet(id){
   const v=db.visits.find(x=>String(x.ID)===String(id));if(!v)return;curSheet=v;
-  $('repHead').style.display='none';$('out').innerHTML=`<div class="tools np" style="margin-bottom:10px"><button onclick="window.print()">🖨️ طباعة الاستمارة (ورقتان)</button><button class="sec" onclick="generateReport()">عودة للسجل</button></div><div class="sw">${sheetHTML(v)}</div>`;
+  $('repHead').style.display='none';
+  $('out').innerHTML=`<div class="tools np" style="margin-bottom:10px"><button onclick="window.print()">🖨️ طباعة الاستمارة (ورقتان)</button><button style="background:#475569" data-act="dl" data-id="${esc(v.ID)}">⬇️ تحميل PDF</button><button style="background:#059669" data-act="send" data-id="${esc(v.ID)}">✉️ إرسال PDF</button><button class="sec" onclick="generateReport()">عودة للسجل</button></div><div class="sw">${sheetHTML(v,logoData||LOGO)}</div>`;
   document.title=('استمارة_'+v.TeacherName+'_'+v.Date).replace(/\s+/g,'_');window.scrollTo(0,0);
 }
 window.addEventListener('afterprint',()=>document.title='استمارة الملاحظة الصفية الموحدة');
+
+/* ---------- أحداث الأزرار في السجل ---------- */
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;
+  const id=b.dataset.id,a=b.dataset.act;
+  if(a==='edit')editVisit(id);else if(a==='view')showSheet(id);else if(a==='send'||a==='dl')pdfAction(b,id,a==='dl'?'download':'send');else if(a==='del')delVisit(b,id);
+});
+
 buildStatic();
+try{if(sessionStorage.getItem('ok')==='1')enter()}catch(e){}
 </script>
 </body>
 </html>
