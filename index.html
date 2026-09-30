@@ -15,7 +15,7 @@
   <style>
     body { font-family: 'Tajawal', sans-serif; }
     
-    /* تنسيقات الطباعة الاحترافية */
+    /* تنسيقات الطباعة الاحترافية الصارمة */
     @media print {
       body, html { background: white !important; color: black !important; font-size: 11px; }
       .no-print { display: none !important; }
@@ -25,8 +25,8 @@
       .print-page { page-break-after: always; padding-top: 10px; }
       .print-page:last-child { page-break-after: auto; }
 
-      .official-table { width: 100%; border-collapse: collapse; direction: rtl; margin-bottom: 10px; }
-      .official-table th, .official-table td { border: 1px solid #000 !important; padding: 4px 6px; text-align: center; color: black !important; vertical-align: middle; font-size: 11px; }
+      .official-table { width: 100%; border-collapse: collapse; direction: rtl; margin-bottom: 10px; page-break-inside: avoid; }
+      .official-table th, .official-table td { border: 1.5px solid #000 !important; padding: 4px 6px; text-align: center; color: black !important; vertical-align: middle; font-size: 11px; }
       .official-table th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; font-weight: bold; }
       
       .vertical-text { writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-weight: bold; white-space: nowrap; }
@@ -36,19 +36,14 @@
       .print-moe-header img { height: 75px; object-fit: contain; margin: 0 auto; display: block; }
       .print-date { position: absolute; right: 0; top: 0; font-size: 11px; font-weight: bold; }
 
-      .print-header-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; font-weight: bold; font-size: 11px; }
-      .print-header-grid div { display: flex; align-items: center; border-bottom: 1px dashed #000; padding-bottom: 2px; }
-      .print-header-grid span.val { font-weight: normal; margin-right: 5px; flex-grow: 1; text-align: center; }
-
-      .box-section { border: 1px solid #000; margin-bottom: 8px; page-break-inside: avoid; }
-      .box-header { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; border-bottom: 1px solid #000; padding: 4px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+      .box-section { border: 1.5px solid #000; margin-bottom: 8px; page-break-inside: avoid; }
+      .box-header { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; border-bottom: 1.5px solid #000; padding: 4px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
       .box-content { padding: 8px; }
+      
       .checkbox-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; font-size: 11px; }
       .checkbox-item { display: flex; align-items: center; gap: 5px; }
       .checkbox-box { width: 12px; height: 12px; border: 1px solid #000; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;}
       
-      .signatures-print { display: flex; justify-content: space-between; margin-top: 10px; text-align: center; font-weight: bold; page-break-inside: avoid; font-size: 11px; }
-      .signatures-print > div { flex: 1; }
       .footer-credits { text-align: center; font-size: 9px; border: 1px solid #000; padding: 3px; margin-top: 8px; page-break-inside: avoid; }
     }
     .print-only { display: none; }
@@ -289,7 +284,6 @@
           <div id="div_specific" class="hidden"><label class="text-xs font-bold block mb-1 text-red-600">اختر:</label><select id="r_specific" class="border border-red-300 p-2 rounded-lg bg-red-50"></select></div>
           <button onclick="generateReport()" class="bg-amber-500 text-slate-900 px-6 py-2 rounded-lg font-bold hover:bg-amber-600"><i class="fa-solid fa-search"></i> استخراج التقرير</button>
           
-          <!-- زر التحديث الجديد (يعالج الذاكرة المخبأة) -->
           <button onclick="refreshData()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700"><i class="fa-solid fa-rotate"></i> تحديث السجل</button>
           
           <button onclick="window.print()" class="bg-slate-700 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-800 mr-auto"><i class="fa-solid fa-print"></i> طباعة (PDF)</button>
@@ -306,8 +300,7 @@
             <div class="text-center py-20 text-slate-400 no-print"><i class="fa-solid fa-magnifying-glass text-6xl mb-4 opacity-30"></i><p>اختر نوع التقرير واضغط "استخراج التقرير"</p></div>
           </div>
           <div class="signatures-print print-only hidden" id="printSignatures">
-            <div style="text-align: right; margin-right: 20px;">المدير المساعد: أ. عبدالله أحمد دليم</div>
-            <div style="text-align: left; margin-left: 20px;">مدير المدرسة: أ. محمد إبراهيم محمد ناصر</div>
+            <!-- سيتم توليد التوقيعات هنا عبر الكود لتجنب التداخل -->
           </div>
           <div class="footer-credits print-only hidden" id="printFooter">
             برنامج تحليل الزيارات الصفية - تصميم وبرمجة أ. صبري محمد حمد 36864227 - مدرسة البلاد القديم الابتدائية الاعدادية للبنين
@@ -559,24 +552,20 @@
       }
     }
 
-    // =====================================
-    // التعديل السحري: إضافة Time-stamp لتخطي الـ Cache
-    // =====================================
     async function fetchData() {
       try {
-        const timestamp = new Date().getTime(); // يمنع المتصفح من قراءة البيانات المخبأة القديمة
+        const timestamp = new Date().getTime();
         const res = await fetch(SCRIPT_URL + "?t=" + timestamp);
         const serverDb = await res.json();
         db.visits = serverDb.visits || [];
       } catch (e) { console.error("Error fetching data from cloud", e); }
     }
 
-    // دالة تحديث السجل ورسم الجدول فوراً
     window.refreshData = async function() {
         try {
             await fetchData();
-            generateReport(); // إعادة رسم الجدول بالبيانات الحديثة
-            alert('تم جلب أحدث التعديلات من السحابة بنجاح!');
+            generateReport(); 
+            alert('تم جلب أحدث البيانات من السحابة بنجاح!');
         } catch(e) {
             alert('حدث خطأ أثناء الاتصال بالسحابة.');
         }
@@ -718,7 +707,7 @@
           VisitorJob: document.getElementById('v_job').value,
           VisitorEmail: document.getElementById('v_visitor_email').value,
           TeacherEmail: document.getElementById('send_to_teacher').checked ? document.getElementById('v_teacher_email').value : "",
-          AdminEmail: "amirasabry80@gmail.com", // إيميل الأدمن للمتابعة
+          AdminEmail: "amirasabry80@gmail.com", 
           FinalJudgment: finalEl.value,
           Extra_Class: document.getElementById('v_class').value, 
           Extra_VisitNo: document.getElementById('v_visitNo').value,
@@ -802,8 +791,8 @@
         return mY && mF;
       });
 
-      document.getElementById('printSignatures').classList.remove('hidden');
-      document.getElementById('printFooter').classList.remove('hidden');
+      document.getElementById('printSignatures').classList.add('hidden');
+      document.getElementById('printFooter').classList.add('hidden');
       document.getElementById('dynamicHeaderInfo').classList.add('hidden');
       const titleEl = document.getElementById('printReportTitle');
 
@@ -831,8 +820,6 @@
         });
         html += `</tbody></table>`;
         container.innerHTML = html;
-        document.getElementById('printSignatures').classList.add('hidden');
-        document.getElementById('printFooter').classList.add('hidden');
         return;
       }
 
@@ -931,6 +918,7 @@
       }
     }
 
+    // عرض الاستمارة بصيغة الجداول الصارمة (لحل مشكلة التداخل نهائياً)
     window.renderSinglePrint = function(visitId) {
       const v = db.visits.find(x => String(x.ID) === String(visitId));
       if(!v) return;
@@ -940,13 +928,27 @@
       
       const dynHeader = document.getElementById('dynamicHeaderInfo');
       dynHeader.classList.remove('hidden');
+      
+      // الترويسة باستخدام جدول صارم يمنع التداخل
       dynHeader.innerHTML = `
-        <div class="print-header-grid">
-           <div>اسم المعلم المزور: <span class="val">${v.TeacherName}</span> اسم المدرسة: <span class="val">البلاد القديم الابتدائية الاعدادية للبنين</span></div>
-           <div>الصف / الشعبة: <span class="val">${v.Extra_Class || ''}</span> المادة/المقرر: <span class="val">${v.Subject}</span></div>
-           <div>التاريخ: <span class="val">${v.Date}</span> رقم الزيارة: <span class="val">${v.Extra_VisitNo || '1'}</span> عنوان الدرس: <span class="val">${v.Extra_Lesson || ''}</span></div>
-           <div>الحصة الدراسية: <span class="val">${v.Period || ''}</span> الزمن: من <span class="val">${(v.Extra_Time || '').split('-')[0] || ''}</span> إلى <span class="val">${(v.Extra_Time || '').split('-')[1] || ''}</span></div>
-        </div>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 12px; font-weight: bold; text-align: right;">
+           <tr>
+               <td style="padding: 5px; border-bottom: 1px dashed #000; width: 50%;">اسم المعلم المزور: <span style="font-weight:normal;">${v.TeacherName || ''}</span></td>
+               <td style="padding: 5px; border-bottom: 1px dashed #000; width: 50%;">اسم المدرسة: <span style="font-weight:normal;">البلاد القديم الابتدائية الاعدادية للبنين</span></td>
+           </tr>
+           <tr>
+               <td style="padding: 5px; border-bottom: 1px dashed #000;">الصف / الشعبة: <span style="font-weight:normal;">${v.Extra_Class || ''}</span></td>
+               <td style="padding: 5px; border-bottom: 1px dashed #000;">المادة/المقرر: <span style="font-weight:normal;">${v.Subject || ''}</span></td>
+           </tr>
+           <tr>
+               <td style="padding: 5px; border-bottom: 1px dashed #000;">التاريخ: <span style="font-weight:normal;">${v.Date || ''}</span> &nbsp;&nbsp;|&nbsp;&nbsp; رقم الزيارة: <span style="font-weight:normal;">${v.Extra_VisitNo || '1'}</span></td>
+               <td style="padding: 5px; border-bottom: 1px dashed #000;">عنوان الدرس: <span style="font-weight:normal;">${v.Extra_Lesson || ''}</span></td>
+           </tr>
+           <tr>
+               <td style="padding: 5px; border-bottom: 1px dashed #000;">الحصة الدراسية: <span style="font-weight:normal;">${v.Period || ''}</span></td>
+               <td style="padding: 5px; border-bottom: 1px dashed #000;">الزمن: من <span style="font-weight:normal;">${(v.Extra_Time || '').split('-')[0] || ''}</span> إلى <span style="font-weight:normal;">${(v.Extra_Time || '').split('-')[1] || ''}</span></td>
+           </tr>
+        </table>
       `;
 
       let html = `<table class="official-table">
@@ -978,8 +980,8 @@
         html += `<td>${c.id}</td><td class="criteria-text">${c.title}</td><td class="font-bold text-lg">${mkP}</td><td class="font-bold text-lg">${mkS}</td><td class="font-bold text-lg">${mkG}</td><td class="font-bold text-lg">${mkM}</td></tr>`;
       });
 
-      let finM = v.FinalJudgment.includes("بكثير") ? "✔" : ""; let finG = v.FinalJudgment.includes("يتجاوز") && !finM ? "✔" : "";
-      let finS = v.FinalJudgment.includes("تماما") ? "✔" : ""; let finP = v.FinalJudgment.includes("جزئيا") ? "✔" : "";
+      let finM = (v.FinalJudgment || "").includes("بكثير") ? "✔" : ""; let finG = (v.FinalJudgment || "").includes("يتجاوز") && !finM ? "✔" : "";
+      let finS = (v.FinalJudgment || "").includes("تماما") ? "✔" : ""; let finP = (v.FinalJudgment || "").includes("جزئيا") ? "✔" : "";
 
       html += `</tbody></table>
           <table class="official-table" style="margin-top:0;">
@@ -1028,12 +1030,19 @@
             </div>
           </div>
           
-          <div class="signatures-print mt-10">
-            <div><p class="font-bold mb-10">اسم الزائر:</p><p>${v.VisitorName}</p></div>
-            <div><p class="font-bold mb-10">المسمى الوظيفي:</p><p>${v.VisitorJob}</p></div>
-            <div><p class="font-bold mb-10">توقيع الزائر:</p><p>................</p></div>
-            <div><p class="font-bold mb-10">توقيع المعلم:</p><p>................</p></div>
-          </div>
+          <!-- التوقيعات باستخدام جدول صارم لمنع التداخل -->
+          <table style="width: 100%; margin-top: 40px; text-align: center; font-size: 12px; font-weight: bold; border-collapse: collapse; page-break-inside: avoid;">
+            <tr>
+                <td style="width: 25%; padding-bottom: 30px;">اسم الزائر:<br><span style="font-weight:normal;">${v.VisitorName || ''}</span></td>
+                <td style="width: 25%; padding-bottom: 30px;">المسمى الوظيفي:<br><span style="font-weight:normal;">${v.VisitorJob || ''}</span></td>
+                <td style="width: 25%; padding-bottom: 30px;">توقيع الزائر:<br><span style="font-weight:normal;">........................</span></td>
+                <td style="width: 25%; padding-bottom: 30px;">توقيع المعلم:<br><span style="font-weight:normal;">........................</span></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: right; padding-top: 20px; border-top: 1px solid #000;">المدير المساعد: أ. عبدالله أحمد دليم</td>
+                <td colspan="2" style="text-align: left; padding-top: 20px; border-top: 1px solid #000;">مدير المدرسة: أ. محمد إبراهيم محمد ناصر</td>
+            </tr>
+          </table>
           
           <div class="text-center mt-6 no-print">
             <button onclick="window.print()" class="bg-red-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-red-800 text-lg w-full"><i class="fa-solid fa-print"></i> طباعة الاستمارة الرسمية (ورقتين)</button>
@@ -1042,7 +1051,6 @@
       `;
 
       document.getElementById('reportTableContainer').innerHTML = html;
-      document.getElementById('printSignatures').classList.add('hidden'); 
       document.getElementById('printFooter').classList.remove('hidden');
     }
 
