@@ -17,23 +17,23 @@
     
     /* تنسيقات الطباعة الاحترافية الصارمة */
     @media print {
-      body, html { background: white !important; color: black !important; font-size: 11px; }
+      body, html { background: white !important; color: black !important; font-size: 11.5px; }
       .no-print { display: none !important; }
       .print-only { display: block !important; }
-      @page { margin: 10mm; size: A4 portrait; }
+      @page { margin: 8mm; size: A4 portrait; }
       
-      .print-page { page-break-after: always; padding-top: 10px; }
-      .print-page:last-child { page-break-after: auto; }
+      .page-1-container { page-break-after: always; } /* إجبار كسر الصفحة بعد الحكم العام */
+      .page-2-container { padding-top: 5px; }
 
-      .official-table { width: 100%; border-collapse: collapse; direction: rtl; margin-bottom: 10px; page-break-inside: avoid; }
-      .official-table th, .official-table td { border: 1.5px solid #000 !important; padding: 4px 6px; text-align: center; color: black !important; vertical-align: middle; font-size: 11px; }
+      .official-table { width: 100%; border-collapse: collapse; direction: rtl; margin-bottom: 8px; page-break-inside: avoid; }
+      .official-table th, .official-table td { border: 1.5px solid #000 !important; padding: 4px 6px; text-align: center; color: black !important; vertical-align: middle; font-size: 11.5px; }
       .official-table th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; font-weight: bold; }
       
       .vertical-text { writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-weight: bold; white-space: nowrap; }
       .criteria-text { text-align: right !important; padding-right: 8px !important; }
       
-      .print-moe-header { position: relative; text-align: center; margin-bottom: 10px; border-bottom: 2px solid #000; padding-bottom: 5px; }
-      .print-moe-header img { height: 75px; object-fit: contain; margin: 0 auto; display: block; }
+      .print-moe-header { position: relative; text-align: center; margin-bottom: 5px; border-bottom: 2px solid #000; padding-bottom: 5px; }
+      .print-moe-header img { height: 70px; object-fit: contain; margin: 0 auto; display: block; }
       .print-date { position: absolute; right: 0; top: 0; font-size: 11px; font-weight: bold; }
 
       .box-section { border: 1.5px solid #000; margin-bottom: 8px; page-break-inside: avoid; }
@@ -290,20 +290,8 @@
         </div>
 
         <div id="printArea" class="w-full bg-white p-2 rounded shadow-sm text-slate-800">
-          <div class="print-moe-header print-only">
-             <div class="print-date" id="printDateAr"></div>
-             <img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt="Logo">
-          </div>
-          <h3 class="font-bold text-center text-lg mb-4 print-only" id="printReportTitle">تحليل نتائج الزيارات الصفية</h3>
-          <div id="dynamicHeaderInfo" class="hidden print-only mb-4"></div>
           <div id="reportTableContainer" class="min-h-[400px]">
             <div class="text-center py-20 text-slate-400 no-print"><i class="fa-solid fa-magnifying-glass text-6xl mb-4 opacity-30"></i><p>اختر نوع التقرير واضغط "استخراج التقرير"</p></div>
-          </div>
-          <div class="signatures-print print-only hidden" id="printSignatures">
-            <!-- سيتم توليد التوقيعات هنا عبر الكود لتجنب التداخل -->
-          </div>
-          <div class="footer-credits print-only hidden" id="printFooter">
-            برنامج تحليل الزيارات الصفية - تصميم وبرمجة أ. صبري محمد حمد 36864227 - مدرسة البلاد القديم الابتدائية الاعدادية للبنين
           </div>
         </div>
       </section>
@@ -404,7 +392,7 @@
 
     function updatePrintDate() {
       let today = new Date().toLocaleDateString('en-GB'); 
-      document.getElementById('printDateAr').innerText = today;
+      return today;
     }
 
     function toggleDarkMode() {
@@ -751,8 +739,6 @@
       }
     }
 
-    function toggleReportViews() {}
-
     function updateFilterUI() {
       const fBy = document.getElementById('r_filterBy').value;
       const divSpec = document.getElementById('div_specific');
@@ -775,7 +761,6 @@
     };
 
     function generateReport() {
-      updatePrintDate();
       const type = document.getElementById('r_type').value;
       const fBy = document.getElementById('r_filterBy').value;
       const spec = document.getElementById('r_specific').value;
@@ -791,9 +776,6 @@
         return mY && mF;
       });
 
-      document.getElementById('printSignatures').classList.add('hidden');
-      document.getElementById('printFooter').classList.add('hidden');
-      document.getElementById('dynamicHeaderInfo').classList.add('hidden');
       const titleEl = document.getElementById('printReportTitle');
 
       if(type === 'log') {
@@ -923,47 +905,49 @@
       const v = db.visits.find(x => String(x.ID) === String(visitId));
       if(!v) return;
 
-      updatePrintDate();
+      document.getElementById('printDateAr').innerText = updatePrintDate();
       document.getElementById('printReportTitle').innerText = `استمارة الملاحظة الصفية الموحدة`;
       
       const dynHeader = document.getElementById('dynamicHeaderInfo');
       dynHeader.classList.remove('hidden');
       
-      // الترويسة باستخدام جدول صارم يمنع التداخل
       dynHeader.innerHTML = `
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 12px; font-weight: bold; text-align: right;">
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 11.5px; font-weight: bold; text-align: right;">
            <tr>
-               <td style="padding: 5px; border-bottom: 1px dashed #000; width: 50%;">اسم المعلم المزور: <span style="font-weight:normal;">${v.TeacherName || ''}</span></td>
-               <td style="padding: 5px; border-bottom: 1px dashed #000; width: 50%;">اسم المدرسة: <span style="font-weight:normal;">البلاد القديم الابتدائية الاعدادية للبنين</span></td>
+               <td style="padding: 4px; border-bottom: 1px dashed #000; width: 50%;">اسم المعلم المزور: <span style="font-weight:normal;">${v.TeacherName || ''}</span></td>
+               <td style="padding: 4px; border-bottom: 1px dashed #000; width: 50%;">اسم المدرسة: <span style="font-weight:normal;">البلاد القديم الابتدائية الاعدادية للبنين</span></td>
            </tr>
            <tr>
-               <td style="padding: 5px; border-bottom: 1px dashed #000;">الصف / الشعبة: <span style="font-weight:normal;">${v.Extra_Class || ''}</span></td>
-               <td style="padding: 5px; border-bottom: 1px dashed #000;">المادة/المقرر: <span style="font-weight:normal;">${v.Subject || ''}</span></td>
+               <td style="padding: 4px; border-bottom: 1px dashed #000;">الصف / الشعبة: <span style="font-weight:normal;">${v.Extra_Class || ''}</span></td>
+               <td style="padding: 4px; border-bottom: 1px dashed #000;">المادة/المقرر: <span style="font-weight:normal;">${v.Subject || ''}</span></td>
            </tr>
            <tr>
-               <td style="padding: 5px; border-bottom: 1px dashed #000;">التاريخ: <span style="font-weight:normal;">${v.Date || ''}</span> &nbsp;&nbsp;|&nbsp;&nbsp; رقم الزيارة: <span style="font-weight:normal;">${v.Extra_VisitNo || '1'}</span></td>
-               <td style="padding: 5px; border-bottom: 1px dashed #000;">عنوان الدرس: <span style="font-weight:normal;">${v.Extra_Lesson || ''}</span></td>
+               <td style="padding: 4px; border-bottom: 1px dashed #000;">التاريخ: <span style="font-weight:normal;">${v.Date || ''}</span> &nbsp;&nbsp;|&nbsp;&nbsp; رقم الزيارة: <span style="font-weight:normal;">${v.Extra_VisitNo || '1'}</span></td>
+               <td style="padding: 4px; border-bottom: 1px dashed #000;">عنوان الدرس: <span style="font-weight:normal;">${v.Extra_Lesson || ''}</span></td>
            </tr>
            <tr>
-               <td style="padding: 5px; border-bottom: 1px dashed #000;">الحصة الدراسية: <span style="font-weight:normal;">${v.Period || ''}</span></td>
-               <td style="padding: 5px; border-bottom: 1px dashed #000;">الزمن: من <span style="font-weight:normal;">${(v.Extra_Time || '').split('-')[0] || ''}</span> إلى <span style="font-weight:normal;">${(v.Extra_Time || '').split('-')[1] || ''}</span></td>
+               <td style="padding: 4px; border-bottom: 1px dashed #000;">الحصة الدراسية: <span style="font-weight:normal;">${v.Period || ''}</span></td>
+               <td style="padding: 4px; border-bottom: 1px dashed #000;">الزمن: من <span style="font-weight:normal;">${(v.Extra_Time || '').split('-')[0] || ''}</span> إلى <span style="font-weight:normal;">${(v.Extra_Time || '').split('-')[1] || ''}</span></td>
            </tr>
         </table>
       `;
 
-      let html = `<table class="official-table">
-            <thead>
-              <tr>
-                <th rowspan="2" class="w-8">المجالات</th><th rowspan="2" class="w-8">الرقم</th><th rowspan="2">المعايير</th><th colspan="4">مستويات التقييم</th>
-              </tr>
-              <tr>
-                <th class="w-12"><div class="vertical-text">يفي بالتوقعات جزئياً</div></th>
-                <th class="w-12"><div class="vertical-text">يفي بالتوقعات تماماً</div></th>
-                <th class="w-12"><div class="vertical-text">يتجاوز التوقعات</div></th>
-                <th class="w-12"><div class="vertical-text">يتجاوز التوقعات بكثير</div></th>
-              </tr>
-            </thead>
-            <tbody>`;
+      let html = `
+      <!-- الحاوية الأولى لإجبار الصفحة على الانتهاء بعد الحكم العام -->
+      <div class="page-1-container">
+          <table class="official-table" style="margin-bottom: 0; border-bottom: none;">
+                <thead>
+                  <tr>
+                    <th rowspan="2" class="w-8">المجالات</th><th rowspan="2" class="w-8">الرقم</th><th rowspan="2">المعايير</th><th colspan="4">مستويات التقييم</th>
+                  </tr>
+                  <tr>
+                    <th class="w-12"><div class="vertical-text">يفي بالتوقعات جزئياً</div></th>
+                    <th class="w-12"><div class="vertical-text">يفي بالتوقعات تماماً</div></th>
+                    <th class="w-12"><div class="vertical-text">يتجاوز التوقعات</div></th>
+                    <th class="w-12"><div class="vertical-text">يتجاوز التوقعات بكثير</div></th>
+                  </tr>
+                </thead>
+                <tbody>`;
 
       let currentDomain = "";
       criteriaList.forEach(c => {
@@ -984,21 +968,24 @@
       let finS = (v.FinalJudgment || "").includes("تماما") ? "✔" : ""; let finP = (v.FinalJudgment || "").includes("جزئيا") ? "✔" : "";
 
       html += `</tbody></table>
-          <table class="official-table" style="margin-top:0;">
+          <!-- جدول الحكم العام مدمج تماما بدون مسافات ليصبح جزءا من الصفحة الاولى -->
+          <table class="official-table" style="border-top: none;">
             <tr>
-              <th class="w-32">الحكم على الدرس:</th>
-              <td><div class="checkbox-box">${finP}</div> غير ملائم = يفي بالتوقعات جزئيا</td>
-              <td><div class="checkbox-box">${finS}</div> مرض = يفي بالتوقعات تماما</td>
-              <td><div class="checkbox-box">${finG}</div> جيد = يتجاوز التوقعات</td>
-              <td><div class="checkbox-box">${finM}</div> ممتاز = يتجاوز التوقعات بكثير</td>
+              <th style="width: 15%; border-top: none;">الحكم على الدرس:</th>
+              <td style="width: 21.25%; border-top: none;"><div class="checkbox-box">${finP}</div> غير ملائم = يفي بالتوقعات جزئيا</td>
+              <td style="width: 21.25%; border-top: none;"><div class="checkbox-box">${finS}</div> مرض = يفي بالتوقعات تماما</td>
+              <td style="width: 21.25%; border-top: none;"><div class="checkbox-box">${finG}</div> جيد = يتجاوز التوقعات</td>
+              <td style="width: 21.25%; border-top: none;"><div class="checkbox-box">${finM}</div> ممتاز = يتجاوز التوقعات بكثير</td>
             </tr>
-          </table>`;
+          </table>
+      </div>`;
 
       let sk = v.Extra_Skills || "";
       let chk = (str, val) => str.includes(val) ? "✔" : "";
       
       html += `
-        <div class="print-page mt-8 pt-8 border-t-2 border-dashed border-slate-300">
+        <!-- بداية الصفحة الثانية -->
+        <div class="page-2-container">
           <div class="text-center font-bold text-sm mb-4 bg-slate-200 py-1 border border-black">الجزء الخاص بالمداولة البعدية مع المعلم المزور</div>
           
           <div class="box-section">
@@ -1030,8 +1017,7 @@
             </div>
           </div>
           
-          <!-- التوقيعات باستخدام جدول صارم لمنع التداخل -->
-          <table style="width: 100%; margin-top: 40px; text-align: center; font-size: 12px; font-weight: bold; border-collapse: collapse; page-break-inside: avoid;">
+          <table style="width: 100%; margin-top: 40px; text-align: center; font-size: 11.5px; font-weight: bold; border-collapse: collapse; page-break-inside: avoid;">
             <tr>
                 <td style="width: 25%; padding-bottom: 30px;">اسم الزائر:<br><span style="font-weight:normal;">${v.VisitorName || ''}</span></td>
                 <td style="width: 25%; padding-bottom: 30px;">المسمى الوظيفي:<br><span style="font-weight:normal;">${v.VisitorJob || ''}</span></td>
@@ -1039,8 +1025,8 @@
                 <td style="width: 25%; padding-bottom: 30px;">توقيع المعلم:<br><span style="font-weight:normal;">........................</span></td>
             </tr>
             <tr>
-                <td colspan="2" style="text-align: right; padding-top: 20px; border-top: 1px solid #000;">المدير المساعد: أ. عبدالله أحمد دليم</td>
-                <td colspan="2" style="text-align: left; padding-top: 20px; border-top: 1px solid #000;">مدير المدرسة: أ. محمد إبراهيم محمد ناصر</td>
+                <td colspan="2" style="text-align: right; padding-top: 20px; border-top: 1.5px solid #000;">المدير المساعد: أ. عبدالله أحمد دليم</td>
+                <td colspan="2" style="text-align: left; padding-top: 20px; border-top: 1.5px solid #000;">مدير المدرسة: أ. محمد إبراهيم محمد ناصر</td>
             </tr>
           </table>
           
@@ -1051,7 +1037,6 @@
       `;
 
       document.getElementById('reportTableContainer').innerHTML = html;
-      document.getElementById('printFooter').classList.remove('hidden');
     }
 
     buildCriteriaEntry();
