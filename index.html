@@ -123,17 +123,17 @@
           <button onclick="switchTab('tab-home')" class="text-sm bg-slate-100 px-3 py-1 rounded font-bold text-slate-700 hover:bg-slate-200">عودة</button>
         </div>
         
-        <form id="visitForm" onsubmit="saveVisit(event)">
+        <form id="visitForm">
           <!-- بيانات الزيارة الأساسية -->
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-200 mb-6 text-sm">
             <div><label class="font-bold block mb-1">القسم</label><select id="v_dept" onchange="filterTeachers()" class="w-full border p-2 rounded bg-white dark:bg-slate-700"></select></div>
-            <div><label class="font-bold block mb-1">اسم المعلم</label><select id="v_teacher" onchange="fillTeacherDetails()" class="w-full border p-2 rounded bg-white dark:bg-slate-700" required><option value="">-- اختر القسم أولاً --</option></select></div>
+            <div><label class="font-bold block mb-1 text-red-700">اسم المعلم *</label><select id="v_teacher" onchange="fillTeacherDetails()" class="w-full border p-2 rounded bg-white dark:bg-slate-700"><option value="">-- اختر القسم أولاً --</option></select></div>
             <div><label class="font-bold block mb-1">المادة</label><input type="text" id="v_subject" class="w-full border p-2 rounded bg-slate-200" readonly><input type="hidden" id="v_cpr"></div>
             
             <!-- قائمة منسدلة للصف/الشعبة -->
             <div>
-              <label class="font-bold block mb-1">الصف/الشعبة</label>
-              <select id="v_class" onchange="updateTimeField()" class="w-full border p-2 rounded bg-white dark:bg-slate-700" required>
+              <label class="font-bold block mb-1 text-red-700">الصف/الشعبة *</label>
+              <select id="v_class" onchange="updateTimeField()" class="w-full border p-2 rounded bg-white dark:bg-slate-700">
                 <option value="">-- اختر الصف --</option>
                 <option value="سادس ابتدائي / 1">سادس ابتدائي / 1</option>
                 <option value="سادس ابتدائي / 2">سادس ابتدائي / 2</option>
@@ -154,14 +154,14 @@
               </select>
             </div>
             
-            <div><label class="font-bold block mb-1">تاريخ الزيارة</label><input type="date" id="v_date" class="w-full border p-2 rounded bg-white dark:bg-slate-700" required></div>
-            <div><label class="font-bold block mb-1">رقم الزيارة</label><input type="number" id="v_visitNo" class="w-full border p-2 rounded bg-white dark:bg-slate-700" min="1" value="1" required></div>
-            <div class="md:col-span-2"><label class="font-bold block mb-1">عنوان الدرس</label><input type="text" id="v_lesson" class="w-full border p-2 rounded bg-white dark:bg-slate-700" required></div>
+            <div><label class="font-bold block mb-1 text-red-700">تاريخ الزيارة *</label><input type="date" id="v_date" class="w-full border p-2 rounded bg-white dark:bg-slate-700"></div>
+            <div><label class="font-bold block mb-1 text-red-700">رقم الزيارة *</label><input type="number" id="v_visitNo" class="w-full border p-2 rounded bg-white dark:bg-slate-700" min="1" value="1"></div>
+            <div class="md:col-span-2"><label class="font-bold block mb-1 text-red-700">عنوان الدرس *</label><input type="text" id="v_lesson" class="w-full border p-2 rounded bg-white dark:bg-slate-700"></div>
 
             <!-- قائمة منسدلة للحصة -->
             <div>
-              <label class="font-bold block mb-1">الحصة الدراسية</label>
-              <select id="v_period" onchange="updateTimeField()" class="w-full border p-2 rounded bg-white dark:bg-slate-700" required>
+              <label class="font-bold block mb-1 text-red-700">الحصة الدراسية *</label>
+              <select id="v_period" onchange="updateTimeField()" class="w-full border p-2 rounded bg-white dark:bg-slate-700">
                 <option value="">-- اختر الحصة --</option>
                 <option value="الأولى">الأولى</option>
                 <option value="الثانية">الثانية</option>
@@ -172,10 +172,10 @@
                 <option value="السابعة">السابعة</option>
               </select>
             </div>
-            <div><label class="font-bold block mb-1">الزمن (من - إلى)</label><input type="text" id="v_time" class="w-full border p-2 rounded bg-white dark:bg-slate-700" placeholder="يتم التحديد تلقائياً ويمكنك التعديل..." required></div>
+            <div><label class="font-bold block mb-1 text-red-700">الزمن (من - إلى) *</label><input type="text" id="v_time" class="w-full border p-2 rounded bg-white dark:bg-slate-700" placeholder="يتم التحديد تلقائياً ويمكنك التعديل..."></div>
             
-            <div><label class="font-bold block mb-1">عدد الطلبة</label><input type="number" id="v_students" class="w-full border p-2 rounded bg-white dark:bg-slate-700" min="0" required></div>
-            <div><label class="font-bold block mb-1">عدد الغياب</label><input type="number" id="v_absence" class="w-full border p-2 rounded bg-white dark:bg-slate-700" min="0" required></div>
+            <div><label class="font-bold block mb-1 text-red-700">عدد الطلبة *</label><input type="number" id="v_students" class="w-full border p-2 rounded bg-white dark:bg-slate-700" min="0"></div>
+            <div><label class="font-bold block mb-1 text-red-700">عدد الغياب *</label><input type="number" id="v_absence" class="w-full border p-2 rounded bg-white dark:bg-slate-700" min="0"></div>
           </div>
 
           <!-- جدول المعايير التفاعلي (18 معيار) -->
@@ -206,7 +206,7 @@
           </div>
 
           <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-200 mb-8">
-            <label class="font-bold block text-red-800 dark:text-red-400 mb-2">الحكم العام على الدرس:</label>
+            <label class="font-bold block text-red-800 dark:text-red-400 mb-2">الحكم العام على الدرس: *</label>
             <div class="flex gap-4 flex-wrap">
               <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="radio" name="v_final" value="ممتاز = يتجاوز التوقعات بكثير" class="w-5 h-5 accent-red-600"> ممتاز</label>
               <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="radio" name="v_final" value="جيد = يتجاوز التوقعات" class="w-5 h-5 accent-red-600"> جيد</label>
@@ -276,11 +276,12 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-100 p-4 rounded-xl mb-6">
-            <div><label class="font-bold text-sm block mb-1">اسم الزائر (المقيم)</label><input type="text" id="v_visitor" list="visitorsData" onchange="fillVisitorDetails()" class="w-full border p-2 rounded bg-white" required></div>
-            <div><label class="font-bold text-sm block mb-1">المسمى الوظيفي</label><input type="text" id="v_job" class="w-full border p-2 rounded bg-white" required></div>
+            <div><label class="font-bold text-sm block mb-1 text-red-700">اسم الزائر (المقيم) *</label><input type="text" id="v_visitor" list="visitorsData" onchange="fillVisitorDetails()" class="w-full border p-2 rounded bg-white"></div>
+            <div><label class="font-bold text-sm block mb-1 text-red-700">المسمى الوظيفي *</label><input type="text" id="v_job" class="w-full border p-2 rounded bg-white"></div>
           </div>
 
-          <button type="submit" id="saveBtn" class="bg-red-700 text-white px-8 py-3 rounded-xl font-bold hover:bg-red-800 shadow-md w-full md:w-auto"><i class="fa-solid fa-cloud-arrow-up"></i> حفظ الزيارة في السجل</button>
+          <!-- زر الحفظ بتغيير النوع إلى button لعمل التحقق المخصص -->
+          <button type="button" id="saveBtn" onclick="validateAndSave()" class="bg-red-700 text-white px-8 py-3 rounded-xl font-bold hover:bg-red-800 shadow-md w-full md:w-auto"><i class="fa-solid fa-cloud-arrow-up"></i> حفظ الزيارة في السجل</button>
         </form>
       </section>
 
@@ -333,6 +334,7 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzty9WyGvvCLyOVI9XaDZxImseaSd4tanfPK4H9ZNWtEdYJUuTKlY7uo30ing_ARR8/exec";
     
+    // دالة تحديد التوقيت التلقائي بناءً على الجدول الزمني
     function updateTimeField() {
       const cls = document.getElementById('v_class').value;
       const prd = document.getElementById('v_period').value;
@@ -585,21 +587,64 @@
       } catch (e) { console.error("Error fetching data", e); }
     }
 
-    async function saveVisit(e) {
-      e.preventDefault();
+    // ==========================================
+    // دالة التحقق اليدوي وعرض الحقول الناقصة (Smart Validator)
+    // ==========================================
+    window.validateAndSave = function() {
+        const requiredFields = [
+          { id: 'v_teacher', name: 'اسم المعلم' },
+          { id: 'v_class', name: 'الصف/الشعبة' },
+          { id: 'v_date', name: 'تاريخ الزيارة' },
+          { id: 'v_visitNo', name: 'رقم الزيارة' },
+          { id: 'v_lesson', name: 'عنوان الدرس' },
+          { id: 'v_period', name: 'الحصة الدراسية' },
+          { id: 'v_time', name: 'الزمن' },
+          { id: 'v_students', name: 'عدد الطلبة' },
+          { id: 'v_absence', name: 'عدد الغياب' },
+          { id: 'v_visitor', name: 'اسم الزائر (المقيم)' },
+          { id: 'v_job', name: 'المسمى الوظيفي' }
+        ];
+
+        let missing = [];
+
+        // 1. فحص الحقول النصية والرقمية
+        requiredFields.forEach(f => {
+            let val = document.getElementById(f.id).value;
+            if(!val || val.trim() === '') {
+                missing.push(f.name);
+            }
+        });
+
+        // 2. فحص تقييم المعايير الـ 18
+        for(let i=1; i<=18; i++) {
+          let checkedEl = document.querySelector(`input[name="q_${i}"]:checked`);
+          if (!checkedEl) {
+             missing.push(`تقييم المعيار رقم (${i})`);
+          }
+        }
+
+        // 3. فحص الحكم النهائي
+        let finalEl = document.querySelector('input[name="v_final"]:checked');
+        if (!finalEl) {
+            missing.push('الحكم العام على الدرس');
+        }
+
+        // إذا كان هناك نواقص، أظهرها في رسالة ولا تكمل
+        if(missing.length > 0) {
+            alert("⚠️ لا يمكن الحفظ! الرجاء إكمال البيانات التالية:\n\n- " + missing.join("\n- "));
+            return;
+        }
+
+        // إذا كل شيء تمام، نفذ عملية الحفظ
+        executeSave(finalEl);
+    }
+
+    function executeSave(finalEl) {
       const btn = document.getElementById('saveBtn'); 
       btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> جاري المعالجة..."; 
       btn.disabled = true;
       
       try {
-        for(let i=1; i<=18; i++) {
-          let checkedEl = document.querySelector(`input[name="q_${i}"]:checked`);
-          if (!checkedEl) throw new Error(`تنبيه: يجب تقييم المعيار رقم (${i}). (تذكر أن تقييم الإنجاز الأكاديمي أولاً يفتح لك الخيارات المسموحة)`);
-        }
-
-        let finalEl = document.querySelector('input[name="v_final"]:checked');
-        if (!finalEl) throw new Error("الرجاء اختيار الحكم العام على الدرس أسفل جدول المعايير.");
-
         let skills = Array.from(document.querySelectorAll('#skillsCheckboxes input:checked')).map(i=>i.value).join('، ');
         let sw = Array.from(document.querySelectorAll('#swCheckboxes input:checked')).map(i=>i.value).join('، ');
         let support = Array.from(document.querySelectorAll('#supportCheckboxes input:checked')).filter(i=>i.id!=='chk_other').map(i=>i.value);
@@ -621,18 +666,19 @@
         payload.ID = Date.now();
         db.visits.push(payload);
 
+        // إرسال سحابي في الخلفية
         fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
             .catch(err => console.log('Sync Error:', err));
 
         alert("تم حفظ الزيارة بنجاح!"); 
-        e.target.reset(); 
+        document.getElementById('visitForm').reset(); 
         handleLockingLogic(); // إعادة قفل الحقول للزيارة الجديدة
         switchTab('tab-reports'); 
         updateFilterUI(); 
         generateReport();
 
       } catch (err) {
-        alert(err.message || "حدث خطأ غير متوقع.");
+        alert("حدث خطأ غير متوقع.");
       } finally {
         btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> حفظ الزيارة في السجل'; 
         btn.disabled = false;
