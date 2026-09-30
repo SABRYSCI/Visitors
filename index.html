@@ -109,7 +109,6 @@ table.lg{width:100%;border-collapse:collapse;font-size:14px}table.lg th,table.lg
 </div></header>
 
 <main>
-<!-- الرئيسية + الإحصائيات -->
 <section id="home" class="tab on">
  <div class="act np">
   <button onclick="openNew()">📝 إدخال زيارة صفية جديدة</button>
@@ -118,7 +117,6 @@ table.lg{width:100%;border-collapse:collapse;font-size:14px}table.lg th,table.lg
  <div class="card"><h3>نظرة سريعة على العام الدراسي <span id="hYear"></span></h3><div id="homeStats"></div></div>
 </section>
 
-<!-- الإدخال -->
 <section id="entry" class="tab">
  <div class="card">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h2 id="formTitle" style="margin:0">إدخال زيارة صفية جديدة</h2><button class="sec sm" onclick="go('home')">عودة</button></div>
@@ -173,7 +171,6 @@ table.lg{width:100%;border-collapse:collapse;font-size:14px}table.lg th,table.lg
  </div>
 </section>
 
-<!-- التقارير -->
 <section id="reports" class="tab">
  <div class="card tools np">
   <div><label>العام الدراسي</label><input id="r_year" value="2026-2027" style="width:110px;text-align:center;font-weight:700"></div>
@@ -261,7 +258,6 @@ const PERIODS=["الأولى","الثانية","الثالثة","الرابعة"
 const SCHED={"ابتدائي":["7:15 - 8:05","8:05 - 8:55","8:55 - 9:45","10:15 - 11:00","11:00 - 11:45","11:45 - 12:30","12:30 - 13:15"],"إعدادي":["7:15 - 8:05","8:05 - 8:55","8:55 - 9:45","9:45 - 10:30","11:00 - 11:45","11:45 - 12:30","12:30 - 13:15"]};
 let db={visits:[]}, curSheet=null;
 
-/* ===== الدخول والمظهر ===== */
 function checkLogin(){
   if($('loginPass').value==="2030"){$('loginScreen').style.display='none';$('app').style.display='block';fetchData().then(renderHome)}
   else $('loginError').style.display='block';
@@ -271,7 +267,6 @@ if(localStorage.getItem('theme')==='dark')toggleDark();
 function go(id){['home','entry','reports'].forEach(t=>$(t).classList.toggle('on',t===id));if(id==='home')renderHome();window.scrollTo(0,0)}
 const post=o=>fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(o)}).then(r=>r.json());
 
-/* ===== بناء الاستمارة ===== */
 function buildStatic(){
   $('v_class').innerHTML='<option value="">-- اختر الصف --</option>'+CLASSES.map(([n,c])=>Array.from({length:c},(_,i)=>`<option>${n} / ${i+1}</option>`).join('')).join('');
   $('v_period').innerHTML='<option value="">-- اختر الحصة --</option>'+PERIODS.map(p=>`<option>${p}</option>`).join('');
@@ -338,7 +333,6 @@ function editVisit(id){
   const f=document.querySelector(`input[name="v_final"][value="${v.FinalJudgment}"]`);if(f)f.checked=true;
 }
 
-/* ===== الحفظ + PDF ===== */
 function validateAndSave(){
   const req=[['v_teacher','اسم المعلم'],['v_class','الصف/الشعبة'],['v_date','تاريخ الزيارة'],['v_visitNo','رقم الزيارة'],['v_lesson','عنوان الدرس'],['v_period','الحصة'],['v_time','الزمن'],['v_students','عدد الطلبة'],['v_absence','عدد الغياب'],['v_visitor','اسم الزائر'],['v_job','المسمى الوظيفي']];
   const miss=req.filter(([i])=>!String($(i).value).trim()).map(x=>x[1]);
@@ -390,11 +384,9 @@ async function pdfAction(btn,id,mode){
   }catch(e){alert('تعذر تنفيذ العملية: '+e.message)}finally{btn.disabled=false;btn.innerHTML=h}
 }
 
-/* ===== البيانات ===== */
 async function fetchData(){try{const r=await fetch(SCRIPT_URL+'?t='+Date.now());db.visits=(await r.json()).visits||[]}catch(e){console.error(e)}}
 async function refreshData(){await fetchData();generateReport();renderHome();alert('تم جلب أحدث البيانات من السحابة')}
 
-/* ===== الرئيسية: إحصائيات ===== */
 const statsOf=arr=>{const c=[0,0,0,0];arr.forEach(v=>{const l=lvl(v.FinalJudgment);c[l<0?0:l]++});return c};
 const pct=(n,t)=>{if(!t)return '0%';const p=n/t*100;return Number.isInteger(p)?p+'%':p.toFixed(2)+'%'};
 function renderHome(){
@@ -409,7 +401,6 @@ function renderHome(){
   <h3 style="margin-top:16px">آخر الزيارات</h3><table class="lg"><tr><th>التاريخ</th><th>المعلم</th><th>المادة</th><th>الحكم</th></tr>${last.map(v=>{const l=lvl(v.FinalJudgment);return `<tr><td>${esc(v.Date)}</td><td>${esc(v.TeacherName)}</td><td>${esc(v.Subject)}</td><td><span class="chip" style="background:var(${LV[l<0?0:l].c})">${LV[l<0?0:l].t.split(' =')[0]}</span></td></tr>`}).join('')}</table>`;
 }
 
-/* ===== التقارير ===== */
 function updateFilterUI(){
   const f=$('r_filterBy').value;$('div_specific').style.display=f==='all'?'none':'block';if(f==='all')return;
   const o=f==='teacher'?localTeachers.map(t=>t.name):f==='dept'?localTeachers.map(t=>t.subject):localVisitors.map(v=>v.name);
@@ -450,7 +441,6 @@ function generateReport(){
   }
 }
 
-/* ===== الاستمارة الرسمية (للعرض والطباعة وملف PDF) ===== */
 function sheetHTML(v){
   const t=String(v.Extra_Time||'').split('-'),J=lvl(v.FinalJudgment),has=(s,x)=>String(s||'').includes(x);
   let rows='',cur='';
