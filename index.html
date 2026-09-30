@@ -15,7 +15,7 @@
   <style>
     body { font-family: 'Tajawal', sans-serif; }
     
-    /* تنسيقات الطباعة الاحترافية المطابقة للصور */
+    /* تنسيقات الطباعة الاحترافية */
     @media print {
       body, html { background: white !important; color: black !important; font-size: 11px; }
       .no-print { display: none !important; }
@@ -25,7 +25,6 @@
       .print-page { page-break-after: always; padding-top: 10px; }
       .print-page:last-child { page-break-after: auto; }
 
-      /* جداول الطباعة */
       .official-table { width: 100%; border-collapse: collapse; direction: rtl; margin-bottom: 10px; }
       .official-table th, .official-table td { border: 1px solid #000 !important; padding: 4px 6px; text-align: center; color: black !important; vertical-align: middle; font-size: 11px; }
       .official-table th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; font-weight: bold; }
@@ -33,7 +32,6 @@
       .vertical-text { writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-weight: bold; white-space: nowrap; }
       .criteria-text { text-align: right !important; padding-right: 8px !important; }
       
-      /* الترويسة العلوية للطباعة */
       .print-moe-header { position: relative; text-align: center; margin-bottom: 10px; border-bottom: 2px solid #000; padding-bottom: 5px; }
       .print-moe-header img { height: 75px; object-fit: contain; margin: 0 auto; display: block; }
       .print-date { position: absolute; right: 0; top: 0; font-size: 11px; font-weight: bold; }
@@ -42,7 +40,6 @@
       .print-header-grid div { display: flex; align-items: center; border-bottom: 1px dashed #000; padding-bottom: 2px; }
       .print-header-grid span.val { font-weight: normal; margin-right: 5px; flex-grow: 1; text-align: center; }
 
-      /* الصناديق في الصفحة الثانية */
       .box-section { border: 1px solid #000; margin-bottom: 8px; page-break-inside: avoid; }
       .box-header { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; border-bottom: 1px solid #000; padding: 4px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
       .box-content { padding: 8px; }
@@ -50,7 +47,6 @@
       .checkbox-item { display: flex; align-items: center; gap: 5px; }
       .checkbox-box { width: 12px; height: 12px; border: 1px solid #000; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;}
       
-      /* التوقيعات */
       .signatures-print { display: flex; justify-content: space-between; margin-top: 10px; text-align: center; font-weight: bold; page-break-inside: avoid; font-size: 11px; }
       .signatures-print > div { flex: 1; }
       .footer-credits { text-align: center; font-size: 9px; border: 1px solid #000; padding: 3px; margin-top: 8px; page-break-inside: avoid; }
@@ -109,7 +105,7 @@
             <div class="w-20 h-20 bg-red-50 text-red-700 rounded-full flex items-center justify-center text-4xl"><i class="fa-solid fa-file-signature"></i></div>
             <span class="text-xl font-bold">إدخال زيارة صفية جديدة</span>
           </button>
-          <button onclick="switchTab('tab-reports'); updateFilterUI(); fetchData();" class="group bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col items-center gap-4 transform hover:-translate-y-1">
+          <button onclick="switchTab('tab-reports'); updateFilterUI(); refreshData();" class="group bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col items-center gap-4 transform hover:-translate-y-1">
             <div class="w-20 h-20 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-4xl"><i class="fa-solid fa-print"></i></div>
             <span class="text-xl font-bold">سجلات الزيارات والتقارير</span>
           </button>
@@ -292,7 +288,10 @@
           <div><label class="text-xs font-bold block mb-1">فرز حسب</label><select id="r_filterBy" onchange="updateFilterUI()" class="border p-2 rounded-lg bg-slate-50"><option value="all">الكل (المدرسة)</option><option value="teacher">المعلم</option><option value="dept">القسم</option><option value="visitor">المقيم</option></select></div>
           <div id="div_specific" class="hidden"><label class="text-xs font-bold block mb-1 text-red-600">اختر:</label><select id="r_specific" class="border border-red-300 p-2 rounded-lg bg-red-50"></select></div>
           <button onclick="generateReport()" class="bg-amber-500 text-slate-900 px-6 py-2 rounded-lg font-bold hover:bg-amber-600"><i class="fa-solid fa-search"></i> استخراج التقرير</button>
-          <button onclick="fetchData(); alert('تم تحديث البيانات بنجاح!');" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700"><i class="fa-solid fa-rotate"></i> تحديث السجل</button>
+          
+          <!-- زر التحديث الجديد (يعالج الذاكرة المخبأة) -->
+          <button onclick="refreshData()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700"><i class="fa-solid fa-rotate"></i> تحديث السجل</button>
+          
           <button onclick="window.print()" class="bg-slate-700 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-800 mr-auto"><i class="fa-solid fa-print"></i> طباعة (PDF)</button>
         </div>
 
@@ -320,7 +319,7 @@
   <datalist id="visitorsData"></datalist>
 
   <script>
-    // ========= ضع رابط Web App هنا =========
+    // ========= ضع رابط Web App الخاص بك هنا =========
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzty9WyGvvCLyOVI9XaDZxImseaSd4tanfPK4H9ZNWtEdYJUuTKlY7uo30ing_ARR8/exec";
     // =======================================
     
@@ -560,12 +559,27 @@
       }
     }
 
+    // =====================================
+    // التعديل السحري: إضافة Time-stamp لتخطي الـ Cache
+    // =====================================
     async function fetchData() {
       try {
-        const res = await fetch(SCRIPT_URL);
+        const timestamp = new Date().getTime(); // يمنع المتصفح من قراءة البيانات المخبأة القديمة
+        const res = await fetch(SCRIPT_URL + "?t=" + timestamp);
         const serverDb = await res.json();
         db.visits = serverDb.visits || [];
       } catch (e) { console.error("Error fetching data from cloud", e); }
+    }
+
+    // دالة تحديث السجل ورسم الجدول فوراً
+    window.refreshData = async function() {
+        try {
+            await fetchData();
+            generateReport(); // إعادة رسم الجدول بالبيانات الحديثة
+            alert('تم جلب أحدث التعديلات من السحابة بنجاح!');
+        } catch(e) {
+            alert('حدث خطأ أثناء الاتصال بالسحابة.');
+        }
     }
 
     window.editVisit = function(visitId) {
