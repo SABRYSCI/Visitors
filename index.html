@@ -1,1084 +1,485 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>استمارة الملاحظة الصفية الموحدة - نظام إلكتروني</title>
-  
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Tajawal', 'sans-serif'] } } } }
-  </script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-  
-  <style>
-    /* =========================================================
-       طبقة التحسين البصرية (CSS Upgrade) المدمجة بنجاح
-       ========================================================= */
-    :root{--brand:#991b1b;--brand-d:#7f1d1d;--ink:#0f172a;--line:#dbe1ea;--bg:#eef1f6;--card:#fff}
-    .dark{--line:#334155;--bg:#0b1220;--card:#162033}
-    body{font-family: 'Tajawal', sans-serif; background:var(--bg)!important;font-size:15px;line-height:1.7}
-    header.no-print{position:sticky;top:0;z-index:30;background:linear-gradient(120deg,var(--brand-d),var(--brand))!important;box-shadow:0 2px 14px rgba(127,29,29,.35)}
-    header.no-print h1{font-size:1.05rem;font-weight:800;letter-spacing:0}
-    #tab-entry,#tab-reports>div.bg-white,#printArea,#tab-home>div>button{border:1px solid var(--line)!important;border-radius:14px!important;background:var(--card)!important;box-shadow:0 1px 2px rgba(15,23,42,.05),0 10px 28px -16px rgba(15,23,42,.25)!important}
-    #tab-home>div>button{transition:transform .15s,box-shadow .15s}
-    #tab-home>div>button:hover{transform:translateY(-3px)}
-    #mainApp input:not([type=radio]):not([type=checkbox]),#mainApp select,#mainApp textarea{border:1px solid var(--line)!important;border-radius:10px!important;padding:8px 10px!important;transition:border-color .15s,box-shadow .15s}
-    #mainApp input:focus,#mainApp select:focus,#mainApp textarea:focus,button:focus-visible{outline:none;border-color:var(--brand)!important;box-shadow:0 0 0 3px rgba(153,27,27,.18)!important}
-    #mainApp label{font-weight:600}
-    .form-grid-table{border-radius:12px;overflow:hidden;border:1px solid var(--line)}
-    .form-grid-table th,.form-grid-table td{border-color:var(--line)!important}
-    .form-grid-table thead th{position:sticky;top:64px;z-index:5;padding:10px 4px;font-size:12px}
-    #criteriaEntryBody tr:has(input:checked){background:rgba(153,27,27,.045)}
-    .eval-radio{width:22px!important;height:22px!important}
-    .eval-radio:disabled{opacity:.25;cursor:not-allowed}
-    #saveBtn,.bg-red-700{background:var(--brand)!important}
-    #saveBtn{padding:14px 32px;border-radius:12px;font-size:1.05rem}
-    .pdf-btn{font-size:12px;font-weight:700;padding:8px 12px;border-radius:8px;color:#fff;margin-right:6px;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-    .pdf-btn[disabled]{opacity:.6;cursor:wait}
-    #reportTableContainer table td,#reportTableContainer table th{padding:8px}
-    @media(max-width:640px){header.no-print h1{font-size:.85rem}.form-grid-table thead th{top:0}}
-
-    /* تنسيقات الطباعة الاحترافية */
-    @media print {
-      @page{size:A4 portrait;margin:9mm}
-      html,body{background:#fff!important;font-family:'Tajawal',Arial,sans-serif!important;font-size:11.5px!important;line-height:1.45!important}
-      *{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-shadow:none!important}
-      header,#loginScreen,#tab-home,#tab-entry{display:none!important}
-      #mainApp,#mainApp main,#tab-reports{display:block!important;padding:0!important;margin:0!important;max-width:none!important}
-      #printArea{border:0!important;border-radius:0!important;padding:0!important}
-      #printArea .print-only{display:block!important}
-      .print-moe-header img{height:80px}
-      #printReportTitle{font-size:16px;margin:6px 0 10px!important}
-      .official-table th,.official-table td{padding:3.5px 6px!important;font-size:11px!important;border:1px solid #000!important}
-      .official-table thead{display:table-header-group}
-      .official-table tr,.box-section{break-inside:avoid;page-break-inside:avoid}
-      .print-page{break-before:page;page-break-before:always;margin:0!important;padding:0!important;border:0!important}
-      .checkbox-box{width:14px;height:14px;font-size:11px}
-      #printFooter{position:fixed;bottom:0;left:0;right:0;background:#fff}
-      
-      .page-1-container { page-break-after: always; }
-      .page-2-container { padding-top: 5px; }
-      .official-table { width: 100%; border-collapse: collapse; direction: rtl; margin-bottom: 8px; page-break-inside: avoid; }
-      .print-moe-header { position: relative; text-align: center; margin-bottom: 5px; border-bottom: 2px solid #000; padding-bottom: 5px; }
-      .print-date { position: absolute; right: 0; top: 0; font-size: 11px; font-weight: bold; }
-      .box-section { border: 1.5px solid #000; margin-bottom: 8px; page-break-inside: avoid; }
-      .box-header { background-color: #f1f5f9 !important; border-bottom: 1.5px solid #000; padding: 4px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
-      .box-content { padding: 8px; }
-      .checkbox-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; font-size: 11px; }
-      .checkbox-item { display: flex; align-items: center; gap: 5px; }
-      .checkbox-box { width: 12px; height: 12px; border: 1px solid #000; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;}
-    }
-    .print-only { display: none; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>استمارة الملاحظة الصفية الموحدة</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root{--br:#8f1d1d;--ink:#1e293b;--mut:#64748b;--ln:#dfe4ec;--bg:#f1f3f7;--cd:#fff;--soft:#f8fafc;--l1:#dc2626;--l2:#ea8a0c;--l3:#2563eb;--l4:#059669}
+.dark{--ink:#e5eaf3;--mut:#94a3b8;--ln:#2b3648;--bg:#0c1320;--cd:#152033;--soft:#101a2b}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.7 Tajawal,sans-serif;background:var(--bg);color:var(--ink)}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:9px 16px;font-weight:700;color:#fff;background:var(--br)}
+button.sec{background:var(--soft);color:var(--ink);border:1px solid var(--ln)}
+button.sm{padding:5px 10px;font-size:12px;border-radius:8px}
+button:disabled{opacity:.55;cursor:wait}
+input,select,textarea{font:inherit;width:100%;padding:8px 10px;border:1px solid var(--ln);border-radius:10px;background:var(--cd);color:var(--ink)}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:3px solid #8f1d1d33;border-color:var(--br)}
+input[readonly]{background:var(--soft)}
+label{font-weight:700;font-size:13px;display:block;margin-bottom:3px}
+.req:after{content:" *";color:var(--l1)}
+.hd{position:sticky;top:0;z-index:20;background:linear-gradient(120deg,#5f1010,var(--br));color:#fff;box-shadow:0 2px 12px #0004}
+.hd .in{max-width:1180px;margin:auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
+.hd h1{margin:0;font-size:17px;font-weight:800}.hd small{opacity:.8;font-size:12px}
+.hd button{background:#ffffff26}.grow{flex:1}
+main{max-width:1180px;margin:auto;padding:18px 16px 60px}
+.card{background:var(--cd);border:1px solid var(--ln);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 2px #0f172a0d}
+.tab{display:none}.tab.on{display:block}
+h2{margin:0 0 12px;font-size:19px}h3{margin:0 0 10px;font-size:16px}
+.g{display:grid;gap:12px}.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.span2{grid-column:span 2}
+#loginScreen{position:fixed;inset:0;background:var(--bg);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}
+#loginScreen .card{max-width:400px;width:100%;text-align:center;padding:28px}
+#loginScreen img{max-width:100%;max-height:100px;margin-bottom:14px}
+.act{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:16px}
+.act button{background:var(--cd);color:var(--ink);border:1px solid var(--ln);padding:24px;font-size:18px;box-shadow:0 1px 2px #0f172a0d}
+.act button:hover{border-color:var(--br)}
+.stat{display:flex;gap:14px;flex-wrap:wrap}.stat>div{flex:1;min-width:130px;background:var(--soft);border:1px solid var(--ln);border-radius:12px;padding:12px}
+.stat b{display:block;font-size:26px;line-height:1.2}.stat span{color:var(--mut);font-size:12px}
+.bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--ln);margin:8px 0}
+.leg{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--mut)}.leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-left:4px}
+.chip{display:inline-block;padding:1px 9px;border-radius:99px;color:#fff;font-size:12px;font-weight:700}
+.note{background:#2563eb14;border:1px solid #2563eb44;color:var(--l3);border-radius:10px;padding:8px 12px;font-size:13px;font-weight:700;margin-bottom:10px}
+.dark .note{color:#93c5fd}
+#prog{position:sticky;top:58px;z-index:10;background:var(--cd);border:1px solid var(--ln);border-radius:10px;padding:6px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700}
+#prog div{flex:1;height:8px;background:var(--ln);border-radius:4px;overflow:hidden}#prog i{display:block;height:100%;width:0;background:var(--l4);transition:width .25s}
+.tw{overflow-x:auto}
+table.cr{width:100%;border-collapse:collapse;min-width:640px}
+table.cr th,table.cr td{border:1px solid var(--ln);padding:0 4px}
+table.cr thead th{padding:8px 2px;font-size:12px;color:#fff;width:82px}
+table.cr .dm td{background:var(--soft);color:var(--br);font-weight:800;padding:7px 10px}
+.dark table.cr .dm td{color:#fca5a5}
+table.cr td.t{padding:6px 10px;font-size:13.5px}
+table.cr td.n{text-align:center;font-weight:700;width:34px}
+table.cr td.rc{text-align:center;padding:0}table.cr td.rc label{margin:0;padding:10px 0;display:flex;justify-content:center;cursor:pointer}
+.eval{appearance:none;width:22px;height:22px;border:2px solid var(--ln);border-radius:50%;margin:0;padding:0;background:var(--cd);cursor:pointer}
+.eval:checked{border-color:var(--c);background:radial-gradient(var(--c) 55%,transparent 60%)}
+.eval:disabled{opacity:.3;cursor:not-allowed}
+tr:has(.eval:checked) td.t{background:#8f1d1d0a}
+.chk{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:6px}.chk label{font-weight:500;font-size:14px;margin:0}
+.chk input,.jr input{width:auto;accent-color:var(--br)}
+.jr{display:flex;gap:16px;flex-wrap:wrap}.jr label{font-size:15px;display:flex;gap:6px;align-items:center;cursor:pointer}
+table.lg{width:100%;border-collapse:collapse;font-size:14px}table.lg th,table.lg td{border-bottom:1px solid var(--ln);padding:8px;text-align:center}table.lg th{background:var(--soft)}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}.tools>div{min-width:130px}
+.rc2{font-size:14px}
+/* الاستمارة الرسمية والتقارير */
+.sw{overflow-x:auto}
+.sheet{width:794px;min-height:1120px;margin:0 auto 14px;padding:26px 34px;background:#fff;color:#000;font:11px/1.5 Tajawal,sans-serif;box-shadow:0 2px 14px #0002;direction:rtl}
+.sheet .hdr{text-align:center;border-bottom:2px solid #000;padding-bottom:5px;margin-bottom:6px}.sheet .hdr img{height:74px}
+.sheet .ttl{font-weight:800;font-size:15px;margin-top:2px}
+.ot{width:100%;border-collapse:collapse;margin-bottom:8px}
+.ot th,.ot td{border:1.4px solid #000;padding:3px 6px;text-align:center;font-size:10.5px;color:#000}.ot th{background:#e9edf3;font-weight:800}
+.ot .cr{text-align:right}.ot .dm{text-align:right;background:#fdeeee;color:#7f1d1d;font-weight:800}.ot .mk{font-size:14px;font-weight:800;width:56px}
+.inf{width:100%;border-collapse:collapse;margin-bottom:8px;font-size:11px}.inf td{padding:4px 5px;border-bottom:1px dashed #000;width:50%}
+.bx{border:1.4px solid #000;margin-bottom:8px;break-inside:avoid}.bx>b{display:block;background:#e9edf3;border-bottom:1.4px solid #000;padding:3px 8px}.bx>div{padding:6px 8px}
+.ck{display:grid;grid-template-columns:1fr 1fr;gap:4px}.ck span:before{content:"";display:inline-block;width:12px;height:12px;border:1.2px solid #000;margin-left:6px;vertical-align:-2px;text-align:center;line-height:10px;font-size:11px}.ck span.y:before{content:"✔"}
+.sg{width:100%;border-collapse:collapse;text-align:center;margin-top:22px}.sg td{padding:4px}
+.cred{text-align:center;font-size:9px;border-top:1px solid #000;margin-top:14px;padding-top:3px}
+.offscreen{position:fixed;left:-10000px;top:0;width:794px}
+.rp .ot th,.rp .ot td{font-size:12px;padding:6px}
+#repHead{display:none;text-align:center}#repHead img{height:80px}
+@media(max-width:700px){.span2{grid-column:auto}.hd small{display:none}}
+@media print{
+ @page{size:A4;margin:8mm}
+ body{background:#fff}.np,.hd,#home,#entry,#loginScreen,.tools{display:none!important}
+ main{padding:0;max-width:none}.card{border:0;box-shadow:none;padding:0}
+ .sheet{width:auto;min-height:0;padding:0;box-shadow:none;margin:0}.sheet2{break-before:page}
+ .ot tr{break-inside:avoid}.ot thead{display:table-header-group}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
 </head>
 <body>
 
-  <!-- ================= شاشة تسجيل الدخول ================= -->
-  <div id="loginScreen" class="fixed inset-0 bg-slate-100 dark:bg-slate-900 z-50 flex items-center justify-center px-4 transition-opacity duration-500">
-    <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-slate-700">
-      <img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt="ترويسة المدرسة" class="w-full h-auto mb-6 mx-auto" style="max-height: 110px; object-fit: contain;">
-      <h2 class="text-2xl font-bold mb-2 text-slate-800 dark:text-white">نظام الزيارات الصفية المطور</h2>
-      <p class="text-sm text-slate-500 dark:text-slate-400 mb-8">الرجاء إدخال كلمة المرور للوصول للنظام</p>
-      <input type="password" id="loginPass" class="w-full border border-slate-300 dark:border-slate-600 p-3 rounded-xl mb-4 text-center text-lg bg-slate-50 dark:bg-slate-700 focus:ring-2 focus:ring-red-600 outline-none" placeholder="كلمة المرور">
-      <p id="loginError" class="text-red-500 text-sm mb-4 hidden font-bold">كلمة المرور غير صحيحة!</p>
-      <button onclick="checkLogin()" class="w-full bg-gradient-to-r from-red-800 to-red-600 hover:from-red-900 hover:to-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition transform hover:scale-[1.02]">
-        تسجيل الدخول <i class="fa-solid fa-arrow-right-to-bracket ml-2"></i>
-      </button>
-    </div>
+<div id="loginScreen"><div class="card">
+ <img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt="">
+ <h2>نظام الزيارات الصفية</h2>
+ <p style="color:var(--mut);margin-top:0">أدخل كلمة المرور للمتابعة</p>
+ <input type="password" id="loginPass" placeholder="كلمة المرور" style="text-align:center;font-size:18px" onkeydown="if(event.key==='Enter')checkLogin()">
+ <p id="loginError" style="color:var(--l1);font-weight:700;display:none;margin:8px 0 0">كلمة المرور غير صحيحة</p>
+ <button style="width:100%;margin-top:12px;padding:12px" onclick="checkLogin()">تسجيل الدخول</button>
+</div></div>
+
+<div id="app" style="display:none">
+<header class="hd np"><div class="in">
+ <div class="grow" style="cursor:pointer" onclick="go('home')"><h1>مدرسة البلاد القديم الابتدائية الاعدادية للبنين</h1><small>استمارة الملاحظة الصفية الموحدة | تصميم وبرمجة صبري محمد حمد 36864227</small></div>
+ <button onclick="go('home')">الرئيسية</button><button onclick="toggleDark()" id="themeBtn">🌙</button>
+</div></header>
+
+<main>
+<!-- الرئيسية + الإحصائيات -->
+<section id="home" class="tab on">
+ <div class="act np">
+  <button onclick="openNew()">📝 إدخال زيارة صفية جديدة</button>
+  <button onclick="go('reports');updateFilterUI();refreshData()">📊 سجلات الزيارات والتقارير</button>
+ </div>
+ <div class="card"><h3>نظرة سريعة على العام الدراسي <span id="hYear"></span></h3><div id="homeStats"></div></div>
+</section>
+
+<!-- الإدخال -->
+<section id="entry" class="tab">
+ <div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h2 id="formTitle" style="margin:0">إدخال زيارة صفية جديدة</h2><button class="sec sm" onclick="go('home')">عودة</button></div>
+  <input type="hidden" id="edit_visit_id">
+  <div class="g g4" style="background:var(--soft);border:1px solid var(--ln);border-radius:12px;padding:14px">
+   <div><label>القسم</label><select id="v_dept" onchange="filterTeachers()"></select></div>
+   <div><label class="req">اسم المعلم</label><select id="v_teacher" onchange="fillTeacher()"></select></div>
+   <div><label>المادة</label><input id="v_subject" readonly><input type="hidden" id="v_teacher_email"></div>
+   <div><label class="req">الصف / الشعبة</label><select id="v_class" onchange="updateTime()"></select></div>
+   <div><label class="req">تاريخ الزيارة</label><input type="date" id="v_date"></div>
+   <div><label class="req">رقم الزيارة</label><input type="number" id="v_visitNo" min="1" value="1"></div>
+   <div class="span2"><label class="req">عنوان الدرس</label><input id="v_lesson"></div>
+   <div><label class="req">الحصة الدراسية</label><select id="v_period" onchange="updateTime()"></select></div>
+   <div><label class="req">الزمن (من - إلى)</label><input id="v_time" placeholder="يُحدد تلقائياً ويمكن تعديله"></div>
+   <div><label class="req">عدد الطلبة</label><input type="number" id="v_students" min="0"></div>
+   <div><label class="req">عدد الغياب</label><input type="number" id="v_absence" min="0"></div>
   </div>
+ </div>
 
-  <div id="mainApp" class="hidden flex-col flex-1">
-    <header class="no-print">
-      <div class="max-w-7xl mx-auto p-4 flex justify-between items-center">
-        <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('tab-home')">
-          <i class="fa-solid fa-chart-pie text-3xl"></i>
-          <div>
-            <h1>مدرسة البلاد القديم الابتدائية الاعدادية للبنين</h1>
-            <p class="text-xs text-red-200 mt-1">استمارة الملاحظة الصفية الموحدة | تصميم صبري محمد حمد 36864227</p>
-          </div>
-        </div>
-        <div class="flex gap-2 items-center">
-          <button onclick="switchTab('tab-home')" class="hidden md:block bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg font-bold transition"><i class="fa-solid fa-house"></i> الرئيسية</button>
-          <button onclick="toggleDarkMode()" class="bg-slate-800/50 hover:bg-slate-800 px-4 py-2 rounded-lg font-bold transition shadow-inner">
-            <i id="themeIcon" class="fa-solid fa-moon"></i>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto p-4 w-full flex-1 flex flex-col">
-      <section id="tab-home" class="flex-1 flex flex-col items-center justify-center py-10">
-        <h2 class="text-2xl font-bold mb-8 text-center">أهلاً بك في النظام المطور، ماذا تريد أن تفعل؟</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
-          <button onclick="openNewVisit()" class="group bg-white p-10 flex flex-col items-center gap-4">
-            <div class="w-20 h-20 bg-red-50 text-red-700 rounded-full flex items-center justify-center text-4xl"><i class="fa-solid fa-file-signature"></i></div>
-            <span class="text-xl font-bold text-slate-800">إدخال زيارة صفية جديدة</span>
-          </button>
-          <button onclick="switchTab('tab-reports'); updateFilterUI(); refreshData();" class="group bg-white p-10 flex flex-col items-center gap-4">
-            <div class="w-20 h-20 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-4xl"><i class="fa-solid fa-print"></i></div>
-            <span class="text-xl font-bold text-slate-800">سجلات الزيارات والتقارير</span>
-          </button>
-        </div>
-      </section>
-
-      <section id="tab-entry" class="hidden p-6 border-slate-200">
-        <div class="flex justify-between items-center mb-6 border-b pb-4">
-          <h2 class="text-xl font-bold text-red-700" id="formTitle"><i class="fa-solid fa-clipboard-check"></i> استمارة الملاحظة الصفية الموحدة</h2>
-          <button onclick="switchTab('tab-home')" class="text-sm bg-slate-100 px-3 py-1 rounded font-bold text-slate-700 hover:bg-slate-200">عودة</button>
-        </div>
-        
-        <form id="visitForm">
-          <input type="hidden" id="edit_visit_id" value=""> 
-          
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-200 mb-6 text-sm">
-            <div><label>القسم</label><select id="v_dept" onchange="filterTeachers()" class="w-full"></select></div>
-            <div><label class="text-red-700">اسم المعلم *</label><select id="v_teacher" onchange="fillTeacherDetails()" class="w-full"><option value="">-- اختر القسم أولاً --</option></select></div>
-            <div><label>المادة</label><input type="text" id="v_subject" class="w-full bg-slate-200" readonly><input type="hidden" id="v_cpr"><input type="hidden" id="v_teacher_email"></div>
-            
-            <div>
-              <label class="text-red-700">الصف/الشعبة *</label>
-              <select id="v_class" onchange="updateTimeField()" class="w-full">
-                <option value="">-- اختر الصف --</option>
-                <option value="سادس ابتدائي / 1">سادس ابتدائي / 1</option>
-                <option value="سادس ابتدائي / 2">سادس ابتدائي / 2</option>
-                <option value="سادس ابتدائي / 3">سادس ابتدائي / 3</option>
-                <option value="أول إعدادي / 1">أول إعدادي / 1</option>
-                <option value="أول إعدادي / 2">أول إعدادي / 2</option>
-                <option value="أول إعدادي / 3">أول إعدادي / 3</option>
-                <option value="أول إعدادي / 4">أول إعدادي / 4</option>
-                <option value="ثاني إعدادي / 1">ثاني إعدادي / 1</option>
-                <option value="ثاني إعدادي / 2">ثاني إعدادي / 2</option>
-                <option value="ثاني إعدادي / 3">ثاني إعدادي / 3</option>
-                <option value="ثاني إعدادي / 4">ثاني إعدادي / 4</option>
-                <option value="ثالث إعدادي / 1">ثالث إعدادي / 1</option>
-                <option value="ثالث إعدادي / 2">ثالث إعدادي / 2</option>
-                <option value="ثالث إعدادي / 3">ثالث إعدادي / 3</option>
-                <option value="ثالث إعدادي / 4">ثالث إعدادي / 4</option>
-                <option value="ثالث إعدادي / 5">ثالث إعدادي / 5</option>
-              </select>
-            </div>
-            
-            <div><label class="text-red-700">تاريخ الزيارة *</label><input type="date" id="v_date" class="w-full"></div>
-            <div><label class="text-red-700">رقم الزيارة *</label><input type="number" id="v_visitNo" class="w-full" min="1" value="1"></div>
-            <div class="md:col-span-2"><label class="text-red-700">عنوان الدرس *</label><input type="text" id="v_lesson" class="w-full"></div>
-
-            <div>
-              <label class="text-red-700">الحصة الدراسية *</label>
-              <select id="v_period" onchange="updateTimeField()" class="w-full">
-                <option value="">-- اختر الحصة --</option>
-                <option value="الأولى">الأولى</option>
-                <option value="الثانية">الثانية</option>
-                <option value="الثالثة">الثالثة</option>
-                <option value="الرابعة">الرابعة</option>
-                <option value="الخامسة">الخامسة</option>
-                <option value="السادسة">السادسة</option>
-                <option value="السابعة">السابعة</option>
-              </select>
-            </div>
-            <div><label class="text-red-700">الزمن (من - إلى) *</label><input type="text" id="v_time" class="w-full" placeholder="يتم التحديد تلقائياً ويمكنك التعديل..."></div>
-            
-            <div><label class="text-red-700">عدد الطلبة *</label><input type="number" id="v_students" class="w-full" min="0"></div>
-            <div><label class="text-red-700">عدد الغياب *</label><input type="number" id="v_absence" class="w-full" min="0"></div>
-          </div>
-
-          <div class="flex items-center justify-between mb-2"><h3 class="font-bold text-lg text-slate-800 dark:text-white">المعايير والتقييم</h3></div>
-          <div class="bg-blue-50 text-blue-800 p-3 rounded-lg text-sm font-bold mb-3">
-             <i class="fa-solid fa-circle-info ml-1"></i> تنبيه هام جداً: يجب تقييم بنود (الإنجاز الأكاديمي) أولاً، ليتم فتح باقي بنود الاستمارة.
-          </div>
-
-          <div class="overflow-x-auto mb-6">
-            <table class="form-grid-table w-full">
-              <thead>
-                <tr>
-                  <th class="w-10">الرقم</th>
-                  <th class="text-right">المعايير</th>
-                  <th class="w-20 bg-red-50 dark:bg-red-900/20"><div class="rotate-180" style="writing-mode: vertical-rl;">يفي بالتوقعات جزئياً</div></th>
-                  <th class="w-20 bg-orange-50 dark:bg-orange-900/20"><div class="rotate-180" style="writing-mode: vertical-rl;">يفي بالتوقعات تماماً</div></th>
-                  <th class="w-20 bg-blue-50 dark:bg-blue-900/20"><div class="rotate-180" style="writing-mode: vertical-rl;">يتجاوز التوقعات</div></th>
-                  <th class="w-20 bg-emerald-50 dark:bg-emerald-900/20"><div class="rotate-180" style="writing-mode: vertical-rl;">يتجاوز التوقعات بكثير</div></th>
-                </tr>
-              </thead>
-              <tbody id="criteriaEntryBody"></tbody>
-            </table>
-          </div>
-
-          <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-200 mb-8">
-            <label class="font-bold block text-red-800 dark:text-red-400 mb-2">الحكم العام على الدرس: *</label>
-            <div class="flex gap-4 flex-wrap">
-              <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="radio" name="v_final" value="ممتاز = يتجاوز التوقعات بكثير" class="w-5 h-5 accent-red-600"> ممتاز</label>
-              <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="radio" name="v_final" value="جيد = يتجاوز التوقعات" class="w-5 h-5 accent-red-600"> جيد</label>
-              <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="radio" name="v_final" value="مرض = يفي بالتوقعات تماما" class="w-5 h-5 accent-red-600"> مرض</label>
-              <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="radio" name="v_final" value="غير ملائم = يفي بالتوقعات جزئيا" class="w-5 h-5 accent-red-600"> غير ملائم</label>
-            </div>
-          </div>
-
-          <h3 class="font-bold text-xl mb-4 text-slate-800 border-b pb-2">الجزء الخاص بالمداولة البعدية مع المعلم</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 text-sm">
-            <div class="border p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50">
-              <h4 class="font-bold mb-3">1) مهارات القرن الحادي والعشرين التي تم توظيفها:</h4>
-              <div class="grid grid-cols-2 gap-2" id="skillsCheckboxes">
-                <label><input type="checkbox" value="التفكير الناقد وحل المشكلات"> التفكير الناقد وحل المشكلات</label>
-                <label><input type="checkbox" value="التعاون والتواصل"> التعاون والتواصل</label>
-                <label><input type="checkbox" value="الوعي العالمي والثقافي"> الوعي العالمي والثقافي</label>
-                <label><input type="checkbox" value="الإبداع والابتكار"> الإبداع والابتكار</label>
-                <label><input type="checkbox" value="القدرة على التكيف والمرونة"> القدرة على التكيف والمرونة</label>
-                <label><input type="checkbox" value="المعرفة المعلوماتية"> المعرفة المعلوماتية</label>
-                <label><input type="checkbox" value="الذكاء العاطفي"> الذكاء العاطفي</label>
-                <label><input type="checkbox" value="المعرفة الرقمية"> المعرفة الرقمية</label>
-              </div>
-            </div>
-            
-            <div class="border p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50">
-              <h4 class="font-bold mb-3">2) متابعة أعمال الطلبة:</h4>
-              <div class="flex items-center gap-2 mb-3">
-                <span>عدد العينات التي ينبغي فحصها: من</span>
-                <input type="number" id="sw_from" class="w-16 text-center" value="4">
-                <span>إلى</span>
-                <input type="number" id="sw_to" class="w-16 text-center" value="6">
-              </div>
-              <p class="font-bold mb-2">معايير متابعة أعمال الطلبة:</p>
-              <div class="flex flex-col gap-2" id="swCheckboxes">
-                <label><input type="checkbox" value="مناسبة كمية ونوعية الأنشطة"> مناسبة كمية ونوعية الأنشطة الكتابية والرقمية لتوافقها مع المطلوب.</label>
-                <label><input type="checkbox" value="مراعاة اختلاف مستويات الطلبة"> مراعاة اختلاف مستويات الطلبة الأكاديمية.</label>
-                <label><input type="checkbox" value="تنمية مهارات التفكير العليا"> تنمية مهارات التفكير العليا، وتحدي القدرات.</label>
-                <label><input type="checkbox" value="انتظام عمليات التصحيح"> انتظام عمليات التصحيح والتصويب لجميع الأنشطة.</label>
-                <label><input type="checkbox" value="تعزيز الأعمال المتميزة"> تعزيز الأعمال المتميزة وتقديم التغذية الراجعة البناءة.</label>
-              </div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div class="border p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50">
-              <h4 class="font-bold mb-3">3) التغذية الراجعة:</h4>
-              <label class="block mb-1 font-bold text-sm">نجاحات المعلم:</label>
-              <textarea id="v_success" rows="3" class="w-full mb-3"></textarea>
-              <label class="block mb-1 font-bold text-sm">جوانب بحاجة إلى تطوير:</label>
-              <textarea id="v_improve" rows="3" class="w-full"></textarea>
-            </div>
-            <div class="border p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50">
-              <h4 class="font-bold mb-3">4) أساليب الدعم والمساندة للمعلم المزور:</h4>
-              <div class="grid grid-cols-2 gap-3 text-sm" id="supportCheckboxes">
-                <label><input type="checkbox" value="لقاء فردي"> لقاء فردي</label>
-                <label><input type="checkbox" value="قراءة موجهة"> قراءة موجهة</label>
-                <label><input type="checkbox" value="زيارة تبادلية"> زيارة تبادلية</label>
-                <label><input type="checkbox" value="ورشة عمل"> ورشة عمل</label>
-                <label><input type="checkbox" value="توأمة ومجتمعات تعلم"> توأمة ومجتمعات تعلم</label>
-                <div class="flex items-center gap-2"><input type="checkbox" value="أخرى" id="chk_other"> أخرى: <input type="text" id="v_support_other" class="w-full"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-emerald-50 dark:bg-slate-900 p-4 rounded-xl mb-6 border border-emerald-200">
-            <div><label class="text-emerald-800">اسم الزائر (المقيم) *</label><input type="text" id="v_visitor" list="visitorsData" onchange="fillVisitorDetails()" class="w-full"></div>
-            <div><label class="text-emerald-800">المسمى الوظيفي *</label><input type="text" id="v_job" class="w-full" readonly></div>
-            <div class="md:col-span-2">
-               <label class="text-emerald-800">إيميل المقيم (لإرسال نسخة له)</label>
-               <input type="email" id="v_visitor_email" class="w-full" placeholder="سيتم تعبئته تلقائياً ويمكن تعديله">
-            </div>
-            <div class="md:col-span-2 flex items-center gap-2 mt-2">
-               <input type="checkbox" id="send_to_teacher" class="w-5 h-5 accent-emerald-600">
-               <label class="font-bold text-sm text-emerald-800">إرسال نسخة من الاستمارة للمعلم المزور أيضاً</label>
-            </div>
-          </div>
-
-          <button type="button" id="saveBtn" onclick="validateAndSave()" class="text-white"><i class="fa-solid fa-cloud-arrow-up"></i> حفظ الزيارة في السجل</button>
-        </form>
-      </section>
-
-      <section id="tab-reports" class="hidden flex-col gap-6">
-        <div class="bg-white p-5 border flex flex-wrap gap-4 items-end no-print">
-          <div><label>العام الدراسي</label><input type="text" id="r_year" class="w-24 font-bold text-center" value="2026-2027"></div>
-          <div><label>نوع التقرير</label><select id="r_type"><option value="summary">ملخص الزيارات (إحصائية عامة)</option><option value="detailed">تحليل مفصل (نسب مئوية للتقييم)</option><option value="log" selected>سجل الزيارات (بحث، طباعة، إيميل وتعديل)</option></select></div>
-          <div><label>فرز حسب</label><select id="r_filterBy" onchange="updateFilterUI()"><option value="all">الكل (المدرسة)</option><option value="teacher">المعلم</option><option value="dept">القسم</option><option value="visitor">المقيم</option></select></div>
-          <div id="div_specific" class="hidden"><label class="text-red-600">اختر:</label><select id="r_specific" class="border-red-300 bg-red-50"></select></div>
-          <button onclick="generateReport()" class="bg-amber-500 text-slate-900 font-bold hover:bg-amber-600 px-6 py-2 rounded-lg"><i class="fa-solid fa-search"></i> استخراج التقرير</button>
-          
-          <button onclick="refreshData()" class="bg-blue-600 text-white font-bold hover:bg-blue-700 px-4 py-2 rounded-lg"><i class="fa-solid fa-rotate"></i> تحديث السجل</button>
-          
-          <button onclick="window.print()" class="bg-slate-700 text-white font-bold hover:bg-slate-800 px-6 py-2 rounded-lg mr-auto"><i class="fa-solid fa-print"></i> طباعة (PDF)</button>
-        </div>
-
-        <div id="printArea" class="w-full bg-white p-2 text-slate-800">
-          <div id="reportTableContainer" class="min-h-[400px]">
-            <div class="text-center py-20 text-slate-400 no-print"><i class="fa-solid fa-magnifying-glass text-6xl mb-4 opacity-30"></i><p>اختر نوع التقرير واضغط "استخراج التقرير"</p></div>
-          </div>
-        </div>
-      </section>
-    </main>
+ <div class="card">
+  <h3>المعايير والتقييم</h3>
+  <div class="note">ابدأ بتقييم بندي «الإنجاز الأكاديمي» (13 و14)، وبعدها تُفتح بقية البنود. يجب ألا يزيد الفرق بين أعلى وأدنى تقييم على درجة واحدة.</div>
+  <div id="prog"><span id="progT">0 / 18</span><div><i id="progB"></i></div></div>
+  <div class="tw"><table class="cr"><thead><tr><th style="width:34px;background:var(--mut)">#</th><th style="background:var(--mut)">المعيار</th>
+   <th style="background:var(--l1)">يفي جزئياً</th><th style="background:var(--l2)">يفي تماماً</th><th style="background:var(--l3)">يتجاوز</th><th style="background:var(--l4)">يتجاوز بكثير</th></tr></thead>
+   <tbody id="critBody"></tbody></table></div>
+  <div style="margin-top:14px;background:#8f1d1d0d;border:1px solid #8f1d1d33;border-radius:12px;padding:12px">
+   <label class="req" style="color:var(--br)">الحكم العام على الدرس</label>
+   <div class="jr" id="finalBox"></div>
   </div>
-  <datalist id="visitorsData"></datalist>
-
-  <script>
-    // ========= ضع رابط Web App الخاص بك هنا =========
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzty9WyGvvCLyOVI9XaDZxImseaSd4tanfPK4H9ZNWtEdYJUuTKlY7uo30ing_ARR8/exec";
-    // =======================================
-    
-    function updateTimeField() {
-      const cls = document.getElementById('v_class').value;
-      const prd = document.getElementById('v_period').value;
-      const timeInput = document.getElementById('v_time');
-      if (!cls || !prd) return;
-      const schedule = {
-        "ابتدائي": { "الأولى": "7:15 - 8:05", "الثانية": "8:05 - 8:55", "الثالثة": "8:55 - 9:45", "الرابعة": "10:15 - 11:00", "الخامسة": "11:00 - 11:45", "السادسة": "11:45 - 12:30", "السابعة": "12:30 - 13:15" },
-        "إعدادي": { "الأولى": "7:15 - 8:05", "الثانية": "8:05 - 8:55", "الثالثة": "8:55 - 9:45", "الرابعة": "9:45 - 10:30", "الخامسة": "11:00 - 11:45", "السادسة": "11:45 - 12:30", "السابعة": "12:30 - 13:15" }
-      };
-      let stage = cls.includes('ابتدائي') ? 'ابتدائي' : 'إعدادي';
-      let newTime = schedule[stage][prd];
-      if (newTime) timeInput.value = newTime;
-    }
-
-    const localTeachers = [
-      { cpr: "781251907", name: "صبري محمد حمد السيد إبراهيم", subject: "العلوم", email: "amirasabry80@gmail.com" },
-      { cpr: "000502286", name: "دانيال نادر محمد خورشيد", subject: "اللغة الإنجليزية", email: "" },
-      { cpr: "730202976", name: "محمد إبراهيم محمد ناصر", subject: "نظام معلم فصل", email: "" },
-      { cpr: "791343197", name: "طه عاطف طه عبد اللطيف", subject: "الرياضيات", email: "" },
-      { cpr: "680839461", name: "عبدالباسط محمد السيد محمد", subject: "الرياضيات", email: "" },
-      { cpr: "710654782", name: "منتصر عثمان زيدان ابوزيد", subject: "اللغة الإنجليزية", email: "" },
-      { cpr: "820503207", name: "إبراهيم عبدالنبي أحمد علي ناصر", subject: "تربية خاصة (دمج)", email: "" },
-      { cpr: "670158887", name: "لطفي ابراهيم محمد ابراهيم", subject: "الرياضيات", email: "" },
-      { cpr: "750504897", name: "علي محسن علي سيف", subject: "المجالات العملية", email: "" },
-      { cpr: "910304823", name: "ياسر عبد الهادي عبد الله عيسى", subject: "اللغة العربية", email: "" },
-      { cpr: "820464350", name: "سفيان محمد نورفل", subject: "التربية الإسلامية", email: "" },
-      { cpr: "750802537", name: "عبدالله حسن عبدالله سند", subject: "المجالات العملية", email: "" },
-      { cpr: "741006316", name: "ماهر مهدي علي عمران", subject: "اللغة العربية", email: "" },
-      { cpr: "711242100", name: "ايمن محمد بكري احمد", subject: "اللغة الإنجليزية", email: "" },
-      { cpr: "820702366", name: "حسين سعيد جاسم علي", subject: "مصادر التعلم", email: "" },
-      { cpr: "860604241", name: "يوسف علي عبدالله عبدالحق", subject: "تقنية المعلومات", email: "" },
-      { cpr: "690246110", name: "صلاح فؤاد محمد السيد", subject: "تربية خاصة (نطق ولغة)", email: "" },
-      { cpr: "790306913", name: "حسين هلال ابراهيم احمد", subject: "تقنية المعلومات", email: "" },
-      { cpr: "661002705", name: "محمد علي محسن العلي", subject: "الرياضيات", email: "" },
-      { cpr: "900905719", name: "محمد عبدالجبار جعفر العويناتي", subject: "اللغة العربية والتربية الإسلامية", email: "" },
-      { cpr: "731201817", name: "جعفر حسن عبدالله الزاير", subject: "العلوم", email: "" },
-      { cpr: "720202892", name: "باسم ناصر سعد رحال", subject: "اللغة العربية", email: "" },
-      { cpr: "670639486", name: "محمد محمود محمد سليمان", subject: "العلوم", email: "" },
-      { cpr: "700243232", name: "السيد البيلي السيد بيلي", subject: "المجالات العملية", email: "" },
-      { cpr: "820603350", name: "حسين راشد حبيب حسين الدرازي", subject: "التربية الرياضية", email: "" },
-      { cpr: "680110836", name: "محمد إبراهيم علي آل طوق", subject: "اللغة العربية", email: "" },
-      { cpr: "721137601", name: "ناصر ماهر احمد محمد", subject: "المواد الاجتماعية", email: "" },
-      { cpr: "790708221", name: "عباس حسين فردان الفردان", subject: "التربية الرياضية", email: "" },
-      { cpr: "770706231", name: "علي عبدالله أحمد علي", subject: "المواد الاجتماعية", email: "" },
-      { cpr: "700202137", name: "موسى مدن حسين مدن عصفور", subject: "التربية الإسلامية", email: "" },
-      { cpr: "700034056", name: "عدنان عبدالجليل عبدالحسين الحلواجي", subject: "اللغة العربية", email: "" },
-      { cpr: "000000000", name: "عبدالرضا عبدالرسول", subject: "العلوم", email: "" },
-      { cpr: "111111111", name: "جلال ابراهيم", subject: "المواد الاجتماعية", email: "" }
-    ];
-
-    const localVisitors = [
-      { name: "محمد إبراهيم محمد ناصر", job: "مدير المدرسة", email: "amirasabry80@gmail.com" }, 
-      { name: "عبدالله أحمد دليم", job: "المدير المساعد", email: "amirasabry80@gmail.com" },
-      { name: "د. عدنان عبدالجليل عبدالحسين الحلواجي", job: "معلم أول", email: "amirasabry80@gmail.com" }, 
-      { name: "محمد علي محسن العلي", job: "معلم أول", email: "" },
-      { name: "عبدالرضا عبدالرسول", job: "معلم أول", email: "" }, 
-      { name: "عباس كاظم أحمد عبدالنبي", job: "معلم أول", email: "" },
-      { name: "موسى مدن حسين مدن عصفور", job: "معلم أول", email: "" }, 
-      { name: "جلال ابراهيم", job: "معلم أول", email: "" },
-      { name: "حسين راشد حبيب حسين الدرازي", job: "منسق", email: "" },
-      { name: "عبدالله موفق احمد فارس فارس", job: "مسئول التربية الخاصة", email: "" }
-    ];
-
-    let db = { visits: [] };
-
-    const criteriaList = [
-      { id: 1, domain: "التخطيط وإدارة الموقف التعليمي", title: "اتساق تخطيط الدرس مع الكفايات التعليمية للمنهج، ومراعاته احتياجات الطلبة." },
-      { id: 2, domain: "التخطيط وإدارة الموقف التعليمي", title: "توفير بيئة تعلم آمنة ومحفزة خالية من المخاطر لضمان إنتاجية التعلم." },
-      { id: 3, domain: "التخطيط وإدارة الموقف التعليمي", title: "تضمين الموقف التعليمي إرشادات وتوجيهات واضحة." },
-      { id: 4, domain: "التخطيط وإدارة الموقف التعليمي", title: "استثمار الوقت بما يحقق أهداف التعلم بصورة منتجة." },
-      { id: 5, domain: "التخطيط وإدارة الموقف التعليمي", title: "تحفيز الطلبة ورفع دافعيتهم بأساليب تمكنهم من المشاركة في التعلم وبناء شخصيتهم." },
-      { id: 6, domain: "التعليم والتعلم والتقويم", title: "سلامة المادة العلمية ومراعاتها كفايات المنهج والمستويات المتوقعة للمرحلة التعليمية." },
-      { id: 7, domain: "التعليم والتعلم والتقويم", title: "توظيف استراتيجيات تعليم وتعلم فاعلة، تسهم في دمج الطلبة على اختلاف احتياجاتهم." },
-      { id: 8, domain: "التعليم والتعلم والتقويم", title: "توظيف التقويم والاستفادة من نتائجه في دعم جميع فئات الطلبة وفق احتياجاتهم." },
-      { id: 9, domain: "التعليم والتعلم والتقويم", title: "تنمية مهارات التفكير العليا للطلبة وتحدي قدراتهم." },
-      { id: 10, domain: "التعليم والتعلم والتقويم", title: "توظيف التعليم المتمايز لتلبية احتياجات الطلبة المتنوعة على اختلاف فئاتهم." },
-      { id: 11, domain: "الموارد التعليمية والتكنولوجية", title: "توظيف المصادر والموارد التعليمية والتكنولوجية في عمليات التعليم والتعلم." },
-      { id: 12, domain: "الموارد التعليمية والتكنولوجية", title: "تنمية مهارات الطلبة التكنولوجية ومهارات البحث والتعلم الذاتي، وتشجيعهم على إنتاج المحتوى التعليمي الرقمي." },
-      { id: 13, domain: "الإنجاز الأكاديمي", title: "إظهار الطلبة المعارف والمهارات الأساسية وفقًا لمرحلتهم التعليمية." },
-      { id: 14, domain: "الإنجاز الأكاديمي", title: "تحقيق الطلبة التقدم خلال الدروس واكتسابهم مهارات التعلم." },
-      { id: 15, domain: "التطور الشخصي للطلبة", title: "التزام الطلبة بالقيم الإسلامية، والوطنية، والرقمية، والاستعمال الآمن للتكنولوجيا." },
-      { id: 16, domain: "التطور الشخصي للطلبة", title: "التزام الطلبة السلوك الإيجابي نحو التعلم، والانضباط الذاتي، وتحمل المسؤوليات المختلفة." },
-      { id: 17, domain: "التطور الشخصي للطلبة", title: "قدرة الطلبة على التواصل والمشاركة الفاعلة خلال تعلمهم." },
-      { id: 18, domain: "التطور الشخصي للطلبة", title: "إظهار الطلبة الثقة بالنفس والقدرة على القيادة، والمبادرة، والابتكار." }
-    ];
-
-    function toggleDarkMode() {
-      document.documentElement.classList.toggle('dark');
-      let isDark = document.documentElement.classList.contains('dark');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    }
-    if(localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) toggleDarkMode();
-
-    function checkLogin() {
-      if (document.getElementById('loginPass').value === "2030") {
-        document.getElementById('loginScreen').style.opacity = '0';
-        setTimeout(() => { document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('mainApp').classList.replace('hidden', 'flex'); refreshData(); }, 500);
-      } else { document.getElementById('loginError').classList.remove('hidden'); }
-    }
-
-    function switchTab(tabId) { 
-      ['tab-home', 'tab-entry', 'tab-reports'].forEach(id => document.getElementById(id).classList.toggle('hidden', id !== tabId)); 
-    }
-
-    function openNewVisit() {
-        document.getElementById('visitForm').reset();
-        document.getElementById('edit_visit_id').value = "";
-        document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-clipboard-check"></i> إدخال زيارة صفية جديدة';
-        document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> حفظ الزيارة في السجل';
-        handleLockingLogic(); 
-        switchTab('tab-entry');
-    }
-
-    window.handleLockingLogic = function() {
-       let q13 = document.querySelector('input[name="q_13"]:checked');
-       let q14 = document.querySelector('input[name="q_14"]:checked');
-       let allNames = criteriaList.map(c => 'q_' + c.id);
-
-       if (!q13 || !q14) {
-           allNames.forEach(name => {
-               if (name !== 'q_13' && name !== 'q_14') {
-                   document.querySelectorAll(`input[name="${name}"]`).forEach(r => { r.disabled = true; r.checked = false; });
-               }
-           });
-           let checkedCore = [q13, q14].filter(Boolean);
-           if (checkedCore.length === 1) {
-               let coreVal = parseInt(checkedCore[0].getAttribute('data-level'));
-               ['q_13', 'q_14'].forEach(name => {
-                   document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-                       let lvl = parseInt(r.getAttribute('data-level'));
-                       r.disabled = Math.abs(lvl - coreVal) > 1; 
-                   });
-               });
-           } else {
-               ['q_13', 'q_14'].forEach(name => {
-                   document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.disabled = false);
-               });
-           }
-           return;
-       }
-
-       allNames.forEach(rowName => {
-           let otherCheckedValues = [];
-           allNames.forEach(otherName => {
-               if (otherName !== rowName) {
-                   let chk = document.querySelector(`input[name="${otherName}"]:checked`);
-                   if (chk) otherCheckedValues.push(parseInt(chk.getAttribute('data-level')));
-               }
-           });
-
-           let c_min = Math.min(...otherCheckedValues);
-           let c_max = Math.max(...otherCheckedValues);
-
-           document.querySelectorAll(`input[name="${rowName}"]`).forEach(r => {
-               let lvl = parseInt(r.getAttribute('data-level'));
-               let new_min = Math.min(c_min, lvl);
-               let new_max = Math.max(c_max, lvl);
-               r.disabled = (new_max - new_min > 1);
-           });
-       });
-    }
-
-    function buildCriteriaEntry() {
-      let html = "";
-      const domainsOrder = [
-        { domain: "الإنجاز الأكاديمي", ids: [13, 14] },
-        { domain: "التخطيط وإدارة الموقف التعليمي", ids: [1, 2, 3, 4, 5] },
-        { domain: "التعليم والتعلم والتقويم", ids: [6, 7, 8, 9, 10] },
-        { domain: "الموارد التعليمية والتكنولوجية", ids: [11, 12] },
-        { domain: "التطور الشخصي للطلبة", ids: [15, 16, 17, 18] }
-      ];
-
-      domainsOrder.forEach(grp => {
-        html += `<tr class="bg-slate-200 dark:bg-slate-700"><td colspan="6" class="text-right text-red-800 dark:text-red-400 p-2 font-extrabold text-base border border-slate-300">المجال: ${grp.domain}</td></tr>`;
-        grp.ids.forEach(id => {
-          let c = criteriaList.find(x => x.id === id);
-          let isKey = (id === 13 || id === 14);
-          let dis = isKey ? "" : "disabled"; 
-          html += `
-            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-              <td class="font-bold">${c.id}</td>
-              <td class="text-right text-xs md:text-sm font-medium pr-2">${c.title}</td>
-              <td><input type="radio" name="q_${c.id}" value="غير ملائم = يفي بالتوقعات جزئيا" data-level="1" onchange="handleLockingLogic()" class="eval-radio w-5 h-5 accent-red-600" ${dis}></td>
-              <td><input type="radio" name="q_${c.id}" value="مرض = يفي بالتوقعات تماما" data-level="2" onchange="handleLockingLogic()" class="eval-radio w-5 h-5 accent-orange-500" ${dis}></td>
-              <td><input type="radio" name="q_${c.id}" value="جيد = يتجاوز التوقعات" data-level="3" onchange="handleLockingLogic()" class="eval-radio w-5 h-5 accent-blue-600" ${dis}></td>
-              <td><input type="radio" name="q_${c.id}" value="ممتاز = يتجاوز التوقعات بكثير" data-level="4" onchange="handleLockingLogic()" class="eval-radio w-5 h-5 accent-emerald-600" ${dis}></td>
-            </tr>
-          `;
-        });
-      });
-      document.getElementById('criteriaEntryBody').innerHTML = html;
-      handleLockingLogic(); 
-    }
-
-    function initDropdowns() {
-      const depts = [...new Set(localTeachers.map(t => t.subject))].sort();
-      let dHtml = '<option value="">-- اختر القسم أولاً --</option><option value="all">عرض جميع المعلمين</option>';
-      depts.forEach(d => dHtml += `<option value="${d}">${d}</option>`);
-      document.getElementById('v_dept').innerHTML = dHtml;
-      
-      let vHtml = ''; localVisitors.forEach(v => vHtml += `<option value="${v.name}">`);
-      document.getElementById('visitorsData').innerHTML = vHtml;
-      filterTeachers();
-    }
-
-    function filterTeachers() {
-      const dept = document.getElementById('v_dept').value;
-      let html = '<option value="">-- اختر المعلم --</option>';
-      let filtered = (dept && dept !== 'all') ? localTeachers.filter(t => t.subject === dept) : localTeachers;
-      filtered.sort((a,b) => a.name.localeCompare(b.name)).forEach(t => html += `<option value="${t.name}">${t.name}</option>`);
-      document.getElementById('v_teacher').innerHTML = html;
-      document.getElementById('v_subject').value = ""; document.getElementById('v_cpr').value = "";
-    }
-
-    function fillTeacherDetails() {
-      const t = localTeachers.find(x => x.name === document.getElementById('v_teacher').value);
-      if(t) { 
-          document.getElementById('v_subject').value = t.subject; 
-          document.getElementById('v_cpr').value = t.cpr; 
-          document.getElementById('v_teacher_email').value = t.email || ''; 
-      }
-    }
-    
-    function fillVisitorDetails() {
-      const v = localVisitors.find(x => x.name === document.getElementById('v_visitor').value);
-      if(v) {
-          document.getElementById('v_job').value = v.job;
-          document.getElementById('v_visitor_email').value = v.email || '';
-      }
-    }
-
-    async function fetchData() {
-        const timestamp = new Date().getTime();
-        const res = await fetch(SCRIPT_URL + "?t=" + timestamp);
-        if (!res.ok) throw new Error("فشل الاتصال");
-        const serverDb = await res.json();
-        db.visits = serverDb.visits || [];
-    }
-
-    window.refreshData = async function() {
-        const container = document.getElementById('reportTableContainer');
-        if (container) {
-            container.innerHTML = "<div class='text-center py-20 text-slate-500'><i class='fa-solid fa-spinner fa-spin text-4xl mb-4'></i><p>جاري جلب البيانات من السحابة...</p></div>";
-        }
-        try {
-            await fetchData();
-            generateReport(); 
-        } catch(e) {
-            alert('خطأ أثناء جلب البيانات: تأكد من نشر نسخة جديدة لسكريبت جوجل.');
-            generateReport(); 
-        }
-    }
-
-    // دالة استرجاع التقييم معدلة لإصلاح مشكلة عدم قراءة المعايير (ملاحظة كلود)
-    window.editVisit = function(visitId) {
-        const v = db.visits.find(x => String(x.ID) === String(visitId));
-        if(!v) return;
-
-        document.getElementById('visitForm').reset();
-        
-        document.getElementById('edit_visit_id').value = v.ID;
-        document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen"></i> تعديل الزيارة الصفية';
-        document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> تحديث الزيارة';
-        switchTab('tab-entry');
-
-        document.getElementById('v_teacher').innerHTML = `<option value="${v.TeacherName}">${v.TeacherName}</option>`;
-        document.getElementById('v_teacher').value = v.TeacherName;
-        document.getElementById('v_subject').value = v.Subject || '';
-        document.getElementById('v_class').value = v.Extra_Class || '';
-        document.getElementById('v_date').value = v.Date || '';
-        document.getElementById('v_visitNo').value = v.Extra_VisitNo || '1';
-        document.getElementById('v_lesson').value = v.Extra_Lesson || '';
-        document.getElementById('v_period').value = v.Period || '';
-        document.getElementById('v_time').value = v.Extra_Time || '';
-        document.getElementById('v_students').value = v.StudentsCount || '';
-        document.getElementById('v_absence').value = v.AbsenceCount || '';
-        
-        document.getElementById('v_visitor').value = v.VisitorName || '';
-        document.getElementById('v_job').value = v.VisitorJob || '';
-        document.getElementById('v_visitor_email').value = v.VisitorEmail || '';
-        document.getElementById('v_teacher_email').value = v.TeacherEmail || '';
-        
-        document.getElementById('v_success').value = v.Extra_Success || '';
-        document.getElementById('v_improve').value = v.Extra_Improve || '';
-
-        let skillsArr = (v.Extra_Skills || "").split('، ');
-        document.querySelectorAll('#skillsCheckboxes input').forEach(chk => { chk.checked = skillsArr.includes(chk.value); });
-        
-        let swArr = (v.Extra_SW || "").split('، ');
-        document.querySelectorAll('#swCheckboxes input').forEach(chk => { chk.checked = swArr.includes(chk.value); });
-
-        let supportArr = (v.Extra_Support || "").split('، ');
-        document.querySelectorAll('#supportCheckboxes input').forEach(chk => { 
-            if(chk.id !== 'chk_other') chk.checked = supportArr.includes(chk.value); 
-        });
-        
-        let otherSupportValue = supportArr.find(val => !['لقاء فردي', 'قراءة موجهة', 'زيارة تبادلية', 'ورشة عمل', 'توأمة ومجتمعات تعلم'].includes(val));
-        if(otherSupportValue && otherSupportValue.trim() !== '') {
-            document.getElementById('chk_other').checked = true;
-            document.getElementById('v_support_other').value = otherSupportValue;
-        }
-
-        // إرجاع التقييم 13 و 14 لفتح القفل بشكل صحيح
-        [13, 14].forEach(n => {
-            let val = v["Q" + n]; 
-            if(val) {
-                let r = document.querySelector(`input[name="q_${n}"][value="${val}"]`);
-                if(r) { r.disabled = false; r.checked = true; }
-            }
-        });
-        
-        handleLockingLogic(); 
-
-        for(let i=1; i<=18; i++) {
-            if(i === 13 || i === 14) continue;
-            let val = v["Q"+i];
-            if(val) {
-                let r = document.querySelector(`input[name="q_${i}"][value="${val}"]`);
-                if(r && !r.disabled) { r.checked = true; }
-            }
-        }
-        handleLockingLogic();
-        
-        if(v.FinalJudgment) {
-            let fr = document.querySelector(`input[name="v_final"][value="${v.FinalJudgment}"]`);
-            if(fr) fr.checked = true;
-        }
-    }
-
-    window.validateAndSave = function() {
-        const expectedIds = ['r_year', 'v_teacher', 'v_class', 'v_date', 'v_visitNo', 'v_lesson', 'v_period', 'v_time', 'v_students', 'v_absence', 'v_visitor', 'v_job'];
-        let missing = [];
-
-        expectedIds.forEach(id => {
-            let el = document.getElementById(id);
-            if (el) {
-               if (id === 'r_year' && el.value.trim() === '') {
-                   missing.push("العام الدراسي (في لوحة التقارير)");
-               } else if (id !== 'r_year' && (!el.value || el.value.trim() === '')) {
-                   let label = el.previousElementSibling;
-                   let name = label ? label.innerText.replace('*','').trim() : id;
-                   missing.push(name);
-               }
-            }
-        });
-
-        for(let i=1; i<=18; i++) {
-          let checkedEl = document.querySelector(`input[name="q_${i}"]:checked`);
-          if (!checkedEl) { missing.push(`تقييم المعيار رقم (${i})`); }
-        }
-
-        let finalEl = document.querySelector('input[name="v_final"]:checked');
-        if (!finalEl) { missing.push('الحكم العام على الدرس'); }
-
-        if(missing.length > 0) {
-            alert("⚠️ لا يمكن الحفظ! الرجاء إكمال البيانات التالية:\n\n- " + missing.join("\n- "));
-            return;
-        }
-
-        executeSave(finalEl);
-    }
-
-    function executeSave(finalEl) {
-      const btn = document.getElementById('saveBtn'); 
-      btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> جاري الحفظ والتزامن مع السحابة..."; 
-      btn.disabled = true;
-      
-      try {
-        let skills = Array.from(document.querySelectorAll('#skillsCheckboxes input:checked')).map(i=>i.value).join('، ');
-        let sw = Array.from(document.querySelectorAll('#swCheckboxes input:checked')).map(i=>i.value).join('، ');
-        let support = Array.from(document.querySelectorAll('#supportCheckboxes input:checked')).filter(i=>i.id!=='chk_other').map(i=>i.value);
-        let chkOther = document.getElementById('chk_other');
-        let supportOtherVal = document.getElementById('v_support_other');
-        if(chkOther && chkOther.checked && supportOtherVal && supportOtherVal.value.trim() !== '') {
-            support.push(supportOtherVal.value);
-        }
-
-        let yearVal = document.getElementById('r_year') ? document.getElementById('r_year').value : "2026-2027";
-        let editId = document.getElementById('edit_visit_id').value;
-
-        let payload = {
-          ID: editId ? editId : Date.now().toString(),
-          Year: yearVal,
-          Semester: "طوال العام", 
-          Date: document.getElementById('v_date').value,
-          TeacherName: document.getElementById('v_teacher').value, 
-          Subject: document.getElementById('v_subject').value,
-          VisitorName: document.getElementById('v_visitor').value, 
-          VisitorJob: document.getElementById('v_job').value,
-          VisitorEmail: document.getElementById('v_visitor_email').value,
-          TeacherEmail: document.getElementById('send_to_teacher').checked ? document.getElementById('v_teacher_email').value : "",
-          AdminEmail: "amirasabry80@gmail.com", 
-          FinalJudgment: finalEl.value,
-          Extra_Class: document.getElementById('v_class').value, 
-          Extra_VisitNo: document.getElementById('v_visitNo').value,
-          Extra_Lesson: document.getElementById('v_lesson').value,
-          Period: document.getElementById('v_period').value,
-          Extra_Time: document.getElementById('v_time').value,
-          StudentsCount: document.getElementById('v_students').value,
-          AbsenceCount: document.getElementById('v_absence').value,
-          Extra_Skills: skills, 
-          Extra_SW: sw, 
-          Extra_Success: document.getElementById('v_success').value,
-          Extra_Improve: document.getElementById('v_improve').value,
-          Extra_Support: support.join('، ')
-        };
-
-        for(let i=1; i<=18; i++) {
-          payload["Q"+i] = document.querySelector(`input[name="q_${i}"]:checked`).value;
-        }
-        
-        if(editId) {
-            let index = db.visits.findIndex(x => String(x.ID) === String(editId));
-            if(index !== -1) db.visits[index] = payload;
-        } else {
-            db.visits.push(payload);
-        }
-
-        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-            .catch(err => console.log('Sync Error:', err));
-
-        alert("تم إرسال الزيارة للسحابة بنجاح! سيتم إرسال الإيميلات تلقائياً."); 
-        openNewVisit(); 
-        switchTab('tab-reports'); 
-        updateFilterUI(); 
-        generateReport();
-
-      } catch (err) {
-        alert("حدث خطأ غير متوقع: " + err.message);
-      } finally {
-        btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> حفظ الزيارة في السجل'; 
-        btn.disabled = false;
-      }
-    }
-
-    function updateFilterUI() {
-      const fBy = document.getElementById('r_filterBy').value;
-      const divSpec = document.getElementById('div_specific');
-      const selSpec = document.getElementById('r_specific');
-      
-      if(fBy === 'all') { divSpec.classList.add('hidden'); return; }
-      divSpec.classList.remove('hidden');
-      
-      let opts = [];
-      if(fBy === 'teacher') opts = [...new Set(localTeachers.map(t=>t.name))].sort();
-      if(fBy === 'dept') opts = [...new Set(localTeachers.map(t=>t.subject))].sort();
-      if(fBy === 'visitor') opts = [...new Set(localVisitors.map(v=>v.name))].sort();
-      selSpec.innerHTML = opts.map(o => `<option value="${o}">${o}</option>`).join('');
-    }
-
-    const formatPct = (count, total) => {
-      if(total === 0) return '0%';
-      let p = (count / total) * 100;
-      return Number.isInteger(p) ? p + '%' : p.toFixed(2) + '%';
-    };
-
-    function generateReport() {
-      const type = document.getElementById('r_type').value;
-      const fBy = document.getElementById('r_filterBy').value;
-      const spec = document.getElementById('r_specific').value;
-      const yr = document.getElementById('r_year').value;
-      const container = document.getElementById('reportTableContainer');
-
-      let filtered = db.visits.filter(v => {
-        let mY = (yr === "" || v.Year === yr);
-        let mF = true;
-        if(fBy === 'teacher') mF = (v.TeacherName === spec);
-        if(fBy === 'dept') mF = (v.Subject === spec);
-        if(fBy === 'visitor') mF = (v.VisitorName === spec);
-        return mY && mF;
-      });
-
-      if(type === 'log') {
-        let html = `<div class="text-sm font-bold mb-4 bg-slate-100 p-2 rounded border border-slate-300">إجمالي الزيارات المسجلة: ${filtered.length}</div>
-                    <table class="w-full text-sm border-collapse border border-slate-300">
-                      <thead><tr class="bg-slate-200"><th class="border p-2">التاريخ</th><th class="border p-2">المعلم</th><th class="border p-2">المقيم</th><th class="border p-2 text-center">إجراء</th></tr></thead>
-                      <tbody>`;
-        if(filtered.length === 0) html += `<tr><td colspan="4" class="text-center p-4">لا توجد زيارات مطابقة للبحث.</td></tr>`;
-        filtered.forEach(v => {
-          // تم إضافة أزرار الـ PDF بجوار كل زيارة
-          html += `<tr class="hover:bg-slate-50">
-                    <td class="border p-2 text-center">${v.Date || ''}</td>
-                    <td class="border p-2 text-center font-bold">${v.TeacherName}</td>
-                    <td class="border p-2 text-center text-slate-500">${v.VisitorName}</td>
-                    <td class="border p-2 text-center no-print">
-                      <button onclick="editVisit('${v.ID}')" class="bg-blue-600 text-xs px-3 py-2 rounded text-white font-bold hover:bg-blue-700 shadow-md ml-1"><i class="fa-solid fa-pen"></i> تعديل</button>
-                      <button onclick="pdfAction(this, '${v.ID}', 'send')" class="bg-emerald-600 text-xs px-3 py-2 rounded text-white font-bold hover:bg-emerald-700 shadow-md ml-1"><i class="fa-solid fa-envelope"></i> إرسال PDF</button>
-                      <button onclick="pdfAction(this, '${v.ID}', 'download')" class="bg-slate-700 text-xs px-3 py-2 rounded text-white font-bold hover:bg-slate-800 shadow-md ml-1"><i class="fa-solid fa-file-arrow-down"></i> تحميل PDF</button>
-                      <button onclick="renderSinglePrint('${v.ID}')" class="bg-amber-500 text-xs px-3 py-2 rounded text-white font-bold hover:bg-amber-600 shadow-md"><i class="fa-solid fa-print"></i> طباعة المتصفح</button>
-                    </td>
-                   </tr>`;
-        });
-        html += `</tbody></table>`;
-        container.innerHTML = html;
-        return;
-      }
-
-      if(filtered.length === 0) {
-        container.innerHTML = "<p class='text-center font-bold text-red-600 mt-10'>لا توجد زيارات مطابقة.</p>";
-        return;
-      }
-
-      const calcStats = (arr) => {
-        let c = { m:0, g:0, s:0, p:0 };
-        arr.forEach(v => {
-          let j = v.FinalJudgment || "";
-          if(j.includes("بكثير")) c.m++; else if(j.includes("يتجاوز")) c.g++; else if(j.includes("تماما")) c.s++; else c.p++;
-        });
-        let t = arr.length;
-        return { total: t, raw: c, m: formatPct(c.m, t), g: formatPct(c.g, t), s: formatPct(c.s, t), p: formatPct(c.p, t) };
-      };
-
-      if(type === 'summary') {
-        let thead = `<table class="official-table"><thead><tr>`;
-        if(fBy === 'teacher') thead += `<th>اسم المعلم</th><th>القسم</th>`;
-        if(fBy === 'dept') thead += `<th>القسم / المادة</th>`;
-        if(fBy === 'visitor') thead += `<th>اسم الزائر (المقيم)</th><th>المسمى الوظيفي</th>`;
-
-        thead += `<th>مجموع<br>الزيارات</th>
-                 <th>غير ملائم = يفي<br>بالتوقعات جزئيا</th>
-                 <th>مرض = يفي<br>بالتوقعات تماما</th>
-                 <th>جيد = يتجاوز<br>التوقعات</th>
-                 <th>ممتاز = يتجاوز<br>التوقعات بكثير</th>
-                 </tr></thead><tbody>`;
-        let tbody = "";
-
-        if(fBy === 'all') {
-          let s = calcStats(filtered);
-          tbody = `<tr><td>${s.total}</td><td>${s.p}</td><td>${s.s}</td><td>${s.g}</td><td>${s.m}</td></tr>`;
-        } 
-        else if(fBy === 'dept') {
-          let grouped = {}; filtered.forEach(v => { grouped[v.Subject] = grouped[v.Subject] || []; grouped[v.Subject].push(v); });
-          for(let k in grouped) { let s = calcStats(grouped[k]); tbody += `<tr><td class="font-bold">${k}</td><td class="font-bold">${s.total}</td><td>${s.p}</td><td>${s.s}</td><td>${s.g}</td><td>${s.m}</td></tr>`; }
-        }
-        else if(fBy === 'teacher') {
-          let grouped = {}; filtered.forEach(v => { grouped[v.TeacherName] = grouped[v.TeacherName] || []; grouped[v.TeacherName].push(v); });
-          for(let k in grouped) { let s = calcStats(grouped[k]); let dept = grouped[k][0].Subject; tbody += `<tr><td class="font-bold">${k}</td><td>${dept}</td><td class="font-bold">${s.total}</td><td>${s.p}</td><td>${s.s}</td><td>${s.g}</td><td>${s.m}</td></tr>`; }
-        }
-        else if(fBy === 'visitor') {
-          let grouped = {}; filtered.forEach(v => { grouped[v.VisitorName] = grouped[v.VisitorName] || []; grouped[v.VisitorName].push(v); });
-          for(let k in grouped) { let s = calcStats(grouped[k]); let job = grouped[k][0].VisitorJob; tbody += `<tr><td class="font-bold">${k}</td><td>${job}</td><td class="font-bold">${s.total}</td><td>${s.p}</td><td>${s.s}</td><td>${s.g}</td><td>${s.m}</td></tr>`; }
-        }
-        container.innerHTML = thead + tbody + `</tbody></table>`;
-      }
-
-      else if(type === 'detailed') {
-        let html = '';
-        if(fBy === 'teacher') html += `<table class="official-table mb-4"><tr><th class="w-1/4">اسم المعلم</th><td class="w-1/4 font-bold">${spec}</td><th class="w-1/4">القسم/المادة</th><td class="w-1/4 font-bold">${filtered[0].Subject}</td></tr></table>`;
-        else if(fBy === 'visitor') html += `<table class="official-table mb-4"><tr><th class="w-1/4">اسم الزائر/المقيم</th><td class="w-1/4 font-bold">${spec}</td><th class="w-1/4">المسمى الوظيفي</th><td class="w-1/4 font-bold">${filtered[0].VisitorJob}</td></tr></table>`;
-        else if(fBy === 'dept') html += `<table class="official-table mb-4"><tr><th class="w-1/4">القسم/المادة</th><td class="w-3/4 font-bold">${spec}</td></tr></table>`;
-
-        html += `<table class="official-table">
-                  <thead>
-                    <tr>
-                      <th class="w-10">الرقم</th>
-                      <th>المعيار</th>
-                      <th class="w-16">يفي<br>بالتوقعات<br>جزئيا</th>
-                      <th class="w-16">يفي<br>بالتوقعات<br>تماما</th>
-                      <th class="w-16">يتجاوز<br>التوقعات</th>
-                      <th class="w-16">يتجاوز<br>التوقعات<br>كثيرا</th>
-                    </tr>
-                  </thead><tbody>`;
-        
-        criteriaList.forEach(c => {
-          let counts = {m:0, g:0, s:0, p:0};
-          filtered.forEach(v => {
-            let ans = v["Q"+c.id] || "";
-            if(ans.includes("بكثير")) counts.m++; else if(ans.includes("يتجاوز")) counts.g++; else if(ans.includes("تماما")) counts.s++; else if(ans.includes("جزئيا")) counts.p++;
-          });
-          let t = filtered.length;
-          html += `<tr><td>${c.id}</td><td class="criteria-text">${c.title}</td><td>${formatPct(counts.p,t)}</td><td>${formatPct(counts.s,t)}</td><td>${formatPct(counts.g,t)}</td><td>${formatPct(counts.m,t)}</td></tr>`;
-        });
-        
-        let fin = calcStats(filtered);
-        html += `</tbody></table>
-                 <h4 class="font-bold mt-4 text-right mb-1 print-only">الحكم النهائي للزيارات الصفية:</h4>
-                 <table class="official-table"><thead><tr><th class="w-32">التقييم</th><th>غير ملائم= يفي بالتوقعات جزئيا</th><th>مرض= يفي بالتوقعات تماما</th><th>جيد= يتجاوز التوقعات</th><th>ممتاز= يتجاوز التوقعات بكثير</th></tr></thead>
-                 <tbody>`;
-        if(fBy === 'all') html += `<tr><td class="font-bold bg-slate-100">عدد الزيارات</td><td>${fin.raw.p}</td><td>${fin.raw.s}</td><td>${fin.raw.g}</td><td>${fin.raw.m}</td></tr>`;
-        html += `<tr><td class="font-bold bg-slate-100">النسبة</td><td>${fin.p}</td><td>${fin.s}</td><td>${fin.g}</td><td>${fin.m}</td></tr></tbody></table>`;
-        
-        container.innerHTML = html;
-      }
-    }
-
-    // =====================================
-    // دالة إنشاء وتحميل/إرسال الـ PDF عبر السيرفر
-    // =====================================
-    window.pdfAction = async function (btn, id, mode) {
-      const v = db.visits.find(x => String(x.ID) === String(id));
-      if (!v) return;
-      let to = '';
-      if (mode === 'send') {
-        to = prompt('أدخل البريد الإلكتروني (يمكنك فصل عدة عناوين بمسافة أو فاصلة):', v.VisitorEmail || v.TeacherEmail || '');
-        if (!to) return;
-      }
-      
-      const originalHtml = btn.innerHTML; 
-      btn.disabled = true; 
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جارٍ التجهيز...';
-      
-      try {
-        const r = await fetch(SCRIPT_URL, { 
-            method: 'POST', 
-            body: JSON.stringify({ action: mode === 'send' ? 'sendPdf' : 'getPdf', ID: id, to: to }) 
-        });
-        const j = await r.json();
-        if (j.status !== 'success') throw new Error(j.error || 'خطأ غير معروف في السيرفر');
-        
-        if (mode === 'send') {
-          alert(j.sent && j.sent.length ? 'تم إرسال ملف PDF بنجاح إلى:\n' + j.sent.join('\n') : 'لم يُرسل الملف، تحقق من صحة العنوان.');
-        } else {
-          // تحويل Base64 إلى ملف PDF وتنزيله
-          const bin = atob(j.base64);
-          const arr = new Uint8Array(bin.length);
-          for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-          const blob = new Blob([arr], { type: 'application/pdf' });
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(blob); 
-          a.download = j.name; 
-          a.click();
-          setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-        }
-      } catch (e) {
-        alert('تعذر تنفيذ العملية: ' + e.message + '\n\nتأكد من نشر نسخة جديدة (New Deployment) من إعدادات جوجل سكريبت، ومنح الصلاحيات اللازمة.');
-      } finally { 
-        btn.disabled = false; 
-        btn.innerHTML = originalHtml; 
-      }
-    };
-
-    // الطباعة القديمة (طباعة المتصفح) مع تسمية الملف ديناميكياً
-    const origTitle = document.title;
-    window.renderSinglePrint = function(visitId) {
-      const v = db.visits.find(x => String(x.ID) === String(visitId));
-      if(!v) return;
-
-      document.title = `استمارة_${v.TeacherName}_${v.Date}`.replace(/\s+/g, '_');
-
-      const container = document.getElementById('reportTableContainer');
-      const SW_list = ["مناسبة كمية ونوعية الأنشطة", "مراعاة اختلاف مستويات الطلبة", "تنمية مهارات التفكير العليا", "انتظام عمليات التصحيح", "تعزيز الأعمال المتميزة"];
-      const SKILLS_list = ["التفكير الناقد وحل المشكلات", "التعاون والتواصل", "الوعي العالمي والثقافي", "الإبداع والابتكار", "القدرة على التكيف والمرونة", "المعرفة المعلوماتية", "الذكاء العاطفي", "المعرفة الرقمية"];
-      const SUPPORT_list = ["لقاء فردي", "قراءة موجهة", "زيارة تبادلية", "ورشة عمل", "توأمة ومجتمعات تعلم"];
-
-      const sel = (s, list) => list.map(x => `<div class="checkbox-item"><div class="checkbox-box">${(s || '').includes(x) ? '✔' : ''}</div> ${x}</div>`).join("");
-      let otherSupport = String(v.Extra_Support || "").split("، ").find(val => val && !SUPPORT_list.includes(val));
-      
-      let html = `
-        <div class="print-header-grid" style="display:none;"></div>
-        <div class="page-1-container">
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 11.5px; font-weight: bold; text-align: right;">
-             <tr>
-                 <td style="padding: 4px; border-bottom: 1px dashed #000; width: 50%;">اسم المعلم المزور: <span style="font-weight:normal;">${v.TeacherName || ''}</span></td>
-                 <td style="padding: 4px; border-bottom: 1px dashed #000; width: 50%;">اسم المدرسة: <span style="font-weight:normal;">البلاد القديم الابتدائية الاعدادية للبنين</span></td>
-             </tr>
-             <tr>
-                 <td style="padding: 4px; border-bottom: 1px dashed #000;">الصف / الشعبة: <span style="font-weight:normal;">${v.Extra_Class || ''}</span></td>
-                 <td style="padding: 4px; border-bottom: 1px dashed #000;">المادة/المقرر: <span style="font-weight:normal;">${v.Subject || ''}</span></td>
-             </tr>
-             <tr>
-                 <td style="padding: 4px; border-bottom: 1px dashed #000;">التاريخ: <span style="font-weight:normal;">${v.Date || ''}</span> &nbsp;&nbsp;|&nbsp;&nbsp; رقم الزيارة: <span style="font-weight:normal;">${v.Extra_VisitNo || '1'}</span></td>
-                 <td style="padding: 4px; border-bottom: 1px dashed #000;">عنوان الدرس: <span style="font-weight:normal;">${v.Extra_Lesson || ''}</span></td>
-             </tr>
-             <tr>
-                 <td style="padding: 4px; border-bottom: 1px dashed #000;">الحصة الدراسية: <span style="font-weight:normal;">${v.Period || ''}</span></td>
-                 <td style="padding: 4px; border-bottom: 1px dashed #000;">الزمن: من <span style="font-weight:normal;">${(v.Extra_Time || '').split('-')[0] || ''}</span> إلى <span style="font-weight:normal;">${(v.Extra_Time || '').split('-')[1] || ''}</span></td>
-             </tr>
-          </table>
-
-          <table class="official-table" style="margin-bottom: 0; border-bottom: none;">
-                <thead>
-                  <tr>
-                    <th rowspan="2" class="w-8">المجالات</th><th rowspan="2" class="w-8">الرقم</th><th rowspan="2">المعايير</th><th colspan="4">مستويات التقييم</th>
-                  </tr>
-                  <tr>
-                    <th class="w-12"><div class="vertical-text">يفي بالتوقعات جزئياً</div></th>
-                    <th class="w-12"><div class="vertical-text">يفي بالتوقعات تماماً</div></th>
-                    <th class="w-12"><div class="vertical-text">يتجاوز التوقعات</div></th>
-                    <th class="w-12"><div class="vertical-text">يتجاوز التوقعات بكثير</div></th>
-                  </tr>
-                </thead>
-                <tbody>`;
-
-      let currentDomain = "";
-      criteriaList.forEach(c => {
-        let domainRowspan = criteriaList.filter(x => x.domain === c.domain).length;
-        let ans = v["Q"+c.id] || "";
-        let mkM = ans.includes("بكثير") ? "✔" : ""; let mkG = ans.includes("يتجاوز") && !mkM ? "✔" : "";
-        let mkS = ans.includes("تماما") ? "✔" : ""; let mkP = ans.includes("جزئيا") ? "✔" : "";
-        
-        html += `<tr>`;
-        if(currentDomain !== c.domain) {
-          html += `<td rowspan="${domainRowspan}"><div class="vertical-text">${c.domain}</div></td>`;
-          currentDomain = c.domain;
-        }
-        html += `<td>${c.id}</td><td class="criteria-text">${c.title}</td><td class="font-bold text-lg">${mkP}</td><td class="font-bold text-lg">${mkS}</td><td class="font-bold text-lg">${mkG}</td><td class="font-bold text-lg">${mkM}</td></tr>`;
-      });
-
-      let finM = (v.FinalJudgment || "").includes("بكثير") ? "✔" : ""; let finG = (v.FinalJudgment || "").includes("يتجاوز") && !finM ? "✔" : "";
-      let finS = (v.FinalJudgment || "").includes("تماما") ? "✔" : ""; let finP = (v.FinalJudgment || "").includes("جزئيا") ? "✔" : "";
-
-      html += `</tbody></table>
-          <table class="official-table" style="border-top: none;">
-            <tr>
-              <th style="width: 15%; border-top: none;">الحكم على الدرس:</th>
-              <td style="width: 21.25%; border-top: none;"><div class="checkbox-box">${finP}</div> غير ملائم = يفي بالتوقعات جزئيا</td>
-              <td style="width: 21.25%; border-top: none;"><div class="checkbox-box">${finS}</div> مرض = يفي بالتوقعات تماما</td>
-              <td style="width: 21.25%; border-top: none;"><div class="checkbox-box">${finG}</div> جيد = يتجاوز التوقعات</td>
-              <td style="width: 21.25%; border-top: none;"><div class="checkbox-box">${finM}</div> ممتاز = يتجاوز التوقعات بكثير</td>
-            </tr>
-          </table>
-      </div>`;
-
-      html += `
-        <div class="page-2-container">
-          <div class="text-center font-bold text-sm mb-4 bg-slate-200 py-1 border border-black">الجزء الخاص بالمداولة البعدية مع المعلم المزور</div>
-          
-          <div class="box-section">
-            <div class="box-header">1). مهارات القرن الحادي والعشرين التي تم توظيفها في الموقف التعليمي:</div>
-            <div class="box-content checkbox-grid">${sel(v.Extra_Skills, SKILLS_list)}</div>
-          </div>
-          
-          <div class="box-section">
-            <div class="box-header">2). متابعة أعمال الطلبة (معايير المتابعة):</div>
-            <div class="box-content checkbox-grid">${sel(v.Extra_SW, SW_list)}</div>
-          </div>
-
-          <div class="box-section">
-            <div class="box-header">3). التغذية الراجعة:</div>
-            <div class="box-content" style="display: flex; gap: 10px;">
-              <div style="flex: 1; border: 1px solid #ccc; padding: 5px; min-height: 50px;"><strong>نجاحات المعلم:</strong><br>${v.Extra_Success || 'لا يوجد'}</div>
-              <div style="flex: 1; border: 1px solid #ccc; padding: 5px; min-height: 50px;"><strong>جوانب بحاجة إلى تطوير:</strong><br>${v.Extra_Improve || 'لا يوجد'}</div>
-            </div>
-          </div>
-
-          <div class="box-section">
-            <div class="box-header">4). أساليب الدعم والمساندة للمعلم المزور:</div>
-            <div class="box-content checkbox-grid">
-               ${sel(v.Extra_Support, SUPPORT_list)}
-               ${otherSupport ? `<div class="checkbox-item"><div class="checkbox-box">✔</div> أخرى: ${otherSupport}</div>` : ''}
-            </div>
-          </div>
-          
-          <table style="width: 100%; margin-top: 40px; text-align: center; font-size: 11.5px; font-weight: bold; border-collapse: collapse; page-break-inside: avoid;">
-            <tr>
-                <td style="width: 25%; padding-bottom: 30px;">اسم الزائر:<br><span style="font-weight:normal;">${v.VisitorName || ''}</span></td>
-                <td style="width: 25%; padding-bottom: 30px;">المسمى الوظيفي:<br><span style="font-weight:normal;">${v.VisitorJob || ''}</span></td>
-                <td style="width: 25%; padding-bottom: 30px;">توقيع الزائر:<br><span style="font-weight:normal;">........................</span></td>
-                <td style="width: 25%; padding-bottom: 30px;">توقيع المعلم:<br><span style="font-weight:normal;">........................</span></td>
-            </tr>
-            <tr>
-                <td colspan="2" style="text-align: right; padding-top: 20px; border-top: 1.5px solid #000;">المدير المساعد: أ. عبدالله أحمد دليم</td>
-                <td colspan="2" style="text-align: left; padding-top: 20px; border-top: 1.5px solid #000;">مدير المدرسة: أ. محمد إبراهيم محمد ناصر</td>
-            </tr>
-          </table>
-        </div>
-      `;
-      container.innerHTML = html;
-      container.scrollIntoView({ behavior: 'smooth' });
-    }
-    window.addEventListener('afterprint', () => { document.title = origTitle; });
-
-    buildCriteriaEntry();
-    initDropdowns();
-  </script>
+ </div>
+
+ <div class="card">
+  <h3>المداولة البعدية مع المعلم</h3>
+  <div class="g g2">
+   <div><label>1) مهارات القرن الحادي والعشرين التي تم توظيفها</label><div class="chk" id="skillsBox"></div></div>
+   <div><label>2) متابعة أعمال الطلبة</label><div class="chk" id="swBox" style="grid-template-columns:1fr"></div></div>
+   <div><label>3) نجاحات المعلم</label><textarea id="v_success" rows="3"></textarea><label style="margin-top:8px">جوانب بحاجة إلى تطوير</label><textarea id="v_improve" rows="3"></textarea></div>
+   <div><label>4) أساليب الدعم والمساندة</label><div class="chk" id="supBox"></div>
+    <div style="display:flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" id="chk_other" style="width:auto"><span>أخرى:</span><input id="v_support_other"></div></div>
+  </div>
+ </div>
+
+ <div class="card" style="border-color:#059669aa">
+  <div class="g g2">
+   <div><label class="req">اسم الزائر (المقيم)</label><input id="v_visitor" list="visitorsData" onchange="fillVisitor()"></div>
+   <div><label class="req">المسمى الوظيفي</label><input id="v_job" readonly></div>
+   <div class="span2"><label>إيميل المقيم (يصله ملف PDF بعد الحفظ)</label><input type="email" id="v_visitor_email" placeholder="يُعبأ تلقائياً ويمكن تعديله"></div>
+   <div class="span2"><label style="display:flex;gap:8px;align-items:center;margin:0"><input type="checkbox" id="send_to_teacher" style="width:auto"> إرسال نسخة PDF للمعلم المزور أيضاً</label></div>
+  </div>
+  <button id="saveBtn" style="margin-top:14px;padding:13px 28px;font-size:16px" onclick="validateAndSave()">حفظ الزيارة وإرسال PDF</button>
+ </div>
+</section>
+
+<!-- التقارير -->
+<section id="reports" class="tab">
+ <div class="card tools np">
+  <div><label>العام الدراسي</label><input id="r_year" value="2026-2027" style="width:110px;text-align:center;font-weight:700"></div>
+  <div><label>نوع التقرير</label><select id="r_type"><option value="summary">ملخص الزيارات</option><option value="detailed">تحليل مفصل (نسب التقييم)</option><option value="log">سجل الزيارات</option></select></div>
+  <div><label>فرز حسب</label><select id="r_filterBy" onchange="updateFilterUI()"><option value="all">الكل (المدرسة)</option><option value="teacher">المعلم</option><option value="dept">القسم</option><option value="visitor">المقيم</option></select></div>
+  <div id="div_specific" style="display:none"><label>اختر</label><select id="r_specific"></select></div>
+  <div><label>بحث في السجل</label><input id="r_q" placeholder="معلم / مقيم / درس"></div>
+  <button onclick="generateReport()">استخراج التقرير</button>
+  <button class="sec" onclick="refreshData()">تحديث من السحابة</button>
+  <button class="sec grow" style="max-width:150px;margin-right:auto" onclick="window.print()">طباعة / PDF</button>
+ </div>
+ <div class="card rp" id="printArea">
+  <div id="repHead"><img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt=""><div id="repDate" style="text-align:right;font-weight:700"></div><h3 id="repTitle" style="text-align:center;font-size:17px"></h3></div>
+  <div id="out"><p style="color:var(--mut);text-align:center;padding:60px 0">اختر نوع التقرير ثم اضغط «استخراج التقرير»</p></div>
+ </div>
+</section>
+</main>
+</div>
+<datalist id="visitorsData"></datalist>
+
+<script>
+const localTeachers = [
+  { cpr: "781251907", name: "صبري محمد حمد السيد إبراهيم", subject: "العلوم", email: "amirasabry80@gmail.com" },
+  { cpr: "000502286", name: "دانيال نادر محمد خورشيد", subject: "اللغة الإنجليزية", email: "" },
+  { cpr: "730202976", name: "محمد إبراهيم محمد ناصر", subject: "نظام معلم فصل", email: "" },
+  { cpr: "791343197", name: "طه عاطف طه عبد اللطيف", subject: "الرياضيات", email: "" },
+  { cpr: "680839461", name: "عبدالباسط محمد السيد محمد", subject: "الرياضيات", email: "" },
+  { cpr: "710654782", name: "منتصر عثمان زيدان ابوزيد", subject: "اللغة الإنجليزية", email: "" },
+  { cpr: "820503207", name: "إبراهيم عبدالنبي أحمد علي ناصر", subject: "تربية خاصة (دمج)", email: "" },
+  { cpr: "670158887", name: "لطفي ابراهيم محمد ابراهيم", subject: "الرياضيات", email: "" },
+  { cpr: "750504897", name: "علي محسن علي سيف", subject: "المجالات العملية", email: "" },
+  { cpr: "910304823", name: "ياسر عبد الهادي عبد الله عيسى", subject: "اللغة العربية", email: "" },
+  { cpr: "820464350", name: "سفيان محمد نورفل", subject: "التربية الإسلامية", email: "" },
+  { cpr: "750802537", name: "عبدالله حسن عبدالله سند", subject: "المجالات العملية", email: "" },
+  { cpr: "741006316", name: "ماهر مهدي علي عمران", subject: "اللغة العربية", email: "" },
+  { cpr: "711242100", name: "ايمن محمد بكري احمد", subject: "اللغة الإنجليزية", email: "" },
+  { cpr: "820702366", name: "حسين سعيد جاسم علي", subject: "مصادر التعلم", email: "" },
+  { cpr: "860604241", name: "يوسف علي عبدالله عبدالحق", subject: "تقنية المعلومات", email: "" },
+  { cpr: "690246110", name: "صلاح فؤاد محمد السيد", subject: "تربية خاصة (نطق ولغة)", email: "" },
+  { cpr: "790306913", name: "حسين هلال ابراهيم احمد", subject: "تقنية المعلومات", email: "" },
+  { cpr: "661002705", name: "محمد علي محسن العلي", subject: "الرياضيات", email: "" },
+  { cpr: "900905719", name: "محمد عبدالجبار جعفر العويناتي", subject: "اللغة العربية والتربية الإسلامية", email: "" },
+  { cpr: "731201817", name: "جعفر حسن عبدالله الزاير", subject: "العلوم", email: "" },
+  { cpr: "720202892", name: "باسم ناصر سعد رحال", subject: "اللغة العربية", email: "" },
+  { cpr: "670639486", name: "محمد محمود محمد سليمان", subject: "العلوم", email: "" },
+  { cpr: "700243232", name: "السيد البيلي السيد بيلي", subject: "المجالات العملية", email: "" },
+  { cpr: "820603350", name: "حسين راشد حبيب حسين الدرازي", subject: "التربية الرياضية", email: "" },
+  { cpr: "680110836", name: "محمد إبراهيم علي آل طوق", subject: "اللغة العربية", email: "" },
+  { cpr: "721137601", name: "ناصر ماهر احمد محمد", subject: "المواد الاجتماعية", email: "" },
+  { cpr: "790708221", name: "عباس حسين فردان الفردان", subject: "التربية الرياضية", email: "" },
+  { cpr: "770706231", name: "علي عبدالله أحمد علي", subject: "المواد الاجتماعية", email: "" },
+  { cpr: "700202137", name: "موسى مدن حسين مدن عصفور", subject: "التربية الإسلامية", email: "" },
+  { cpr: "700034056", name: "عدنان عبدالجليل عبدالحسين الحلواجي", subject: "اللغة العربية", email: "" },
+  { cpr: "000000000", name: "عبدالرضا عبدالرسول", subject: "العلوم", email: "" },
+  { cpr: "111111111", name: "جلال ابراهيم", subject: "المواد الاجتماعية", email: "" }
+];
+
+const localVisitors = [
+  { name: "محمد إبراهيم محمد ناصر", job: "مدير المدرسة", email: "amirasabry80@gmail.com" }, 
+  { name: "عبدالله أحمد دليم", job: "المدير المساعد", email: "amirasabry80@gmail.com" },
+  { name: "د. عدنان عبدالجليل عبدالحسين الحلواجي", job: "معلم أول", email: "amirasabry80@gmail.com" }, 
+  { name: "محمد علي محسن العلي", job: "معلم أول", email: "" },
+  { name: "عبدالرضا عبدالرسول", job: "معلم أول", email: "" }, 
+  { name: "عباس كاظم أحمد عبدالنبي", job: "معلم أول", email: "" },
+  { name: "موسى مدن حسين مدن عصفور", job: "معلم أول", email: "" }, 
+  { name: "جلال ابراهيم", job: "معلم أول", email: "" },
+  { name: "حسين راشد حبيب حسين الدرازي", job: "منسق", email: "" },
+  { name: "عبدالله موفق احمد فارس فارس", job: "مسئول التربية الخاصة", email: "" }
+];
+
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzty9WyGvvCLyOVI9XaDZxImseaSd4tanfPK4H9ZNWtEdYJUuTKlY7uo30ing_ARR8/exec";
+const ADMIN="amirasabry80@gmail.com", LOGO="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])).replace(/\n/g,'<br>');
+const LV=[{t:'غير ملائم = يفي بالتوقعات جزئيا',s:'يفي جزئياً',c:'--l1'},{t:'مرض = يفي بالتوقعات تماما',s:'يفي تماماً',c:'--l2'},{t:'جيد = يتجاوز التوقعات',s:'يتجاوز',c:'--l3'},{t:'ممتاز = يتجاوز التوقعات بكثير',s:'يتجاوز بكثير',c:'--l4'}];
+const lvl=a=>{a=a||'';return a.includes('بكثير')?3:a.includes('يتجاوز')?2:a.includes('تماما')?1:a.includes('جزئيا')?0:-1};
+const CR=[[1,"التخطيط وإدارة الموقف التعليمي","اتساق تخطيط الدرس مع الكفايات التعليمية للمنهج، ومراعاته احتياجات الطلبة."],[2,"التخطيط وإدارة الموقف التعليمي","توفير بيئة تعلم آمنة ومحفزة خالية من المخاطر لضمان إنتاجية التعلم."],[3,"التخطيط وإدارة الموقف التعليمي","تضمين الموقف التعليمي إرشادات وتوجيهات واضحة."],[4,"التخطيط وإدارة الموقف التعليمي","استثمار الوقت بما يحقق أهداف التعلم بصورة منتجة."],[5,"التخطيط وإدارة الموقف التعليمي","تحفيز الطلبة ورفع دافعيتهم بأساليب تمكنهم من المشاركة في التعلم وبناء شخصيتهم."],[6,"التعليم والتعلم والتقويم","سلامة المادة العلمية ومراعاتها كفايات المنهج والمستويات المتوقعة للمرحلة التعليمية."],[7,"التعليم والتعلم والتقويم","توظيف استراتيجيات تعليم وتعلم فاعلة، تسهم في دمج الطلبة على اختلاف احتياجاتهم."],[8,"التعليم والتعلم والتقويم","توظيف التقويم والاستفادة من نتائجه في دعم جميع فئات الطلبة وفق احتياجاتهم."],[9,"التعليم والتعلم والتقويم","تنمية مهارات التفكير العليا للطلبة وتحدي قدراتهم."],[10,"التعليم والتعلم والتقويم","توظيف التعليم المتمايز لتلبية احتياجات الطلبة المتنوعة على اختلاف فئاتهم."],[11,"الموارد التعليمية والتكنولوجية","توظيف المصادر والموارد التعليمية والتكنولوجية في عمليات التعليم والتعلم."],[12,"الموارد التعليمية والتكنولوجية","تنمية مهارات الطلبة التكنولوجية ومهارات البحث والتعلم الذاتي، وتشجيعهم على إنتاج المحتوى التعليمي الرقمي."],[13,"الإنجاز الأكاديمي","إظهار الطلبة المعارف والمهارات الأساسية وفقًا لمرحلتهم التعليمية."],[14,"الإنجاز الأكاديمي","تحقيق الطلبة التقدم خلال الدروس واكتسابهم مهارات التعلم."],[15,"التطور الشخصي للطلبة","التزام الطلبة بالقيم الإسلامية، والوطنية، والرقمية، والاستعمال الآمن للتكنولوجيا."],[16,"التطور الشخصي للطلبة","التزام الطلبة السلوك الإيجابي نحو التعلم، والانضباط الذاتي، وتحمل المسؤوليات المختلفة."],[17,"التطور الشخصي للطلبة","قدرة الطلبة على التواصل والمشاركة الفاعلة خلال تعلمهم."],[18,"التطور الشخصي للطلبة","إظهار الطلبة الثقة بالنفس والقدرة على القيادة، والمبادرة، والابتكار."]];
+const ENTRY_ORDER=[["الإنجاز الأكاديمي",[13,14]],["التخطيط وإدارة الموقف التعليمي",[1,2,3,4,5]],["التعليم والتعلم والتقويم",[6,7,8,9,10]],["الموارد التعليمية والتكنولوجية",[11,12]],["التطور الشخصي للطلبة",[15,16,17,18]]];
+const SKILLS=["التفكير الناقد وحل المشكلات","التعاون والتواصل","الوعي العالمي والثقافي","الإبداع والابتكار","القدرة على التكيف والمرونة","المعرفة المعلوماتية","الذكاء العاطفي","المعرفة الرقمية"];
+const SW=["مناسبة كمية ونوعية الأنشطة","مراعاة اختلاف مستويات الطلبة","تنمية مهارات التفكير العليا","انتظام عمليات التصحيح","تعزيز الأعمال المتميزة"];
+const SW_FULL=["مناسبة كمية ونوعية الأنشطة الكتابية والرقمية لتوافقها مع المطلوب.","مراعاة اختلاف مستويات الطلبة الأكاديمية.","تنمية مهارات التفكير العليا، وتحدي القدرات.","انتظام عمليات التصحيح والتصويب لجميع الأنشطة.","تعزيز الأعمال المتميزة وتقديم التغذية الراجعة البناءة."];
+const SUP=["لقاء فردي","قراءة موجهة","زيارة تبادلية","ورشة عمل","توأمة ومجتمعات تعلم"];
+const CLASSES=[["سادس ابتدائي",3],["أول إعدادي",4],["ثاني إعدادي",4],["ثالث إعدادي",5]];
+const PERIODS=["الأولى","الثانية","الثالثة","الرابعة","الخامسة","السادسة","السابعة"];
+const SCHED={"ابتدائي":["7:15 - 8:05","8:05 - 8:55","8:55 - 9:45","10:15 - 11:00","11:00 - 11:45","11:45 - 12:30","12:30 - 13:15"],"إعدادي":["7:15 - 8:05","8:05 - 8:55","8:55 - 9:45","9:45 - 10:30","11:00 - 11:45","11:45 - 12:30","12:30 - 13:15"]};
+let db={visits:[]}, curSheet=null;
+
+/* ===== الدخول والمظهر ===== */
+function checkLogin(){
+  if($('loginPass').value==="2030"){$('loginScreen').style.display='none';$('app').style.display='block';fetchData().then(renderHome)}
+  else $('loginError').style.display='block';
+}
+function toggleDark(){document.documentElement.classList.toggle('dark');const d=document.documentElement.classList.contains('dark');localStorage.setItem('theme',d?'dark':'light');$('themeBtn').textContent=d?'☀️':'🌙'}
+if(localStorage.getItem('theme')==='dark')toggleDark();
+function go(id){['home','entry','reports'].forEach(t=>$(t).classList.toggle('on',t===id));if(id==='home')renderHome();window.scrollTo(0,0)}
+const post=o=>fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(o)}).then(r=>r.json());
+
+/* ===== بناء الاستمارة ===== */
+function buildStatic(){
+  $('v_class').innerHTML='<option value="">-- اختر الصف --</option>'+CLASSES.map(([n,c])=>Array.from({length:c},(_,i)=>`<option>${n} / ${i+1}</option>`).join('')).join('');
+  $('v_period').innerHTML='<option value="">-- اختر الحصة --</option>'+PERIODS.map(p=>`<option>${p}</option>`).join('');
+  $('finalBox').innerHTML=LV.slice().reverse().map(l=>`<label><input type="radio" name="v_final" value="${l.t}"> ${l.t.split(' =')[0]}</label>`).join('');
+  $('skillsBox').innerHTML=SKILLS.map(s=>`<label><input type="checkbox" value="${s}"> ${s}</label>`).join('');
+  $('swBox').innerHTML=SW.map((s,i)=>`<label><input type="checkbox" value="${s}"> ${SW_FULL[i]}</label>`).join('');
+  $('supBox').innerHTML=SUP.map(s=>`<label><input type="checkbox" value="${s}"> ${s}</label>`).join('');
+  let h='';
+  ENTRY_ORDER.forEach(([d,ids])=>{
+    h+=`<tr class="dm"><td colspan="6">المجال: ${d}</td></tr>`;
+    ids.forEach(id=>{const c=CR.find(x=>x[0]===id),dis=(id===13||id===14)?'':'disabled';
+      h+=`<tr><td class="n">${id}</td><td class="t">${c[2]}</td>`+LV.map((l,i)=>`<td class="rc"><label><input type="radio" class="eval" name="q_${id}" value="${l.t}" data-level="${i+1}" style="--c:var(${l.c})" onchange="lockLogic()" ${dis}></label></td>`).join('')+'</tr>';});
+  });
+  $('critBody').innerHTML=h;
+  $('v_dept').innerHTML='<option value="">-- اختر القسم --</option><option value="all">عرض جميع المعلمين</option>'+[...new Set(localTeachers.map(t=>t.subject))].sort().map(d=>`<option>${d}</option>`).join('');
+  $('visitorsData').innerHTML=localVisitors.map(v=>`<option value="${v.name}">`).join('');
+  filterTeachers();lockLogic();
+}
+function lockLogic(){
+  const names=CR.map(c=>'q_'+c[0]),R=n=>document.querySelectorAll(`input[name="${n}"]`),chk=n=>document.querySelector(`input[name="${n}"]:checked`);
+  const q13=chk('q_13'),q14=chk('q_14');
+  if(!q13||!q14){
+    names.forEach(n=>{if(n!=='q_13'&&n!=='q_14')R(n).forEach(r=>{r.disabled=true;r.checked=false})});
+    const one=q13||q14;
+    ['q_13','q_14'].forEach(n=>R(n).forEach(r=>{r.disabled=one?Math.abs(+r.dataset.level-(+one.dataset.level))>1:false}));
+  }else names.forEach(n=>{
+    const others=names.filter(o=>o!==n).map(chk).filter(Boolean).map(x=>+x.dataset.level),mn=Math.min(...others),mx=Math.max(...others);
+    R(n).forEach(r=>{const l=+r.dataset.level;r.disabled=Math.max(mx,l)-Math.min(mn,l)>1});
+  });
+  const done=names.filter(n=>chk(n)).length;$('progT').textContent=done+' / 18';$('progB').style.width=(done/18*100)+'%';
+}
+function updateTime(){
+  const c=$('v_class').value,p=$('v_period').value;if(!c||!p)return;
+  $('v_time').value=SCHED[c.includes('ابتدائي')?'ابتدائي':'إعدادي'][PERIODS.indexOf(p)]||'';
+}
+function filterTeachers(){
+  const d=$('v_dept').value,list=(d&&d!=='all')?localTeachers.filter(t=>t.subject===d):localTeachers;
+  $('v_teacher').innerHTML='<option value="">-- اختر المعلم --</option>'+list.slice().sort((a,b)=>a.name.localeCompare(b.name,'ar')).map(t=>`<option>${t.name}</option>`).join('');
+  $('v_subject').value='';
+}
+function fillTeacher(){const t=localTeachers.find(x=>x.name===$('v_teacher').value);if(t){$('v_subject').value=t.subject;$('v_teacher_email').value=t.email||''}}
+function fillVisitor(){const v=localVisitors.find(x=>x.name===$('v_visitor').value);if(v){$('v_job').value=v.job;$('v_visitor_email').value=v.email||''}}
+
+function openNew(){
+  ['v_teacher','v_subject','v_class','v_date','v_lesson','v_period','v_time','v_students','v_absence','v_visitor','v_job','v_visitor_email','v_teacher_email','v_success','v_improve','v_support_other','edit_visit_id'].forEach(i=>$(i).value='');$('v_visitNo').value=1;filterTeachers();
+  document.querySelectorAll('#entry input[type=checkbox],#entry input[type=radio]').forEach(i=>i.checked=false);
+  $('formTitle').textContent='إدخال زيارة صفية جديدة';$('saveBtn').textContent='حفظ الزيارة وإرسال PDF';lockLogic();go('entry');
+}
+function setRadio(n,val){const r=document.querySelector(`input[name="q_${n}"][value="${val}"]`);if(r&&val){r.disabled=false;r.checked=true;return true}}
+function editVisit(id){
+  const v=db.visits.find(x=>String(x.ID)===String(id));if(!v)return;
+  openNew();
+  $('edit_visit_id').value=v.ID;$('formTitle').textContent='تعديل الزيارة الصفية';$('saveBtn').textContent='تحديث الزيارة وإرسال PDF';
+  $('v_teacher').innerHTML=`<option>${v.TeacherName}</option>`;
+  const m={v_subject:'Subject',v_class:'Extra_Class',v_date:'Date',v_visitNo:'Extra_VisitNo',v_lesson:'Extra_Lesson',v_period:'Period',v_time:'Extra_Time',v_students:'StudentsCount',v_absence:'AbsenceCount',v_visitor:'VisitorName',v_job:'VisitorJob',v_visitor_email:'VisitorEmail',v_success:'Extra_Success',v_improve:'Extra_Improve'};
+  for(const k in m)$(k).value=v[m[k]]||'';
+  const t=localTeachers.find(x=>x.name===v.TeacherName);$('v_teacher_email').value=t?t.email||'':'';
+  const tick=(sel,str)=>{const a=(str||'').split('، ');document.querySelectorAll(sel).forEach(c=>c.checked=a.includes(c.value))};
+  tick('#skillsBox input',v.Extra_Skills);tick('#swBox input',v.Extra_SW);tick('#supBox input',v.Extra_Support);
+  const oth=(v.Extra_Support||'').split('، ').find(x=>x.trim()&&!SUP.includes(x));
+  if(oth){$('chk_other').checked=true;$('v_support_other').value=oth}
+  setRadio(13,v.Q13);setRadio(14,v.Q14);lockLogic();
+  for(let i=1;i<=18;i++)if(i!==13&&i!==14){setRadio(i,v['Q'+i]);lockLogic()}
+  const f=document.querySelector(`input[name="v_final"][value="${v.FinalJudgment}"]`);if(f)f.checked=true;
+}
+
+/* ===== الحفظ + PDF ===== */
+function validateAndSave(){
+  const req=[['v_teacher','اسم المعلم'],['v_class','الصف/الشعبة'],['v_date','تاريخ الزيارة'],['v_visitNo','رقم الزيارة'],['v_lesson','عنوان الدرس'],['v_period','الحصة'],['v_time','الزمن'],['v_students','عدد الطلبة'],['v_absence','عدد الغياب'],['v_visitor','اسم الزائر'],['v_job','المسمى الوظيفي']];
+  const miss=req.filter(([i])=>!String($(i).value).trim()).map(x=>x[1]);
+  for(let i=1;i<=18;i++)if(!document.querySelector(`input[name="q_${i}"]:checked`))miss.push('تقييم المعيار رقم '+i);
+  const fin=document.querySelector('input[name="v_final"]:checked');if(!fin)miss.push('الحكم العام على الدرس');
+  if(miss.length)return alert('⚠️ أكمل البيانات التالية قبل الحفظ:\n\n- '+miss.join('\n- '));
+  if(+$('v_absence').value>+$('v_students').value)return alert('⚠️ عدد الغياب أكبر من عدد الطلبة.');
+  save(fin);
+}
+const vals=sel=>Array.from(document.querySelectorAll(sel+':checked')).map(i=>i.value);
+async function save(fin){
+  const btn=$('saveBtn');btn.disabled=true;btn.textContent='جارٍ الحفظ وتجهيز PDF...';
+  try{
+    const sup=vals('#supBox input');if($('chk_other').checked&&$('v_support_other').value.trim())sup.push($('v_support_other').value.trim());
+    const editId=$('edit_visit_id').value;
+    const p={ID:editId||Date.now().toString(),Year:$('r_year').value\vert{}\vert{}"2026-2027",Semester:"طوال العام",Date:$('v_date').value,TeacherName:$('v_teacher').value,Subject:$('v_subject').value,
+      VisitorName:$('v_visitor').value,VisitorJob:$('v_job').value,VisitorEmail:$('v_visitor_email').value,TeacherEmail:$('send_to_teacher').checked?$('v_teacher_email').value:"",AdminEmail:ADMIN,
+      FinalJudgment:fin.value,Extra_Class:$('v_class').value,Extra_VisitNo:$('v_visitNo').value,Extra_Lesson:$('v_lesson').value,Period:$('v_period').value,Extra_Time:$('v_time').value,
+      StudentsCount:$('v_students').value,AbsenceCount:$('v_absence').value,Extra_Skills:vals('#skillsBox input').join('، '),Extra_SW:vals('#swBox input').join('، '),
+      Extra_Success:$('v_success').value,Extra_Improve:$('v_improve').value,Extra_Support:sup.join('، ')};
+    for(let i=1;i<=18;i++)p['Q'+i]=document.querySelector(`input[name="q_${i}"]:checked`).value;
+    const i=db.visits.findIndex(x=>String(x.ID)===String(p.ID));if(i>-1)db.visits[i]=p;else db.visits.push(p);
+    let msg='';
+    try{
+      const pdf=await makePdf(p);
+      const r=await post({...p,Pdf:pdf.b64,PdfName:pdf.name});
+      msg=r.status==='success'?'تم حفظ الزيارة وإرسال ملف PDF إلى: '+((r.sent||[]).join('، ')||'لا يوجد مستلمون'):'تم إرسال الزيارة لكن حدث خطأ: '+r.error;
+    }catch(e){msg='تعذر التأكد من وصول الزيارة للسحابة ('+e.message+'). اضغط «تحديث من السحابة» في التقارير للتحقق.'}
+    alert(msg);go('reports');updateFilterUI();generateReport();
+  }finally{btn.disabled=false;btn.textContent='حفظ الزيارة وإرسال PDF'}
+}
+async function makePdf(v){
+  await document.fonts.ready;
+  const host=document.createElement('div');host.className='offscreen';host.innerHTML=sheetHTML(v);document.body.appendChild(host);
+  try{
+    const pdf=await html2pdf().set({margin:0,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true,backgroundColor:'#fff'},jsPDF:{unit:'mm',format:'a4'},pagebreak:{mode:['css'],before:'.sheet2'}}).from(host).toPdf().get('pdf');
+    return {b64:pdf.output('datauristring').split(',')[1],name:('استمارة_'+v.TeacherName+'_'+v.Date).replace(/[\\\/:*?"<>|\s]+/g,'_')+'.pdf'};
+  }finally{host.remove()}
+}
+async function pdfAction(btn,id,mode){
+  const v=db.visits.find(x=>String(x.ID)===String(id));if(!v)return;
+  let to='';if(mode==='send'){to=prompt('أدخل البريد الإلكتروني (يمكن فصل عدة عناوين بفاصلة):',v.VisitorEmail||v.TeacherEmail||'');if(!to)return}
+  const h=btn.innerHTML;btn.disabled=true;btn.textContent='جارٍ التجهيز...';
+  try{
+    const pdf=await makePdf(v);
+    if(mode==='send'){const r=await post({action:'emailPdf',to,Pdf:pdf.b64,PdfName:pdf.name,TeacherName:v.TeacherName,Subject:v.Subject,Date:v.Date,FinalJudgment:v.FinalJudgment});
+      if(r.status!=='success')throw new Error(r.error);alert(r.sent.length?'تم إرسال PDF إلى:\n'+r.sent.join('\n'):'لم يُرسل الملف، تحقق من العنوان.')}
+    else{const a=document.createElement('a');a.href='data:application/pdf;base64,'+pdf.b64;a.download=pdf.name;a.click()}
+  }catch(e){alert('تعذر تنفيذ العملية: '+e.message)}finally{btn.disabled=false;btn.innerHTML=h}
+}
+
+/* ===== البيانات ===== */
+async function fetchData(){try{const r=await fetch(SCRIPT_URL+'?t='+Date.now());db.visits=(await r.json()).visits||[]}catch(e){console.error(e)}}
+async function refreshData(){await fetchData();generateReport();renderHome();alert('تم جلب أحدث البيانات من السحابة')}
+
+/* ===== الرئيسية: إحصائيات ===== */
+const statsOf=arr=>{const c=[0,0,0,0];arr.forEach(v=>{const l=lvl(v.FinalJudgment);c[l<0?0:l]++});return c};
+const pct=(n,t)=>{if(!t)return '0%';const p=n/t*100;return Number.isInteger(p)?p+'%':p.toFixed(2)+'%'};
+function renderHome(){
+  const yr=$('r_year').value,vs=db.visits.filter(v=>!yr\vert{}\vert{}v.Year===yr);$('hYear').textContent=yr;
+  if(!vs.length){$('homeStats').innerHTML='<p style="color:var(--mut)">لا توجد زيارات مسجلة لهذا العام بعد.</p>';return}
+  const c=statsOf(vs),t=vs.length,teachers=new Set(vs.map(v=>v.TeacherName)).size,by={};
+  vs.forEach(v=>by[v.Subject]=(by[v.Subject]||0)+1);
+  const last=vs.slice().sort((a,b)=>String(b.Date).localeCompare(String(a.Date))).slice(0,5);
+  $('homeStats').innerHTML=`<div class="stat"><div><b>${t}</b><span>إجمالي الزيارات</span></div><div><b>${teachers}</b><span>معلمون تمت زيارتهم</span></div><div><b>${pct(c[2]+c[3],t)}</b><span>جيد وأعلى</span></div><div><b>${Object.keys(by).length}</b><span>أقسام</span></div></div>
+  <div class="bar">${c.map((n,i)=>`<span style="width:${n/t*100}\%;background:var(${LV[i].c})"></span>`).join('')}</div>
+  <div class="leg">${LV.map((l,i)=>`<span><i style="background:var(${l.c})"></i>${l.t.split(' =')[0]}: ${c[i]} (${pct(c[i],t)})</span>`).join('')}</div>
+  <h3 style="margin-top:16px">آخر الزيارات</h3><table class="lg"><tr><th>التاريخ</th><th>المعلم</th><th>المادة</th><th>الحكم</th></tr>${last.map(v=>{const l=lvl(v.FinalJudgment);return `<tr><td>${esc(v.Date)}</td><td>${esc(v.TeacherName)}</td><td>${esc(v.Subject)}</td><td><span class="chip" style="background:var(${LV[l<0?0:l].c})">${LV[l<0?0:l].t.split(' =')[0]}</span></td></tr>`}).join('')}</table>`;
+}
+
+/* ===== التقارير ===== */
+function updateFilterUI(){
+  const f=$('r_filterBy').value;$('div_specific').style.display=f==='all'?'none':'block';if(f==='all')return;
+  const o=f==='teacher'?localTeachers.map(t=>t.name):f==='dept'?localTeachers.map(t=>t.subject):localVisitors.map(v=>v.name);
+  $('r_specific').innerHTML=[...new Set(o)].sort().map(x=>`<option>${x}</option>`).join('');
+}
+function generateReport(){
+  const type=$('r_type').value,f=$('r_filterBy').value,spec=$('r_specific').value,yr=$('r_year').value,q=$('r_q').value.trim();
+  $('repDate').textContent=new Date().toLocaleDateString('en-GB');$('repHead').style.display='block';curSheet=null;
+  const rows=db.visits.filter(v=>{
+    if(yr&&v.Year!==yr)return false;
+    if(f==='teacher'&&v.TeacherName!==spec)return false;if(f==='dept'&&v.Subject!==spec)return false;if(f==='visitor'&&v.VisitorName!==spec)return false;
+    return !q||[v.TeacherName,v.VisitorName,v.Extra_Lesson].join(' ').includes(q)});
+  const title=$('repTitle'),out=$('out'),who=f==='all'?'للمدرسة':spec;
+  if(type==='log'){
+    title.textContent=`سجل الزيارات: ${who} (${yr})`;
+    out.innerHTML=`<p><b>إجمالي الزيارات: ${rows.length}</b></p><div class="tw"><table class="lg"><tr><th>التاريخ</th><th>المعلم</th><th>المقيم</th><th>الحكم</th><th class="np">إجراءات</th></tr>`+
+    (rows.length?rows.map(v=>{const l=lvl(v.FinalJudgment);return `<tr><td>${esc(v.Date)}</td><td><b>${esc(v.TeacherName)}</b></td><td>${esc(v.VisitorName)}</td><td><span class="chip" style="background:var(${LV[l<0?0:l].c})">${LV[l<0?0:l].t.split(' =')[0]}</span></td>
+      <td class="np"><button class="sm" onclick="editVisit('${v.ID}')">تعديل</button> <button class="sm" style="background:#d97706" onclick="showSheet('${v.ID}')">عرض وطباعة</button> <button class="sm" style="background:#059669" onclick="pdfAction(this,'${v.ID}','send')">إرسال PDF</button> <button class="sm" style="background:#475569" onclick="pdfAction(this,'${v.ID}','download')">تحميل PDF</button></td></tr>`}).join(''):'<tr><td colspan="5">لا توجد زيارات مطابقة.</td></tr>')+'</table></div>';return;
+  }
+  if(!rows.length){out.innerHTML='<p style="text-align:center;color:var(--l1);font-weight:700;padding:40px">لا توجد زيارات مطابقة.</p>';return}
+  const head=LV.map(l=>l.t.replace(' = ',' =<br>'));
+  if(type==='summary'){
+    const key=f==='teacher'?'TeacherName':f==='dept'?'Subject':f==='visitor'?'VisitorName':null;
+    title.textContent=`ملخص نتائج الزيارات الصفية للعام الدراسي ${yr}`+({teacher:' حسب المعلم',dept:' حسب الأقسام',visitor:' حسب الزائر (المقيم)'}[f]||'');
+    const grp={};rows.forEach(v=>{const k=key?v[key]:'all';(grp[k]=grp[k]||[]).push(v)});
+    const extra=f==='teacher'?'<th>القسم</th>':f==='visitor'?'<th>المسمى الوظيفي</th>':'';
+    let b='';for(const k in grp){const c=statsOf(grp[k]),t=grp[k].length,e=f==='teacher'?`<td>${esc(grp[k][0].Subject)}</td>`:f==='visitor'?`<td>${esc(grp[k][0].VisitorJob)}</td>`:'';
+      b+=`<tr>${key?`<td><b>${esc(k)}</b></td>`:''}${e}<td><b>${t}</b></td>${c.map(n=>`<td>${pct(n,t)}</td>`).join('')}</tr>`}
+    out.innerHTML=`<table class="ot"><thead><tr>${key?'<th>'+({teacher:'اسم المعلم',dept:'القسم / المادة',visitor:'اسم الزائر (المقيم)'}[f])+'</th>':''}${extra}<th>مجموع<br>الزيارات</th>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${b}</tbody></table>`;
+  }else{
+    title.textContent=`تحليل نتائج الزيارات الصفية ${{all:'للمدرسة',teacher:'لمعلم',dept:'لقسم',visitor:'لزائر / مقيم'}[f]} للعام الدراسي ${yr}`;
+    let h=f==='teacher'?`<table class="ot"><tr><th>اسم المعلم</th><td><b>${esc(spec)}</b></td><th>القسم/المادة</th><td><b>${esc(rows[0].Subject)}</b></td></tr></table>`:f==='visitor'?`<table class="ot"><tr><th>اسم الزائر</th><td><b>${esc(spec)}</b></td><th>المسمى الوظيفي</th><td><b>${esc(rows[0].VisitorJob)}</b></td></tr></table>`:f==='dept'?`<table class="ot"><tr><th>القسم/المادة</th><td><b>${esc(spec)}</b></td></tr></table>`:'';
+    h+=`<table class="ot"><thead><tr><th>الرقم</th><th>المعيار</th><th>يفي<br>بالتوقعات<br>جزئيا</th><th>يفي<br>بالتوقعات<br>تماما</th><th>يتجاوز<br>التوقعات</th><th>يتجاوز<br>التوقعات<br>كثيرا</th></tr></thead><tbody>`;
+    CR.forEach(c=>{const n=[0,0,0,0];rows.forEach(v=>{const l=lvl(v['Q'+c[0]]);if(l>-1)n[l]++});h+=`<tr><td>${c[0]}</td><td class="cr">${c[2]}</td>${n.map(x=>`<td>${pct(x,rows.length)}</td>`).join('')}</tr>`});
+    const c=statsOf(rows);
+    h+=`</tbody></table><h4 style="margin:10px 0 4px">الحكم النهائي للزيارات الصفية:</h4><table class="ot"><thead><tr><th>التقييم</th>${LV.map(l=>`<th>${l.t.replace('=',' = ')}</th>`).join('')}</tr></thead><tbody>${f==='all'?`<tr><th>عدد الزيارات</th>${c.map(n=>`<td>${n}</td>`).join('')}</tr>`:''}<tr><th>النسبة</th>${c.map(n=>`<td>${pct(n,rows.length)}</td>`).join('')}</tr></tbody></table>`;
+    out.innerHTML=h;
+  }
+}
+
+/* ===== الاستمارة الرسمية (للعرض والطباعة وملف PDF) ===== */
+function sheetHTML(v){
+  const t=String(v.Extra_Time||'').split('-'),J=lvl(v.FinalJudgment),has=(s,x)=>String(s||'').includes(x);
+  let rows='',cur='';
+  CR.forEach(([id,d,ti])=>{if(d!==cur){cur=d;rows+=`<tr><td colspan="6" class="dm">المجال: ${d}</td></tr>`}
+    const l=lvl(v['Q'+id]);rows+=`<tr><td>${id}</td><td class="cr">${ti}</td>${[0,1,2,3].map(i=>`<td class="mk">${l===i?'✔':''}</td>`).join('')}</tr>`});
+  const inf=(a,b,c,d)=>`<tr><td><b>${a}</b> ${b}</td><td><b>${c}</b> ${d}</td></tr>`;
+  const list=(all,sel,full)=>`<div class="ck">${all.map((s,i)=>`<span class="${has(sel,s)?'y':''}">${full?full[i]:s}</span>`).join('')}</div>`;
+  const oth=String(v.Extra_Support||'').split('، ').filter(x=>x.trim()&&!SUP.includes(x)).join('، ');
+  return `<div class="sheet"><div class="hdr"><img src="${LOGO}" crossorigin="anonymous" alt=""><div class="ttl">استمارة الملاحظة الصفية الموحدة</div></div>
+  <table class="inf">${inf('اسم المعلم المزور:',esc(v.TeacherName),'اسم المدرسة:','البلاد القديم الابتدائية الاعدادية للبنين')}${inf('الصف / الشعبة:',esc(v.Extra_Class),'المادة / المقرر:',esc(v.Subject))}
+   ${inf('التاريخ:',esc(v.Date)+' &nbsp;|&nbsp; رقم الزيارة: '+esc(v.Extra_VisitNo||1),'عنوان الدرس:',esc(v.Extra_Lesson))}${inf('الحصة:',esc(v.Period)+' &nbsp;|&nbsp; الطلبة: '+esc(v.StudentsCount)+' &nbsp;|&nbsp; الغياب: '+esc(v.AbsenceCount),'الزمن:','من '+esc((t[0]||'').trim())+' إلى '+esc((t[1]||'').trim()))}</table>
+  <table class="ot"><thead><tr><th rowspan="2" style="width:30px">الرقم</th><th rowspan="2">المعايير</th><th colspan="4">مستويات التقييم</th></tr><tr>${LV.map(l=>`<th>${l.s.replace(' ','<br>')}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>
+  <table class="ot"><tr><th style="width:90px">الحكم على الدرس</th>${LV.map((l,i)=>`<td style="${J===i?'background:#fdeeee;font-weight:800':''}">${J===i?'✔ ':''}${l.t}</td>`).join('')}</tr></table></div>
+  <div class="sheet sheet2"><div class="hdr"><div class="ttl">الجزء الخاص بالمداولة البعدية مع المعلم المزور</div></div>
+  <div class="bx"><b>1) مهارات القرن الحادي والعشرين التي تم توظيفها في الموقف التعليمي:</b><div>${list(SKILLS,v.Extra_Skills)}</div></div>
+  <div class="bx"><b>2) متابعة أعمال الطلبة (معايير المتابعة):</b><div>${list(SW,v.Extra_SW,SW_FULL)}</div></div>
+  <div class="bx"><b>3) التغذية الراجعة:</b><div><b>نجاحات المعلم:</b><br>${esc(v.Extra_Success)||'لا يوجد'}<br><br><b>جوانب بحاجة إلى تطوير:</b><br>${esc(v.Extra_Improve)||'لا يوجد'}</div></div>
+  <div class="bx"><b>4) أساليب الدعم والمساندة للمعلم المزور:</b><div>${list(SUP,v.Extra_Support)}${oth?`<div style="margin-top:4px">أخرى: ${esc(oth)}</div>`:''}</div></div>
+  <table class="sg"><tr><td><b>اسم الزائر</b><br>${esc(v.VisitorName)}</td><td><b>المسمى الوظيفي</b><br>${esc(v.VisitorJob)}</td><td><b>توقيع الزائر</b><br><br>..................</td><td><b>توقيع المعلم</b><br><br>..................</td></tr>
+   <tr><td colspan="2" style="text-align:right;padding-top:22px;border-top:1px solid #000"><b>المدير المساعد:</b> أ. عبدالله أحمد دليم</td><td colspan="2" style="text-align:left;padding-top:22px;border-top:1px solid #000"><b>مدير المدرسة:</b> أ. محمد إبراهيم محمد ناصر</td></tr></table>
+  <div class="cred">برنامج تحليل الزيارات الصفية - تصميم وبرمجة أ. صبري محمد حمد 36864227 - مدرسة البلاد القديم الابتدائية الاعدادية للبنين</div></div>`;
+}
+function showSheet(id){
+  const v=db.visits.find(x=>String(x.ID)===String(id));if(!v)return;curSheet=v;
+  $('repHead').style.display='none';$('out').innerHTML=`<div class="tools np" style="margin-bottom:10px"><button onclick="window.print()">🖨️ طباعة الاستمارة (ورقتان)</button><button class="sec" onclick="generateReport()">عودة للسجل</button></div><div class="sw">${sheetHTML(v)}</div>`;
+  document.title=('استمارة_'+v.TeacherName+'_'+v.Date).replace(/\s+/g,'_');window.scrollTo(0,0);
+}
+window.addEventListener('afterprint',()=>document.title='استمارة الملاحظة الصفية الموحدة');
+buildStatic();
+</script>
 </body>
 </html>
