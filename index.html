@@ -22,7 +22,7 @@
       .print-only { display: block !important; }
       @page { margin: 8mm; size: A4 portrait; }
       
-      .page-1-container { page-break-after: always; } /* إجبار كسر الصفحة بعد الحكم العام */
+      .page-1-container { page-break-after: always; }
       .page-2-container { padding-top: 5px; }
 
       .official-table { width: 100%; border-collapse: collapse; direction: rtl; margin-bottom: 8px; page-break-inside: avoid; }
@@ -57,7 +57,6 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col">
 
-  <!-- ================= شاشة تسجيل الدخول ================= -->
   <div id="loginScreen" class="fixed inset-0 bg-slate-100 dark:bg-slate-900 z-50 flex items-center justify-center px-4 transition-opacity duration-500">
     <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-slate-700">
       <img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt="ترويسة المدرسة" class="w-full h-auto mb-6 mx-auto" style="max-height: 110px; object-fit: contain;">
@@ -72,7 +71,6 @@
   </div>
 
   <div id="mainApp" class="hidden flex-col flex-1">
-    <!-- الشريط العلوي -->
     <header class="bg-gradient-to-r from-red-900 to-red-700 text-white shadow-md no-print">
       <div class="max-w-7xl mx-auto p-4 flex justify-between items-center">
         <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('tab-home')">
@@ -92,7 +90,6 @@
     </header>
 
     <main class="max-w-7xl mx-auto p-4 w-full flex-1 flex flex-col">
-      <!-- شاشة الاختيار -->
       <section id="tab-home" class="flex-1 flex flex-col items-center justify-center py-10">
         <h2 class="text-2xl font-bold mb-8 text-center">أهلاً بك في النظام المطور، ماذا تريد أن تفعل؟</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
@@ -107,7 +104,6 @@
         </div>
       </section>
 
-      <!-- شاشة إدخال الزيارة -->
       <section id="tab-entry" class="hidden bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200">
         <div class="flex justify-between items-center mb-6 border-b pb-4">
           <h2 class="text-xl font-bold text-red-700" id="formTitle"><i class="fa-solid fa-clipboard-check"></i> استمارة الملاحظة الصفية الموحدة</h2>
@@ -272,7 +268,6 @@
         </form>
       </section>
 
-      <!-- شاشة التقارير والتحليل -->
       <section id="tab-reports" class="hidden flex-col gap-6">
         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border flex flex-wrap gap-4 items-end no-print">
           <div>
@@ -540,22 +535,29 @@
       }
     }
 
+    // دالة محصنة للتعامل مع السحابة
     async function fetchData() {
-      try {
         const timestamp = new Date().getTime();
         const res = await fetch(SCRIPT_URL + "?t=" + timestamp);
+        if (!res.ok) throw new Error("فشل الاتصال، الرجاء التأكد من تحديث الـ Deployment في جوجل سكريبت");
         const serverDb = await res.json();
         db.visits = serverDb.visits || [];
-      } catch (e) { console.error("Error fetching data from cloud", e); }
     }
 
+    // دالة التحديث مع كشف دقيق للأخطاء
     window.refreshData = async function() {
+        const container = document.getElementById('reportTableContainer');
+        if (container) {
+            container.innerHTML = "<div class='text-center py-20 text-slate-500'><i class='fa-solid fa-spinner fa-spin text-4xl mb-4'></i><p>جاري جلب البيانات من السحابة...</p></div>";
+        }
+        
         try {
             await fetchData();
             generateReport(); 
             alert('تم جلب أحدث البيانات من السحابة بنجاح!');
         } catch(e) {
-            alert('حدث خطأ أثناء الاتصال بالسحابة.');
+            alert('خطأ أثناء جلب البيانات: ' + e.message + '\n\nتأكد أنك قمت بعمل (إصدار جديد) New Version للـ Web App من إعدادات جوجل سكريبت.');
+            generateReport(); // إعادة رسم البيانات القديمة كاحتياط
         }
     }
 
@@ -776,10 +778,18 @@
         return mY && mF;
       });
 
+      const ps = document.getElementById('printSignatures');
+      if(ps) ps.classList.add('hidden');
+      const pf = document.getElementById('printFooter');
+      if(pf) pf.classList.add('hidden');
+      
+      const dynHeader = document.getElementById('dynamicHeaderInfo');
+      if(dynHeader) dynHeader.classList.add('hidden');
+      
       const titleEl = document.getElementById('printReportTitle');
 
       if(type === 'log') {
-        titleEl.innerText = `سجل الزيارات: ${fBy !== 'all' ? spec : 'للمدرسة'} (${yr})`;
+        if(titleEl) titleEl.innerText = `سجل الزيارات: ${fBy !== 'all' ? spec : 'للمدرسة'} (${yr})`;
         let html = `<div class="text-sm font-bold mb-4 bg-slate-100 p-2 rounded border border-slate-300">إجمالي الزيارات المسجلة: ${filtered.length}</div>
                     <table class="w-full text-sm border-collapse border border-slate-300">
                       <thead><tr class="bg-slate-200"><th class="border p-2">التاريخ</th><th class="border p-2">المعلم</th><th class="border p-2">المقيم</th><th class="border p-2 text-center">إجراء</th></tr></thead>
@@ -801,12 +811,12 @@
                    </tr>`;
         });
         html += `</tbody></table>`;
-        container.innerHTML = html;
+        if(container) container.innerHTML = html;
         return;
       }
 
       if(filtered.length === 0) {
-        container.innerHTML = "<p class='text-center font-bold text-red-600 mt-10'>لا توجد زيارات مطابقة.</p>";
+        if(container) container.innerHTML = "<p class='text-center font-bold text-red-600 mt-10'>لا توجد زيارات مطابقة.</p>";
         return;
       }
 
@@ -835,31 +845,31 @@
         let tbody = "";
 
         if(fBy === 'all') {
-          titleEl.innerText = `ملخص نتائج الزيارات الصفية للمدرسة للعام الدراسي ${yr}`;
+          if(titleEl) titleEl.innerText = `ملخص نتائج الزيارات الصفية للمدرسة للعام الدراسي ${yr}`;
           let s = calcStats(filtered);
           tbody = `<tr><td>${s.total}</td><td>${s.p}</td><td>${s.s}</td><td>${s.g}</td><td>${s.m}</td></tr>`;
         } 
         else if(fBy === 'dept') {
-          titleEl.innerText = `ملخص نتائج الزيارات الصفية للمدرسة للعام الدراسي ${yr} حسب الأقسام التعليمية`;
+          if(titleEl) titleEl.innerText = `ملخص نتائج الزيارات الصفية للمدرسة للعام الدراسي ${yr} حسب الأقسام التعليمية`;
           let grouped = {}; filtered.forEach(v => { grouped[v.Subject] = grouped[v.Subject] || []; grouped[v.Subject].push(v); });
           for(let k in grouped) { let s = calcStats(grouped[k]); tbody += `<tr><td class="font-bold">${k}</td><td class="font-bold">${s.total}</td><td>${s.p}</td><td>${s.s}</td><td>${s.g}</td><td>${s.m}</td></tr>`; }
         }
         else if(fBy === 'teacher') {
-          titleEl.innerText = `ملخص نتائج الزيارات الصفية للمدرسة للعام الدراسي ${yr} حسب المعلم`;
+          if(titleEl) titleEl.innerText = `ملخص نتائج الزيارات الصفية للمدرسة للعام الدراسي ${yr} حسب المعلم`;
           let grouped = {}; filtered.forEach(v => { grouped[v.TeacherName] = grouped[v.TeacherName] || []; grouped[v.TeacherName].push(v); });
           for(let k in grouped) { let s = calcStats(grouped[k]); let dept = grouped[k][0].Subject; tbody += `<tr><td class="font-bold">${k}</td><td>${dept}</td><td class="font-bold">${s.total}</td><td>${s.p}</td><td>${s.s}</td><td>${s.g}</td><td>${s.m}</td></tr>`; }
         }
         else if(fBy === 'visitor') {
-          titleEl.innerText = `ملخص نتائج الزيارات الصفية للمدرسة للعام الدراسي ${yr} حسب الزائر (المقيم)`;
+          if(titleEl) titleEl.innerText = `ملخص نتائج الزيارات الصفية للمدرسة للعام الدراسي ${yr} حسب الزائر (المقيم)`;
           let grouped = {}; filtered.forEach(v => { grouped[v.VisitorName] = grouped[v.VisitorName] || []; grouped[v.VisitorName].push(v); });
           for(let k in grouped) { let s = calcStats(grouped[k]); let job = grouped[k][0].VisitorJob; tbody += `<tr><td class="font-bold">${k}</td><td>${job}</td><td class="font-bold">${s.total}</td><td>${s.p}</td><td>${s.s}</td><td>${s.g}</td><td>${s.m}</td></tr>`; }
         }
-        container.innerHTML = thead + tbody + `</tbody></table>`;
+        if(container) container.innerHTML = thead + tbody + `</tbody></table>`;
       }
 
       else if(type === 'detailed') {
         let titleSuffix = fBy === 'all' ? 'للمدرسة' : fBy === 'teacher' ? `لمعلم` : fBy === 'dept' ? `لقسم` : `لزائر / مقيم`;
-        titleEl.innerText = `تحليل نتائج الزيارات الصفية ${titleSuffix} للعام الدراسي ${yr}`;
+        if(titleEl) titleEl.innerText = `تحليل نتائج الزيارات الصفية ${titleSuffix} للعام الدراسي ${yr}`;
         
         let html = '';
         if(fBy === 'teacher') html += `<table class="official-table mb-4"><tr><th class="w-1/4">اسم المعلم</th><td class="w-1/4 font-bold">${spec}</td><th class="w-1/4">القسم/المادة</th><td class="w-1/4 font-bold">${filtered[0].Subject}</td></tr></table>`;
@@ -896,44 +906,43 @@
         if(fBy === 'all') html += `<tr><td class="font-bold bg-slate-100">عدد الزيارات</td><td>${fin.raw.p}</td><td>${fin.raw.s}</td><td>${fin.raw.g}</td><td>${fin.raw.m}</td></tr>`;
         html += `<tr><td class="font-bold bg-slate-100">النسبة</td><td>${fin.p}</td><td>${fin.s}</td><td>${fin.g}</td><td>${fin.m}</td></tr></tbody></table>`;
         
-        container.innerHTML = html;
+        if(container) container.innerHTML = html;
       }
     }
 
-    // عرض الاستمارة بصيغة الجداول الصارمة (لحل مشكلة التداخل نهائياً)
     window.renderSinglePrint = function(visitId) {
       const v = db.visits.find(x => String(x.ID) === String(visitId));
       if(!v) return;
 
-      document.getElementById('printDateAr').innerText = updatePrintDate();
-      document.getElementById('printReportTitle').innerText = `استمارة الملاحظة الصفية الموحدة`;
+      const titleEl = document.getElementById('printReportTitle');
+      if(titleEl) titleEl.innerText = `استمارة الملاحظة الصفية الموحدة`;
       
       const dynHeader = document.getElementById('dynamicHeaderInfo');
-      dynHeader.classList.remove('hidden');
-      
-      dynHeader.innerHTML = `
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 11.5px; font-weight: bold; text-align: right;">
-           <tr>
-               <td style="padding: 4px; border-bottom: 1px dashed #000; width: 50%;">اسم المعلم المزور: <span style="font-weight:normal;">${v.TeacherName || ''}</span></td>
-               <td style="padding: 4px; border-bottom: 1px dashed #000; width: 50%;">اسم المدرسة: <span style="font-weight:normal;">البلاد القديم الابتدائية الاعدادية للبنين</span></td>
-           </tr>
-           <tr>
-               <td style="padding: 4px; border-bottom: 1px dashed #000;">الصف / الشعبة: <span style="font-weight:normal;">${v.Extra_Class || ''}</span></td>
-               <td style="padding: 4px; border-bottom: 1px dashed #000;">المادة/المقرر: <span style="font-weight:normal;">${v.Subject || ''}</span></td>
-           </tr>
-           <tr>
-               <td style="padding: 4px; border-bottom: 1px dashed #000;">التاريخ: <span style="font-weight:normal;">${v.Date || ''}</span> &nbsp;&nbsp;|&nbsp;&nbsp; رقم الزيارة: <span style="font-weight:normal;">${v.Extra_VisitNo || '1'}</span></td>
-               <td style="padding: 4px; border-bottom: 1px dashed #000;">عنوان الدرس: <span style="font-weight:normal;">${v.Extra_Lesson || ''}</span></td>
-           </tr>
-           <tr>
-               <td style="padding: 4px; border-bottom: 1px dashed #000;">الحصة الدراسية: <span style="font-weight:normal;">${v.Period || ''}</span></td>
-               <td style="padding: 4px; border-bottom: 1px dashed #000;">الزمن: من <span style="font-weight:normal;">${(v.Extra_Time || '').split('-')[0] || ''}</span> إلى <span style="font-weight:normal;">${(v.Extra_Time || '').split('-')[1] || ''}</span></td>
-           </tr>
-        </table>
-      `;
+      if(dynHeader) {
+          dynHeader.classList.remove('hidden');
+          dynHeader.innerHTML = `
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 11.5px; font-weight: bold; text-align: right;">
+               <tr>
+                   <td style="padding: 4px; border-bottom: 1px dashed #000; width: 50%;">اسم المعلم المزور: <span style="font-weight:normal;">${v.TeacherName || ''}</span></td>
+                   <td style="padding: 4px; border-bottom: 1px dashed #000; width: 50%;">اسم المدرسة: <span style="font-weight:normal;">البلاد القديم الابتدائية الاعدادية للبنين</span></td>
+               </tr>
+               <tr>
+                   <td style="padding: 4px; border-bottom: 1px dashed #000;">الصف / الشعبة: <span style="font-weight:normal;">${v.Extra_Class || ''}</span></td>
+                   <td style="padding: 4px; border-bottom: 1px dashed #000;">المادة/المقرر: <span style="font-weight:normal;">${v.Subject || ''}</span></td>
+               </tr>
+               <tr>
+                   <td style="padding: 4px; border-bottom: 1px dashed #000;">التاريخ: <span style="font-weight:normal;">${v.Date || ''}</span> &nbsp;&nbsp;|&nbsp;&nbsp; رقم الزيارة: <span style="font-weight:normal;">${v.Extra_VisitNo || '1'}</span></td>
+                   <td style="padding: 4px; border-bottom: 1px dashed #000;">عنوان الدرس: <span style="font-weight:normal;">${v.Extra_Lesson || ''}</span></td>
+               </tr>
+               <tr>
+                   <td style="padding: 4px; border-bottom: 1px dashed #000;">الحصة الدراسية: <span style="font-weight:normal;">${v.Period || ''}</span></td>
+                   <td style="padding: 4px; border-bottom: 1px dashed #000;">الزمن: من <span style="font-weight:normal;">${(v.Extra_Time || '').split('-')[0] || ''}</span> إلى <span style="font-weight:normal;">${(v.Extra_Time || '').split('-')[1] || ''}</span></td>
+               </tr>
+            </table>
+          `;
+      }
 
       let html = `
-      <!-- الحاوية الأولى لإجبار الصفحة على الانتهاء بعد الحكم العام -->
       <div class="page-1-container">
           <table class="official-table" style="margin-bottom: 0; border-bottom: none;">
                 <thead>
@@ -968,7 +977,6 @@
       let finS = (v.FinalJudgment || "").includes("تماما") ? "✔" : ""; let finP = (v.FinalJudgment || "").includes("جزئيا") ? "✔" : "";
 
       html += `</tbody></table>
-          <!-- جدول الحكم العام مدمج تماما بدون مسافات ليصبح جزءا من الصفحة الاولى -->
           <table class="official-table" style="border-top: none;">
             <tr>
               <th style="width: 15%; border-top: none;">الحكم على الدرس:</th>
@@ -984,7 +992,6 @@
       let chk = (str, val) => str.includes(val) ? "✔" : "";
       
       html += `
-        <!-- بداية الصفحة الثانية -->
         <div class="page-2-container">
           <div class="text-center font-bold text-sm mb-4 bg-slate-200 py-1 border border-black">الجزء الخاص بالمداولة البعدية مع المعلم المزور</div>
           
@@ -1036,7 +1043,8 @@
         </div>
       `;
 
-      document.getElementById('reportTableContainer').innerHTML = html;
+      const container = document.getElementById('reportTableContainer');
+      if(container) container.innerHTML = html;
     }
 
     buildCriteriaEntry();
