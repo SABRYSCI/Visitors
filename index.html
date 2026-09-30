@@ -15,7 +15,7 @@
   <style>
     body { font-family: 'Tajawal', sans-serif; }
     
-    /* تنسيقات الطباعة الاحترافية المطابقة للصور */
+    /* تنسيقات الطباعة الاحترافية */
     @media print {
       body, html { background: white !important; color: black !important; font-size: 11px; }
       .no-print { display: none !important; }
@@ -25,7 +25,6 @@
       .print-page { page-break-after: always; padding-top: 10px; }
       .print-page:last-child { page-break-after: auto; }
 
-      /* جداول الطباعة */
       .official-table { width: 100%; border-collapse: collapse; direction: rtl; margin-bottom: 10px; }
       .official-table th, .official-table td { border: 1px solid #000 !important; padding: 4px 6px; text-align: center; color: black !important; vertical-align: middle; font-size: 11px; }
       .official-table th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; font-weight: bold; }
@@ -33,7 +32,6 @@
       .vertical-text { writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-weight: bold; white-space: nowrap; }
       .criteria-text { text-align: right !important; padding-right: 8px !important; }
       
-      /* الترويسة العلوية للطباعة */
       .print-moe-header { position: relative; text-align: center; margin-bottom: 10px; border-bottom: 2px solid #000; padding-bottom: 5px; }
       .print-moe-header img { height: 75px; object-fit: contain; margin: 0 auto; display: block; }
       .print-date { position: absolute; right: 0; top: 0; font-size: 11px; font-weight: bold; }
@@ -42,7 +40,6 @@
       .print-header-grid div { display: flex; align-items: center; border-bottom: 1px dashed #000; padding-bottom: 2px; }
       .print-header-grid span.val { font-weight: normal; margin-right: 5px; flex-grow: 1; text-align: center; }
 
-      /* الصناديق في الصفحة الثانية */
       .box-section { border: 1px solid #000; margin-bottom: 8px; page-break-inside: avoid; }
       .box-header { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; border-bottom: 1px solid #000; padding: 4px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
       .box-content { padding: 8px; }
@@ -50,7 +47,6 @@
       .checkbox-item { display: flex; align-items: center; gap: 5px; }
       .checkbox-box { width: 12px; height: 12px; border: 1px solid #000; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;}
       
-      /* التوقيعات */
       .signatures-print { display: flex; justify-content: space-between; margin-top: 10px; text-align: center; font-weight: bold; page-break-inside: avoid; font-size: 11px; }
       .signatures-print > div { flex: 1; }
       .footer-credits { text-align: center; font-size: 9px; border: 1px solid #000; padding: 3px; margin-top: 8px; page-break-inside: avoid; }
@@ -105,11 +101,11 @@
       <section id="tab-home" class="flex-1 flex flex-col items-center justify-center py-10">
         <h2 class="text-2xl font-bold mb-8 text-center">أهلاً بك في النظام المطور، ماذا تريد أن تفعل؟</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
-          <button onclick="switchTab('tab-entry')" class="group bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col items-center gap-4 transform hover:-translate-y-1">
+          <button onclick="openNewVisit()" class="group bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col items-center gap-4 transform hover:-translate-y-1">
             <div class="w-20 h-20 bg-red-50 text-red-700 rounded-full flex items-center justify-center text-4xl"><i class="fa-solid fa-file-signature"></i></div>
             <span class="text-xl font-bold">إدخال زيارة صفية جديدة</span>
           </button>
-          <button onclick="switchTab('tab-reports'); updateFilterUI();" class="group bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col items-center gap-4 transform hover:-translate-y-1">
+          <button onclick="switchTab('tab-reports'); updateFilterUI(); fetchData();" class="group bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col items-center gap-4 transform hover:-translate-y-1">
             <div class="w-20 h-20 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-4xl"><i class="fa-solid fa-print"></i></div>
             <span class="text-xl font-bold">سجلات الزيارات والتقارير</span>
           </button>
@@ -119,18 +115,18 @@
       <!-- شاشة إدخال الزيارة -->
       <section id="tab-entry" class="hidden bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200">
         <div class="flex justify-between items-center mb-6 border-b pb-4">
-          <h2 class="text-xl font-bold text-red-700"><i class="fa-solid fa-clipboard-check"></i> استمارة الملاحظة الصفية الموحدة</h2>
+          <h2 class="text-xl font-bold text-red-700" id="formTitle"><i class="fa-solid fa-clipboard-check"></i> استمارة الملاحظة الصفية الموحدة</h2>
           <button onclick="switchTab('tab-home')" class="text-sm bg-slate-100 px-3 py-1 rounded font-bold text-slate-700 hover:bg-slate-200">عودة</button>
         </div>
         
         <form id="visitForm">
-          <!-- بيانات الزيارة الأساسية -->
+          <input type="hidden" id="edit_visit_id" value=""> 
+          
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-200 mb-6 text-sm">
             <div><label class="font-bold block mb-1">القسم</label><select id="v_dept" onchange="filterTeachers()" class="w-full border p-2 rounded bg-white dark:bg-slate-700"></select></div>
             <div><label class="font-bold block mb-1 text-red-700">اسم المعلم *</label><select id="v_teacher" onchange="fillTeacherDetails()" class="w-full border p-2 rounded bg-white dark:bg-slate-700"><option value="">-- اختر القسم أولاً --</option></select></div>
-            <div><label class="font-bold block mb-1">المادة</label><input type="text" id="v_subject" class="w-full border p-2 rounded bg-slate-200" readonly><input type="hidden" id="v_cpr"></div>
+            <div><label class="font-bold block mb-1">المادة</label><input type="text" id="v_subject" class="w-full border p-2 rounded bg-slate-200" readonly><input type="hidden" id="v_cpr"><input type="hidden" id="v_teacher_email"></div>
             
-            <!-- قائمة منسدلة للصف/الشعبة -->
             <div>
               <label class="font-bold block mb-1 text-red-700">الصف/الشعبة *</label>
               <select id="v_class" onchange="updateTimeField()" class="w-full border p-2 rounded bg-white dark:bg-slate-700">
@@ -158,7 +154,6 @@
             <div><label class="font-bold block mb-1 text-red-700">رقم الزيارة *</label><input type="number" id="v_visitNo" class="w-full border p-2 rounded bg-white dark:bg-slate-700" min="1" value="1"></div>
             <div class="md:col-span-2"><label class="font-bold block mb-1 text-red-700">عنوان الدرس *</label><input type="text" id="v_lesson" class="w-full border p-2 rounded bg-white dark:bg-slate-700"></div>
 
-            <!-- قائمة منسدلة للحصة -->
             <div>
               <label class="font-bold block mb-1 text-red-700">الحصة الدراسية *</label>
               <select id="v_period" onchange="updateTimeField()" class="w-full border p-2 rounded bg-white dark:bg-slate-700">
@@ -178,15 +173,9 @@
             <div><label class="font-bold block mb-1 text-red-700">عدد الغياب *</label><input type="number" id="v_absence" class="w-full border p-2 rounded bg-white dark:bg-slate-700" min="0"></div>
           </div>
 
-          <!-- جدول المعايير التفاعلي (18 معيار) -->
-          <div class="flex items-center justify-between mb-2">
-             <h3 class="font-bold text-lg text-slate-800 dark:text-white">المعايير والتقييم</h3>
-          </div>
-          
-          <div class="bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 p-3 rounded-lg text-sm font-bold mb-3 border border-blue-200 leading-relaxed">
-             <i class="fa-solid fa-circle-info ml-1"></i> تنبيه هام جداً: بناءً على توجيهات اللجنة الفنية وضمان الجودة، 
-             <span class="text-red-600">يجب تقييم بنود (الإنجاز الأكاديمي) أولاً!</span> 
-             النظام سيقفل ويفتح الخيارات في باقي الاستمارة تلقائياً بحيث لا يتجاوز الفارق بين الممارسات وأثر التعلم أكثر من درجة واحدة.
+          <div class="flex items-center justify-between mb-2"><h3 class="font-bold text-lg text-slate-800 dark:text-white">المعايير والتقييم</h3></div>
+          <div class="bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 p-3 rounded-lg text-sm font-bold mb-3 border border-blue-200">
+             <i class="fa-solid fa-circle-info ml-1"></i> تنبيه هام جداً: يجب تقييم بنود (الإنجاز الأكاديمي) أولاً، ليتم فتح باقي بنود الاستمارة.
           </div>
 
           <div class="overflow-x-auto mb-6">
@@ -215,10 +204,8 @@
             </div>
           </div>
 
-          <!-- الصفحة الثانية: المداولة البعدية -->
           <h3 class="font-bold text-xl mb-4 text-slate-800 border-b pb-2">الجزء الخاص بالمداولة البعدية مع المعلم</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 text-sm">
-            <!-- مهارات القرن 21 -->
             <div class="border p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50">
               <h4 class="font-bold mb-3">1) مهارات القرن الحادي والعشرين التي تم توظيفها:</h4>
               <div class="grid grid-cols-2 gap-2" id="skillsCheckboxes">
@@ -233,7 +220,6 @@
               </div>
             </div>
             
-            <!-- متابعة أعمال الطلبة -->
             <div class="border p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50">
               <h4 class="font-bold mb-3">2) متابعة أعمال الطلبة:</h4>
               <div class="flex items-center gap-2 mb-3">
@@ -253,7 +239,6 @@
             </div>
           </div>
 
-          <!-- التغذية الراجعة والدعم -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div class="border p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50">
               <h4 class="font-bold mb-3">3) التغذية الراجعة:</h4>
@@ -275,12 +260,19 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-100 p-4 rounded-xl mb-6">
-            <div><label class="font-bold text-sm block mb-1 text-red-700">اسم الزائر (المقيم) *</label><input type="text" id="v_visitor" list="visitorsData" onchange="fillVisitorDetails()" class="w-full border p-2 rounded bg-white"></div>
-            <div><label class="font-bold text-sm block mb-1 text-red-700">المسمى الوظيفي *</label><input type="text" id="v_job" class="w-full border p-2 rounded bg-white"></div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-emerald-50 dark:bg-slate-900 p-4 rounded-xl mb-6 border border-emerald-200">
+            <div><label class="font-bold text-sm block mb-1 text-emerald-800">اسم الزائر (المقيم) *</label><input type="text" id="v_visitor" list="visitorsData" onchange="fillVisitorDetails()" class="w-full border p-2 rounded bg-white"></div>
+            <div><label class="font-bold text-sm block mb-1 text-emerald-800">المسمى الوظيفي *</label><input type="text" id="v_job" class="w-full border p-2 rounded bg-white" readonly></div>
+            <div class="md:col-span-2">
+               <label class="font-bold text-sm block mb-1 text-emerald-800">إيميل المقيم (لإرسال نسخة له)</label>
+               <input type="email" id="v_visitor_email" class="w-full border p-2 rounded bg-white" placeholder="سيتم تعبئته تلقائياً ويمكن تعديله">
+            </div>
+            <div class="md:col-span-2 flex items-center gap-2 mt-2">
+               <input type="checkbox" id="send_to_teacher" class="w-5 h-5 accent-emerald-600">
+               <label class="font-bold text-sm text-emerald-800">إرسال نسخة من الاستمارة للمعلم المزور أيضاً</label>
+            </div>
           </div>
 
-          <!-- زر الحفظ بتغيير النوع إلى button لعمل التحقق المخصص -->
           <button type="button" id="saveBtn" onclick="validateAndSave()" class="bg-red-700 text-white px-8 py-3 rounded-xl font-bold hover:bg-red-800 shadow-md w-full md:w-auto"><i class="fa-solid fa-cloud-arrow-up"></i> حفظ الزيارة في السجل</button>
         </form>
       </section>
@@ -292,30 +284,24 @@
             <label class="text-xs font-bold block mb-1">العام الدراسي</label>
             <input type="text" id="r_year" class="border p-2 rounded-lg bg-slate-50 w-24 font-bold text-center" value="2026-2027">
           </div>
-          <div><label class="text-xs font-bold block mb-1">نوع التقرير</label><select id="r_type" class="border p-2 rounded-lg bg-slate-50"><option value="summary">ملخص الزيارات (إحصائية عامة)</option><option value="detailed">تحليل مفصل (نسب مئوية للتقييم)</option><option value="log">سجل الزيارات (بحث وطباعة فردية)</option></select></div>
+          <div><label class="text-xs font-bold block mb-1">نوع التقرير</label><select id="r_type" class="border p-2 rounded-lg bg-slate-50"><option value="summary">ملخص الزيارات (إحصائية عامة)</option><option value="detailed">تحليل مفصل (نسب مئوية للتقييم)</option><option value="log">سجل الزيارات (بحث، طباعة، وتعديل)</option></select></div>
           <div><label class="text-xs font-bold block mb-1">فرز حسب</label><select id="r_filterBy" onchange="updateFilterUI()" class="border p-2 rounded-lg bg-slate-50"><option value="all">الكل (المدرسة)</option><option value="teacher">المعلم</option><option value="dept">القسم</option><option value="visitor">المقيم</option></select></div>
           <div id="div_specific" class="hidden"><label class="text-xs font-bold block mb-1 text-red-600">اختر:</label><select id="r_specific" class="border border-red-300 p-2 rounded-lg bg-red-50"></select></div>
           <button onclick="generateReport()" class="bg-amber-500 text-slate-900 px-6 py-2 rounded-lg font-bold hover:bg-amber-600"><i class="fa-solid fa-search"></i> استخراج التقرير</button>
+          <button onclick="fetchData(); alert('تم تحديث البيانات بنجاح!');" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700"><i class="fa-solid fa-rotate"></i> تحديث السجل</button>
           <button onclick="window.print()" class="bg-slate-700 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-800 mr-auto"><i class="fa-solid fa-print"></i> طباعة (PDF)</button>
         </div>
 
         <div id="printArea" class="w-full bg-white p-2 rounded shadow-sm text-slate-800">
-          
-          <!-- الترويسة المخصصة للطباعة -->
           <div class="print-moe-header print-only">
              <div class="print-date" id="printDateAr"></div>
              <img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt="Logo">
           </div>
-          
           <h3 class="font-bold text-center text-lg mb-4 print-only" id="printReportTitle">تحليل نتائج الزيارات الصفية</h3>
-          
           <div id="dynamicHeaderInfo" class="hidden print-only mb-4"></div>
-
           <div id="reportTableContainer" class="min-h-[400px]">
             <div class="text-center py-20 text-slate-400 no-print"><i class="fa-solid fa-magnifying-glass text-6xl mb-4 opacity-30"></i><p>اختر نوع التقرير واضغط "استخراج التقرير"</p></div>
           </div>
-          
-          <!-- توقيعات الطباعة (مضغوطة في سطر واحد) -->
           <div class="signatures-print print-only hidden" id="printSignatures">
             <div style="text-align: right; margin-right: 20px;">المدير المساعد: أ. عبدالله أحمد دليم</div>
             <div style="text-align: left; margin-left: 20px;">مدير المدرسة: أ. محمد إبراهيم محمد ناصر</div>
@@ -323,85 +309,54 @@
           <div class="footer-credits print-only hidden" id="printFooter">
             برنامج تحليل الزيارات الصفية - تصميم وبرمجة أ. صبري محمد حمد 36864227 - مدرسة البلاد القديم الابتدائية الاعدادية للبنين
           </div>
-
         </div>
       </section>
     </main>
   </div>
-
   <datalist id="visitorsData"></datalist>
 
   <script>
+    // ========= ضع رابط Web App هنا =========
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzty9WyGvvCLyOVI9XaDZxImseaSd4tanfPK4H9ZNWtEdYJUuTKlY7uo30ing_ARR8/exec";
+    // =======================================
     
-    // دالة تحديد التوقيت التلقائي بناءً على الجدول الزمني
     function updateTimeField() {
       const cls = document.getElementById('v_class').value;
       const prd = document.getElementById('v_period').value;
       const timeInput = document.getElementById('v_time');
-
       if (!cls || !prd) return;
-
       const schedule = {
         "ابتدائي": { "الأولى": "7:15 - 8:05", "الثانية": "8:05 - 8:55", "الثالثة": "8:55 - 9:45", "الرابعة": "10:15 - 11:00", "الخامسة": "11:00 - 11:45", "السادسة": "11:45 - 12:30", "السابعة": "12:30 - 13:15" },
         "إعدادي": { "الأولى": "7:15 - 8:05", "الثانية": "8:05 - 8:55", "الثالثة": "8:55 - 9:45", "الرابعة": "9:45 - 10:30", "الخامسة": "11:00 - 11:45", "السادسة": "11:45 - 12:30", "السابعة": "12:30 - 13:15" }
       };
-
       let stage = cls.includes('ابتدائي') ? 'ابتدائي' : 'إعدادي';
       let newTime = schedule[stage][prd];
-      
-      if (newTime) {
-        timeInput.value = newTime;
-      }
+      if (newTime) timeInput.value = newTime;
     }
 
     const localTeachers = [
-      { cpr: "781251907", name: "صبري محمد حمد السيد إبراهيم", subject: "العلوم" },
-      { cpr: "000502286", name: "دانيال نادر محمد خورشيد", subject: "اللغة الإنجليزية" },
-      { cpr: "730202976", name: "محمد إبراهيم محمد ناصر", subject: "نظام معلم فصل" },
-      { cpr: "791343197", name: "طه عاطف طه عبد اللطيف", subject: "الرياضيات" },
-      { cpr: "680839461", name: "عبدالباسط محمد السيد محمد", subject: "الرياضيات" },
-      { cpr: "710654782", name: "منتصر عثمان زيدان ابوزيد", subject: "اللغة الإنجليزية" },
-      { cpr: "820503207", name: "إبراهيم عبدالنبي أحمد علي ناصر", subject: "تربية خاصة (دمج)" },
-      { cpr: "670158887", name: "لطفي ابراهيم محمد ابراهيم", subject: "الرياضيات" },
-      { cpr: "750504897", name: "علي محسن علي سيف", subject: "المجالات العملية" },
-      { cpr: "910304823", name: "ياسر عبد الهادي عبد الله عيسى", subject: "اللغة العربية" },
-      { cpr: "820464350", name: "سفيان محمد نورفل", subject: "التربية الإسلامية" },
-      { cpr: "750802537", name: "عبدالله حسن عبدالله سند", subject: "المجالات العملية" },
-      { cpr: "741006316", name: "ماهر مهدي علي عمران", subject: "اللغة العربية" },
-      { cpr: "711242100", name: "ايمن محمد بكري احمد", subject: "اللغة الإنجليزية" },
-      { cpr: "820702366", name: "حسين سعيد جاسم علي", subject: "مصادر التعلم" },
-      { cpr: "860604241", name: "يوسف علي عبدالله عبدالحق", subject: "تقنية المعلومات" },
-      { cpr: "690246110", name: "صلاح فؤاد محمد السيد", subject: "تربية خاصة (نطق ولغة)" },
-      { cpr: "790306913", name: "حسين هلال ابراهيم احمد", subject: "تقنية المعلومات" },
-      { cpr: "661002705", name: "محمد علي محسن العلي", subject: "الرياضيات" },
-      { cpr: "900905719", name: "محمد عبدالجبار جعفر العويناتي", subject: "اللغة العربية والتربية الإسلامية" },
-      { cpr: "731201817", name: "جعفر حسن عبدالله الزاير", subject: "العلوم" },
-      { cpr: "720202892", name: "باسم ناصر سعد رحال", subject: "اللغة العربية" },
-      { cpr: "670639486", name: "محمد محمود محمد سليمان", subject: "العلوم" },
-      { cpr: "700243232", name: "السيد البيلي السيد بيلي", subject: "المجالات العملية" },
-      { cpr: "820603350", name: "حسين راشد حبيب حسين الدرازي", subject: "التربية الرياضية" },
-      { cpr: "680110836", name: "محمد إبراهيم علي آل طوق", subject: "اللغة العربية" },
-      { cpr: "721137601", name: "ناصر ماهر احمد محمد", subject: "المواد الاجتماعية" },
-      { cpr: "790708221", name: "عباس حسين فردان الفردان", subject: "التربية الرياضية" },
-      { cpr: "770706231", name: "علي عبدالله أحمد علي", subject: "المواد الاجتماعية" },
-      { cpr: "700202137", name: "موسى مدن حسين مدن عصفور", subject: "التربية الإسلامية" },
-      { cpr: "700034056", name: "عدنان عبدالجليل عبدالحسين الحلواجي", subject: "اللغة العربية" },
-      { cpr: "000000000", name: "عبدالرضا عبدالرسول", subject: "العلوم" },
-      { cpr: "111111111", name: "جلال ابراهيم", subject: "المواد الاجتماعية" }
+      { cpr: "781251907", name: "صبري محمد حمد السيد إبراهيم", subject: "العلوم", email: "amirasabry80@gmail.com" },
+      { cpr: "000502286", name: "دانيال نادر محمد خورشيد", subject: "اللغة الإنجليزية", email: "" },
+      { cpr: "791343197", name: "طه عاطف طه عبد اللطيف", subject: "الرياضيات", email: "" },
+      { cpr: "711242100", name: "ايمن محمد بكري احمد", subject: "اللغة الإنجليزية", email: "" },
+      { cpr: "700034056", name: "عدنان عبدالجليل عبدالحسين الحلواجي", subject: "اللغة العربية", email: "" },
+      { cpr: "111111111", name: "جلال ابراهيم", subject: "المواد الاجتماعية", email: "" }
     ];
 
     const localVisitors = [
-      { name: "محمد إبراهيم محمد ناصر", job: "مدير المدرسة" }, { name: "عبدالله أحمد دليم", job: "المدير المساعد" },
-      { name: "د. عدنان عبدالجليل عبدالحسين الحلواجي", job: "معلم أول" }, { name: "محمد علي محسن العلي", job: "معلم أول" },
-      { name: "عبدالرضا عبدالرسول", job: "معلم أول" }, { name: "عباس كاظم أحمد عبدالنبي", job: "معلم أول" },
-      { name: "موسى مدن حسين مدن عصفور", job: "معلم أول" }, { name: "جلال ابراهيم", job: "معلم أول" },
-      { name: "حسين راشد حبيب حسين الدرازي", job: "منسق" }, { name: "عبدالله موفق احمد فارس فارس", job: "مسئول التربية الخاصة" }
+      { name: "محمد إبراهيم محمد ناصر", job: "مدير المدرسة", email: "amirasabry80@gmail.com" }, 
+      { name: "عبدالله أحمد دليم", job: "المدير المساعد", email: "amirasabry80@gmail.com" },
+      { name: "د. عدنان عبدالجليل عبدالحسين الحلواجي", job: "معلم أول", email: "amirasabry80@gmail.com" }, 
+      { name: "محمد علي محسن العلي", job: "معلم أول", email: "" },
+      { name: "عبدالرضا عبدالرسول", job: "معلم أول", email: "" }, 
+      { name: "عباس كاظم أحمد عبدالنبي", job: "معلم أول", email: "" },
+      { name: "موسى مدن حسين مدن عصفور", job: "معلم أول", email: "" }, 
+      { name: "جلال ابراهيم", job: "معلم أول", email: "" },
+      { name: "حسين راشد حبيب حسين الدرازي", job: "منسق", email: "" }
     ];
 
     let db = { visits: [] };
 
-    // القائمة الرسمية للتسلسل والطباعة
     const criteriaList = [
       { id: 1, domain: "التخطيط وإدارة الموقف التعليمي", title: "اتساق تخطيط الدرس مع الكفايات التعليمية للمنهج، ومراعاته احتياجات الطلبة." },
       { id: 2, domain: "التخطيط وإدارة الموقف التعليمي", title: "توفير بيئة تعلم آمنة ومحفزة خالية من المخاطر لضمان إنتاجية التعلم." },
@@ -438,44 +393,44 @@
     function checkLogin() {
       if (document.getElementById('loginPass').value === "2030") {
         document.getElementById('loginScreen').style.opacity = '0';
-        setTimeout(() => { document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('mainApp').classList.replace('hidden', 'flex'); }, 500);
+        setTimeout(() => { document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('mainApp').classList.replace('hidden', 'flex'); fetchData(); }, 500);
       } else { document.getElementById('loginError').classList.remove('hidden'); }
     }
 
-    function switchTab(tabId) { ['tab-home', 'tab-entry', 'tab-reports'].forEach(id => document.getElementById(id).classList.toggle('hidden', id !== tabId)); }
+    function switchTab(tabId) { 
+      ['tab-home', 'tab-entry', 'tab-reports'].forEach(id => document.getElementById(id).classList.toggle('hidden', id !== tabId)); 
+    }
 
-    // ==========================================
-    // الدالة السحرية لإدارة المنطق الشرطي (القفل الديناميكي الشامل)
-    // ==========================================
+    function openNewVisit() {
+        document.getElementById('visitForm').reset();
+        document.getElementById('edit_visit_id').value = "";
+        document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-clipboard-check"></i> إدخال زيارة صفية جديدة';
+        document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> حفظ الزيارة في السجل';
+        handleLockingLogic(); 
+        switchTab('tab-entry');
+    }
+
     window.handleLockingLogic = function() {
        let q13 = document.querySelector('input[name="q_13"]:checked');
        let q14 = document.querySelector('input[name="q_14"]:checked');
-       
        let allNames = criteriaList.map(c => 'q_' + c.id);
 
-       // 1. إذا لم يقم المقيم بتقييم 13 و 14، اقفل جميع المعايير الأخرى تماماً
        if (!q13 || !q14) {
            allNames.forEach(name => {
                if (name !== 'q_13' && name !== 'q_14') {
-                   document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-                       r.disabled = true;
-                       r.checked = false;
-                   });
+                   document.querySelectorAll(`input[name="${name}"]`).forEach(r => { r.disabled = true; r.checked = false; });
                }
            });
-           
-           // تقييد 13 و 14 تجاه بعضهما البعض لتطبيق القاعدة الذهبية (فارق درجة واحدة)
            let checkedCore = [q13, q14].filter(Boolean);
            if (checkedCore.length === 1) {
                let coreVal = parseInt(checkedCore[0].getAttribute('data-level'));
                ['q_13', 'q_14'].forEach(name => {
                    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
                        let lvl = parseInt(r.getAttribute('data-level'));
-                       r.disabled = Math.abs(lvl - coreVal) > 1; // يمنع اختيار تباين أعلى من درجة
+                       r.disabled = Math.abs(lvl - coreVal) > 1; 
                    });
                });
            } else {
-               // إذا تم إلغاء التحديد، افتح خيارات 13 و 14 بالكامل
                ['q_13', 'q_14'].forEach(name => {
                    document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.disabled = false);
                });
@@ -483,9 +438,7 @@
            return;
        }
 
-       // 2. إذا تم تقييم 13 و 14، طبق "القاعدة الذهبية" ديناميكياً على كل الاستمارة
        allNames.forEach(rowName => {
-           // ابحث عن كل القيم المختارة في *بقية* الصفوف (باستثناء الصف الحالي لتتمكن من تغيير رأيك)
            let otherCheckedValues = [];
            allNames.forEach(otherName => {
                if (otherName !== rowName) {
@@ -497,27 +450,17 @@
            let c_min = Math.min(...otherCheckedValues);
            let c_max = Math.max(...otherCheckedValues);
 
-           // قيم الخيارات المتاحة للصف الحالي لضمان عدم كسر القاعدة (الفارق <= 1)
            document.querySelectorAll(`input[name="${rowName}"]`).forEach(r => {
                let lvl = parseInt(r.getAttribute('data-level'));
                let new_min = Math.min(c_min, lvl);
                let new_max = Math.max(c_max, lvl);
-               
-               if (new_max - new_min > 1) {
-                   r.disabled = true;
-               } else {
-                   r.disabled = false;
-               }
+               r.disabled = (new_max - new_min > 1);
            });
        });
     }
 
-    // ==========================================
-    // بناء جدول الإدخال بترتيب مخصص يضع (الإنجاز الأكاديمي) أولاً
-    // ==========================================
     function buildCriteriaEntry() {
       let html = "";
-      
       const domainsOrder = [
         { domain: "الإنجاز الأكاديمي", ids: [13, 14] },
         { domain: "التخطيط وإدارة الموقف التعليمي", ids: [1, 2, 3, 4, 5] },
@@ -528,12 +471,10 @@
 
       domainsOrder.forEach(grp => {
         html += `<tr class="bg-slate-200 dark:bg-slate-700"><td colspan="6" class="text-right text-red-800 dark:text-red-400 p-2 font-extrabold text-base border border-slate-300">المجال: ${grp.domain}</td></tr>`;
-        
         grp.ids.forEach(id => {
           let c = criteriaList.find(x => x.id === id);
           let isKey = (id === 13 || id === 14);
-          let dis = isKey ? "" : "disabled"; // جميع المعايير مغلقة افتراضياً ما عدا 13 و 14
-          
+          let dis = isKey ? "" : "disabled"; 
           html += `
             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800 transition">
               <td class="font-bold">${c.id}</td>
@@ -547,7 +488,7 @@
         });
       });
       document.getElementById('criteriaEntryBody').innerHTML = html;
-      handleLockingLogic(); // للتأكد من القفل في البداية
+      handleLockingLogic(); 
     }
 
     function initDropdowns() {
@@ -572,11 +513,19 @@
 
     function fillTeacherDetails() {
       const t = localTeachers.find(x => x.name === document.getElementById('v_teacher').value);
-      if(t) { document.getElementById('v_subject').value = t.subject; document.getElementById('v_cpr').value = t.cpr; }
+      if(t) { 
+          document.getElementById('v_subject').value = t.subject; 
+          document.getElementById('v_cpr').value = t.cpr; 
+          document.getElementById('v_teacher_email').value = t.email || ''; 
+      }
     }
+    
     function fillVisitorDetails() {
       const v = localVisitors.find(x => x.name === document.getElementById('v_visitor').value);
-      if(v) document.getElementById('v_job').value = v.job;
+      if(v) {
+          document.getElementById('v_job').value = v.job;
+          document.getElementById('v_visitor_email').value = v.email || '';
+      }
     }
 
     async function fetchData() {
@@ -584,26 +533,93 @@
         const res = await fetch(SCRIPT_URL);
         const serverDb = await res.json();
         db.visits = serverDb.visits || [];
-      } catch (e) { console.error("Error fetching data", e); }
+      } catch (e) { console.error("Error fetching data from cloud", e); }
     }
 
-    // ==========================================
-    // دالة التحقق اليدوي وعرض الحقول الناقصة (Smart Validator)
-    // ==========================================
-    window.validateAndSave = function() {
-        // حقول متوقعة أن تكون موجودة في DOM لتجنب الأخطاء
-        const expectedIds = ['r_year', 'v_teacher', 'v_class', 'v_date', 'v_visitNo', 'v_lesson', 'v_period', 'v_time', 'v_students', 'v_absence', 'v_visitor', 'v_job'];
+    window.editVisit = function(visitId) {
+        const v = db.visits.find(x => String(x.ID) === String(visitId));
+        if(!v) return;
+
+        document.getElementById('visitForm').reset();
         
+        document.getElementById('edit_visit_id').value = v.ID;
+        document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen"></i> تعديل الزيارة الصفية';
+        document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> تحديث الزيارة';
+        switchTab('tab-entry');
+
+        document.getElementById('v_teacher').innerHTML = `<option value="${v.TeacherName}">${v.TeacherName}</option>`;
+        document.getElementById('v_teacher').value = v.TeacherName;
+        document.getElementById('v_subject').value = v.Subject || '';
+        document.getElementById('v_class').value = v.Extra_Class || '';
+        document.getElementById('v_date').value = v.Date || '';
+        document.getElementById('v_visitNo').value = v.Extra_VisitNo || '1';
+        document.getElementById('v_lesson').value = v.Extra_Lesson || '';
+        document.getElementById('v_period').value = v.Period || '';
+        document.getElementById('v_time').value = v.Extra_Time || '';
+        document.getElementById('v_students').value = v.StudentsCount || '';
+        document.getElementById('v_absence').value = v.AbsenceCount || '';
+        
+        document.getElementById('v_visitor').value = v.VisitorName || '';
+        document.getElementById('v_job').value = v.VisitorJob || '';
+        document.getElementById('v_visitor_email').value = v.VisitorEmail || '';
+        document.getElementById('v_teacher_email').value = v.TeacherEmail || '';
+        
+        document.getElementById('v_success').value = v.Extra_Success || '';
+        document.getElementById('v_improve').value = v.Extra_Improve || '';
+
+        let skillsArr = (v.Extra_Skills || "").split('، ');
+        document.querySelectorAll('#skillsCheckboxes input').forEach(chk => { chk.checked = skillsArr.includes(chk.value); });
+        
+        let swArr = (v.Extra_SW || "").split('، ');
+        document.querySelectorAll('#swCheckboxes input').forEach(chk => { chk.checked = swArr.includes(chk.value); });
+
+        let supportArr = (v.Extra_Support || "").split('، ');
+        document.querySelectorAll('#supportCheckboxes input').forEach(chk => { 
+            if(chk.id !== 'chk_other') chk.checked = supportArr.includes(chk.value); 
+        });
+        
+        let otherSupportValue = supportArr.find(val => !['لقاء فردي', 'قراءة موجهة', 'زيارة تبادلية', 'ورشة عمل', 'توأمة ومجتمعات تعلم'].includes(val));
+        if(otherSupportValue && otherSupportValue.trim() !== '') {
+            document.getElementById('chk_other').checked = true;
+            document.getElementById('v_support_other').value = otherSupportValue;
+        }
+
+        ['q_13', 'q_14'].forEach(name => {
+            let val = v[name.toUpperCase()]; 
+            if(val) {
+                let r = document.querySelector(`input[name="${name}"][value="${val}"]`);
+                if(r) { r.disabled = false; r.checked = true; }
+            }
+        });
+        
+        handleLockingLogic(); 
+
+        for(let i=1; i<=18; i++) {
+            if(i !== 13 && i !== 14) {
+                let val = v["Q"+i];
+                if(val) {
+                    let r = document.querySelector(`input[name="q_${i}"][value="${val}"]`);
+                    if(r && !r.disabled) r.checked = true;
+                }
+            }
+        }
+        
+        if(v.FinalJudgment) {
+            let fr = document.querySelector(`input[name="v_final"][value="${v.FinalJudgment}"]`);
+            if(fr) fr.checked = true;
+        }
+    }
+
+    window.validateAndSave = function() {
+        const expectedIds = ['r_year', 'v_teacher', 'v_class', 'v_date', 'v_visitNo', 'v_lesson', 'v_period', 'v_time', 'v_students', 'v_absence', 'v_visitor', 'v_job'];
         let missing = [];
 
         expectedIds.forEach(id => {
             let el = document.getElementById(id);
             if (el) {
-               // إذا كان حقل السنة موجودًا في التقارير ولكنه فارغ
                if (id === 'r_year' && el.value.trim() === '') {
                    missing.push("العام الدراسي (في لوحة التقارير)");
                } else if (id !== 'r_year' && (!el.value || el.value.trim() === '')) {
-                   // البحث عن الـ label المرتبط به لمعرفة اسمه، وإلا نستخدم الـ ID كبديل
                    let label = el.previousElementSibling;
                    let name = label ? label.innerText.replace('*','').trim() : id;
                    missing.push(name);
@@ -611,33 +627,25 @@
             }
         });
 
-        // 2. فحص تقييم المعايير الـ 18
         for(let i=1; i<=18; i++) {
           let checkedEl = document.querySelector(`input[name="q_${i}"]:checked`);
-          if (!checkedEl) {
-             missing.push(`تقييم المعيار رقم (${i})`);
-          }
+          if (!checkedEl) { missing.push(`تقييم المعيار رقم (${i})`); }
         }
 
-        // 3. فحص الحكم النهائي
         let finalEl = document.querySelector('input[name="v_final"]:checked');
-        if (!finalEl) {
-            missing.push('الحكم العام على الدرس');
-        }
+        if (!finalEl) { missing.push('الحكم العام على الدرس'); }
 
-        // إذا كان هناك نواقص، أظهرها في رسالة ولا تكمل
         if(missing.length > 0) {
             alert("⚠️ لا يمكن الحفظ! الرجاء إكمال البيانات التالية:\n\n- " + missing.join("\n- "));
             return;
         }
 
-        // إذا كل شيء تمام، نفذ عملية الحفظ
         executeSave(finalEl);
     }
 
     function executeSave(finalEl) {
       const btn = document.getElementById('saveBtn'); 
-      btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> جاري المعالجة..."; 
+      btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> جاري الحفظ والتزامن مع السحابة..."; 
       btn.disabled = true;
       
       try {
@@ -646,13 +654,15 @@
         let support = Array.from(document.querySelectorAll('#supportCheckboxes input:checked')).filter(i=>i.id!=='chk_other').map(i=>i.value);
         let chkOther = document.getElementById('chk_other');
         let supportOtherVal = document.getElementById('v_support_other');
-        if(chkOther && chkOther.checked && supportOtherVal) {
+        if(chkOther && chkOther.checked && supportOtherVal && supportOtherVal.value.trim() !== '') {
             support.push(supportOtherVal.value);
         }
 
         let yearVal = document.getElementById('r_year') ? document.getElementById('r_year').value : "2026-2027";
+        let editId = document.getElementById('edit_visit_id').value;
 
         let payload = {
+          ID: editId ? editId : Date.now().toString(),
           Year: yearVal,
           Semester: "طوال العام", 
           Date: document.getElementById('v_date').value,
@@ -660,6 +670,9 @@
           Subject: document.getElementById('v_subject').value,
           VisitorName: document.getElementById('v_visitor').value, 
           VisitorJob: document.getElementById('v_job').value,
+          VisitorEmail: document.getElementById('v_visitor_email').value,
+          TeacherEmail: document.getElementById('send_to_teacher').checked ? document.getElementById('v_teacher_email').value : "",
+          AdminEmail: "amirasabry80@gmail.com", // إيميل الأدمن 
           FinalJudgment: finalEl.value,
           Extra_Class: document.getElementById('v_class').value, 
           Extra_VisitNo: document.getElementById('v_visitNo').value,
@@ -670,6 +683,8 @@
           AbsenceCount: document.getElementById('v_absence').value,
           Extra_Skills: skills, 
           Extra_SW: sw, 
+          Extra_Success: document.getElementById('v_success').value,
+          Extra_Improve: document.getElementById('v_improve').value,
           Extra_Support: support.join('، ')
         };
 
@@ -677,16 +692,18 @@
           payload["Q"+i] = document.querySelector(`input[name="q_${i}"]:checked`).value;
         }
         
-        payload.ID = Date.now();
-        db.visits.push(payload);
+        if(editId) {
+            let index = db.visits.findIndex(x => String(x.ID) === String(editId));
+            if(index !== -1) db.visits[index] = payload;
+        } else {
+            db.visits.push(payload);
+        }
 
-        // إرسال سحابي في الخلفية
         fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
             .catch(err => console.log('Sync Error:', err));
 
-        alert("تم حفظ الزيارة بنجاح!"); 
-        document.getElementById('visitForm').reset(); 
-        handleLockingLogic(); // إعادة قفل الحقول للزيارة الجديدة
+        alert("تم إرسال الزيارة للسحابة بنجاح! سيتم إرسال الإيميلات تلقائياً."); 
+        openNewVisit(); 
         switchTab('tab-reports'); 
         updateFilterUI(); 
         generateReport();
@@ -748,7 +765,7 @@
         titleEl.innerText = `سجل الزيارات: ${fBy !== 'all' ? spec : 'للمدرسة'} (${yr})`;
         let html = `<div class="text-sm font-bold mb-4 bg-slate-100 p-2 rounded border border-slate-300">إجمالي الزيارات المسجلة: ${filtered.length}</div>
                     <table class="w-full text-sm border-collapse border border-slate-300">
-                      <thead><tr class="bg-slate-200"><th class="border p-2">التاريخ</th><th class="border p-2">المعلم</th><th class="border p-2">المقيم</th><th class="border p-2">إجراء</th></tr></thead>
+                      <thead><tr class="bg-slate-200"><th class="border p-2">التاريخ</th><th class="border p-2">المعلم</th><th class="border p-2">المقيم</th><th class="border p-2 text-center">إجراء</th></tr></thead>
                       <tbody>`;
         if(filtered.length === 0) html += `<tr><td colspan="4" class="text-center p-4">لا توجد زيارات مطابقة للبحث.</td></tr>`;
         filtered.forEach(v => {
@@ -757,8 +774,11 @@
                     <td class="border p-2 text-center font-bold">${v.TeacherName}</td>
                     <td class="border p-2 text-center text-slate-500">${v.VisitorName}</td>
                     <td class="border p-2 text-center no-print">
-                      <button onclick="renderSinglePrint('${v.ID}')" class="bg-amber-500 text-xs px-4 py-2 rounded text-white font-bold hover:bg-amber-600 shadow-md">
-                        <i class="fa-solid fa-print"></i> عرض وطباعة الاستمارة
+                      <button onclick="editVisit('${v.ID}')" class="bg-blue-600 text-xs px-3 py-2 rounded text-white font-bold hover:bg-blue-700 shadow-md ml-2">
+                        <i class="fa-solid fa-pen"></i> تعديل
+                      </button>
+                      <button onclick="renderSinglePrint('${v.ID}')" class="bg-amber-500 text-xs px-3 py-2 rounded text-white font-bold hover:bg-amber-600 shadow-md">
+                        <i class="fa-solid fa-print"></i> عرض وطباعة
                       </button>
                     </td>
                    </tr>`;
@@ -843,7 +863,6 @@
                     </tr>
                   </thead><tbody>`;
         
-        // عند الطباعة، تعود المعايير لترتيبها التسلسلي الأصلي الرسمي
         criteriaList.forEach(c => {
           let counts = {m:0, g:0, s:0, p:0};
           filtered.forEach(v => {
@@ -866,7 +885,6 @@
       }
     }
 
-    // عرض زيارة فردية واحدة (علامة ✔ للطباعة مع المداولة)
     window.renderSinglePrint = function(visitId) {
       const v = db.visits.find(x => String(x.ID) === String(visitId));
       if(!v) return;
@@ -949,6 +967,21 @@
             </div>
           </div>
           
+          <div class="box-section">
+            <div class="box-header">3). التغذية الراجعة:</div>
+            <div class="box-content" style="display: flex; gap: 10px;">
+              <div style="flex: 1; border: 1px solid #ccc; padding: 5px; min-height: 50px;"><strong>نجاحات المعلم:</strong><br>${v.Extra_Success || 'لا يوجد'}</div>
+              <div style="flex: 1; border: 1px solid #ccc; padding: 5px; min-height: 50px;"><strong>جوانب بحاجة إلى تطوير:</strong><br>${v.Extra_Improve || 'لا يوجد'}</div>
+            </div>
+          </div>
+
+          <div class="box-section">
+            <div class="box-header">4). أساليب الدعم والمساندة للمعلم المزور:</div>
+            <div class="box-content font-bold">
+              ${v.Extra_Support || 'لم يتم تحديد أساليب دعم.'}
+            </div>
+          </div>
+          
           <div class="signatures-print mt-10">
             <div><p class="font-bold mb-10">اسم الزائر:</p><p>${v.VisitorName}</p></div>
             <div><p class="font-bold mb-10">المسمى الوظيفي:</p><p>${v.VisitorJob}</p></div>
@@ -969,8 +1002,6 @@
 
     buildCriteriaEntry();
     initDropdowns();
-    fetchData();
   </script>
 </body>
-</html
-  
+</html>
