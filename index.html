@@ -591,27 +591,23 @@
     // دالة التحقق اليدوي وعرض الحقول الناقصة (Smart Validator)
     // ==========================================
     window.validateAndSave = function() {
-        const requiredFields = [
-          { id: 'v_teacher', name: 'اسم المعلم' },
-          { id: 'v_class', name: 'الصف/الشعبة' },
-          { id: 'v_date', name: 'تاريخ الزيارة' },
-          { id: 'v_visitNo', name: 'رقم الزيارة' },
-          { id: 'v_lesson', name: 'عنوان الدرس' },
-          { id: 'v_period', name: 'الحصة الدراسية' },
-          { id: 'v_time', name: 'الزمن' },
-          { id: 'v_students', name: 'عدد الطلبة' },
-          { id: 'v_absence', name: 'عدد الغياب' },
-          { id: 'v_visitor', name: 'اسم الزائر (المقيم)' },
-          { id: 'v_job', name: 'المسمى الوظيفي' }
-        ];
-
+        // حقول متوقعة أن تكون موجودة في DOM لتجنب الأخطاء
+        const expectedIds = ['r_year', 'v_teacher', 'v_class', 'v_date', 'v_visitNo', 'v_lesson', 'v_period', 'v_time', 'v_students', 'v_absence', 'v_visitor', 'v_job'];
+        
         let missing = [];
 
-        // 1. فحص الحقول النصية والرقمية
-        requiredFields.forEach(f => {
-            let val = document.getElementById(f.id).value;
-            if(!val || val.trim() === '') {
-                missing.push(f.name);
+        expectedIds.forEach(id => {
+            let el = document.getElementById(id);
+            if (el) {
+               // إذا كان حقل السنة موجودًا في التقارير ولكنه فارغ
+               if (id === 'r_year' && el.value.trim() === '') {
+                   missing.push("العام الدراسي (في لوحة التقارير)");
+               } else if (id !== 'r_year' && (!el.value || el.value.trim() === '')) {
+                   // البحث عن الـ label المرتبط به لمعرفة اسمه، وإلا نستخدم الـ ID كبديل
+                   let label = el.previousElementSibling;
+                   let name = label ? label.innerText.replace('*','').trim() : id;
+                   missing.push(name);
+               }
             }
         });
 
@@ -648,15 +644,33 @@
         let skills = Array.from(document.querySelectorAll('#skillsCheckboxes input:checked')).map(i=>i.value).join('، ');
         let sw = Array.from(document.querySelectorAll('#swCheckboxes input:checked')).map(i=>i.value).join('، ');
         let support = Array.from(document.querySelectorAll('#supportCheckboxes input:checked')).filter(i=>i.id!=='chk_other').map(i=>i.value);
-        if(document.getElementById('chk_other').checked) support.push(document.getElementById('v_support_other').value);
+        let chkOther = document.getElementById('chk_other');
+        let supportOtherVal = document.getElementById('v_support_other');
+        if(chkOther && chkOther.checked && supportOtherVal) {
+            support.push(supportOtherVal.value);
+        }
+
+        let yearVal = document.getElementById('r_year') ? document.getElementById('r_year').value : "2026-2027";
 
         let payload = {
-          Year: document.getElementById('v_year').value, Semester: "طوال العام", Date: document.getElementById('v_date').value,
-          TeacherName: document.getElementById('v_teacher').value, Subject: document.getElementById('v_subject').value,
-          VisitorName: document.getElementById('v_visitor').value, VisitorJob: document.getElementById('v_job').value,
+          Year: yearVal,
+          Semester: "طوال العام", 
+          Date: document.getElementById('v_date').value,
+          TeacherName: document.getElementById('v_teacher').value, 
+          Subject: document.getElementById('v_subject').value,
+          VisitorName: document.getElementById('v_visitor').value, 
+          VisitorJob: document.getElementById('v_job').value,
           FinalJudgment: finalEl.value,
-          Extra_Class: document.getElementById('v_class').value, Extra_VisitNo: document.getElementById('v_visitNo').value,
-          Extra_Lesson: document.getElementById('v_lesson').value, Extra_Skills: skills, Extra_SW: sw, Extra_Support: support.join('، ')
+          Extra_Class: document.getElementById('v_class').value, 
+          Extra_VisitNo: document.getElementById('v_visitNo').value,
+          Extra_Lesson: document.getElementById('v_lesson').value,
+          Period: document.getElementById('v_period').value,
+          Extra_Time: document.getElementById('v_time').value,
+          StudentsCount: document.getElementById('v_students').value,
+          AbsenceCount: document.getElementById('v_absence').value,
+          Extra_Skills: skills, 
+          Extra_SW: sw, 
+          Extra_Support: support.join('، ')
         };
 
         for(let i=1; i<=18; i++) {
@@ -678,7 +692,7 @@
         generateReport();
 
       } catch (err) {
-        alert("حدث خطأ غير متوقع.");
+        alert("حدث خطأ غير متوقع: " + err.message);
       } finally {
         btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> حفظ الزيارة في السجل'; 
         btn.disabled = false;
