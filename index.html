@@ -196,6 +196,7 @@ const localTeachers = [
   { cpr: "781251907", name: "صبري محمد حمد السيد إبراهيم", subject: "العلوم", email: "amirasabry80@gmail.com" },
   { cpr: "770601715", name: "حسن عبدعلي حياة المشخص", subject: "إداري", email: "hayat31@hotmail.com" },
   { cpr: "000502286", name: "دانيال نادر محمد خورشيد", subject: "اللغة الانجليزية", email: "Daniel4bh@gmail.com" },
+  { cpr: "730202976", name: "محمد إبراهيم محمد ناصر", subject: "نظام معلم فصل", email: "mohds24@gmail.com" },
   { cpr: "791343197", name: "طه عاطف طه عبد اللطيف", subject: "الرياضيات", email: "teetooo1001@gmail.com" },
   { cpr: "710654782", name: "منتصر عثمان زيدان ابوزيد", subject: "اللغة الانجليزية", email: "Montaserzidan8@gmail.com" },
   { cpr: "820503207", name: "إبراهيم عبدالنبي أحمد علي ناصر", subject: "تربية خاصة (دمج)", email: "abuhussainsb@gmail.com" },
@@ -214,6 +215,7 @@ const localTeachers = [
   { cpr: "661002705", name: "محمد علي محسن العلي", subject: "الرياضيات", email: "mod913@hotmail.com" },
   { cpr: "900905719", name: "محمد عبدالجبار جعفر العويناتي", subject: "اللغة العربية والتربية الإسلامية", email: "Mo-hd@hotmail.com" },
   { cpr: "731201817", name: "جعفر حسن عبدالله الزاير", subject: "العلوم", email: "amirasabry80@gmail.com" },
+  { cpr: "980805341", name: "عبدالله أحمد إبراهيم دليم", subject: "إدارة", email: "abdulladliam123@gmail.com" },
   { cpr: "720202892", name: "باسم ناصر سعد رحال", subject: "اللغة العربية", email: "basim221972@gmail.com" },
   { cpr: "670639486", name: "محمد محمود محمد سليمان", subject: "العلوم", email: "Abofarouk67@gmail.com" },
   { cpr: "700243232", name: "السيد البيلي السيد بيلي", subject: "الزراعة", email: "Selbially99@yahoo.com" },
@@ -279,8 +281,14 @@ const SCHED={"ابتدائي":["7:15 - 8:05","8:05 - 8:55","8:55 - 9:45","10:15 
 let db={visits:[]}, curSheet=null;
 
 function checkLogin(){
-  if($('loginPass').value==="2030"){$('loginScreen').style.display='none';$('app').style.display='block';fetchData().then(renderHome)}
-  else $('loginError').style.display='block';
+  const pass = $('loginPass').value.trim();
+  if(pass === "2030"){
+      $('loginScreen').style.display='none';
+      $('app').style.display='block';
+      fetchData().then(renderHome);
+  } else { 
+      $('loginError').style.display='block';
+  }
 }
 function toggleDark(){document.documentElement.classList.toggle('dark');const d=document.documentElement.classList.contains('dark');localStorage.setItem('theme',d?'dark':'light');$('themeBtn').textContent=d?'☀️':'🌙'}
 if(localStorage.getItem('theme')==='dark')toggleDark();
