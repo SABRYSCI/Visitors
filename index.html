@@ -78,7 +78,7 @@ table.lg{width:100%;border-collapse:collapse;font-size:14px}table.lg th,table.lg
 .sg{width:100%;border-collapse:collapse;text-align:center;margin-top:22px}.sg td{padding:4px}
 .cred{text-align:center;font-size:9px;border-top:1px solid #000;margin-top:14px;padding-top:3px}
 .offscreen{position:fixed;left:-10000px;top:0;width:794px}
-.rp .ot th,.rp .ot td{font-size:12px;padding:6px}
+.rp #out>.ot th,.rp #out>.ot td{font-size:12px;padding:6px}
 #repHead{display:none;text-align:center}#repHead img{height:80px}
 @media(max-width:700px){.span2{grid-column:auto}.hd small{display:none}}
 @media print{
@@ -87,6 +87,12 @@ table.lg{width:100%;border-collapse:collapse;font-size:14px}table.lg th,table.lg
  main{padding:0;max-width:none}.card{border:0;box-shadow:none;padding:0}
  .sheet{width:auto;min-height:0;padding:0;box-shadow:none;margin:0}.sheet2{break-before:page}
  .ot tr{break-inside:avoid}.ot thead{display:table-header-group}
+ .sheet .ot,.sheet .bx{break-inside:avoid}
+ .sheet .hdr img{height:62px}.sheet .ttl{font-size:14px}
+ .sheet .ot th,.sheet .ot td{padding:2px 5px;line-height:1.35}
+ .sheet .inf td{padding:2px 4px}
+ .sheet:not(.sheet2){zoom:.95}
+ .sheet2{break-after:avoid;page-break-after:avoid}
  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
