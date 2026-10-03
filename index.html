@@ -115,7 +115,7 @@ table.lg{width:100%;border-collapse:collapse;font-size:14px}table.lg th,table.lg
   <button onclick="openNew()">📝 إدخال زيارة صفية جديدة</button>
   <button onclick="go('reports');updateFilterUI();refreshData(true)">📊 سجلات الزيارات والتقارير</button>
  </div>
- <div class="card"><h3>نظرة سريعة على العام الدراسي <span id="hYear"></span></h3><div id="homeStats"></div></div>
+ <div class="card"><h3>نظرة سريعة على العام الدراسي <span id="hYear" dir="ltr"></span></h3><div id="homeStats"></div></div>
 </section>
 
 <!-- الإدخال -->
@@ -376,11 +376,12 @@ function renderHome(){
   if(!vs.length){$('homeStats').innerHTML='<p style="color:var(--mut)">لا توجد زيارات مسجلة لهذا العام بعد.</p>';return}
   const c=statsOf(vs),t=vs.length,teachers=new Set(vs.map(v=>v.TeacherName)).size,by={};
   vs.forEach(v=>by[v.Subject]=(by[v.Subject]||0)+1);
-  const last=vs.slice().sort((a,b)=>String(b.Date).localeCompare(String(a.Date))).slice(0,5);
-  $('homeStats').innerHTML=`<div class="stat"><div><b>${t}</b><span>إجمالي الزيارات</span></div><div><b>${teachers}</b><span>معلمون تمت زيارتهم</span></div><div><b>${pct(c[2]+c[3],t)}</b><span>جيد وأعلى</span></div><div><b>${Object.keys(by).length}</b><span>أقسام</span></div></div>
+  const last=vs.slice().sort((a,b)=>String(b.Date).localeCompare(String(a.Date))).slice(0,10);
+  $('homeStats').innerHTML=`<div class="stat"><div><b>${t}</b><span>إجمالي الزيارات</span></div><div><b>${teachers}</b><span>معلمون تمت زيارتهم (دون تكرار)</span></div><div><b>${pct(c[2]+c[3],t)}</b><span>جيد وأعلى</span></div><div><b>${Object.keys(by).length}</b><span>أقسام</span></div></div>
   <div class="bar">${c.map((n,i)=>`<span style="width:${n/t*100}%;background:var(${LV[i].c})"></span>`).join('')}</div>
   <div class="leg">${LV.map((l,i)=>`<span><i style="background:var(${l.c})"></i>${l.t.split(' =')[0]}: ${c[i]} (${pct(c[i],t)})</span>`).join('')}</div>
-  <h3 style="margin-top:16px">آخر الزيارات</h3><table class="lg"><tr><th>التاريخ</th><th>المعلم</th><th>المادة</th><th>الحكم</th></tr>${last.map(v=>{const l=lvl(v.FinalJudgment);return `<tr><td>${esc(v.Date)}</td><td>${esc(v.TeacherName)}</td><td>${esc(v.Subject)}</td><td><span class="chip" style="background:var(${LV[l<0?0:l].c})">${LV[l<0?0:l].t.split(' =')[0]}</span></td></tr>`}).join('')}</table>`;
+  <h3 style="margin-top:16px">آخر الزيارات</h3><table class="lg"><tr><th>التاريخ</th><th>المعلم</th><th>المادة</th><th>الحكم</th></tr>${last.map(v=>{const l=lvl(v.FinalJudgment);return `<tr><td>${esc(v.Date)}</td><td>${esc(v.TeacherName)}</td><td>${esc(v.Subject)}</td><td><span class="chip" style="background:var(${LV[l<0?0:l].c})">${LV[l<0?0:l].t.split(' =')[0]}</span></td></tr>`}).join('')}</table>
+  <p style="margin:12px 0 0"><button class="sec sm" onclick="go('reports');$('r_type').value='log';updateFilterUI();generateReport()">عرض كل الزيارات في السجل (${t})</button></p>`;
 }
 
 /* ===== التقارير ===== */
