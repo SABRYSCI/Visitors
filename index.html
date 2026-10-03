@@ -7,10 +7,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-<!-- كود صيد الأخطاء لمعرفة سبب أي مشكلة مستقبلاً -->
 <script>
 window.onerror = function(msg, url, line) {
-    alert("تنبيه برمجي (صائد الأخطاء):\n" + msg + "\nالسطر: " + line + "\n\nإذا استمرت المشكلة، يرجى تحديث الصفحة (Ctrl+F5).");
+    alert("تنبيه برمجي:\n" + msg + "\nالسطر: " + line);
     return false;
 };
 </script>
@@ -106,9 +105,9 @@ table.lg{width:100%;border-collapse:collapse;font-size:14px}table.lg th,table.lg
  <img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt="">
  <h2>نظام الزيارات الصفية</h2>
  <p style="color:var(--mut);margin-top:0">أدخل كلمة المرور للمتابعة</p>
- <input type="password" id="loginPass" placeholder="كلمة المرور" style="text-align:center;font-size:18px" onkeydown="if(event.key==='Enter'){try{checkLogin()}catch(e){alert('خطأ: '+e.message)}}">
+ <input type="password" id="loginPass" placeholder="كلمة المرور" style="text-align:center;font-size:18px" onkeydown="if(event.key==='Enter')checkLogin()">
  <p id="loginError" style="color:var(--l1);font-weight:700;display:none;margin:8px 0 0">كلمة المرور غير صحيحة</p>
- <button style="width:100%;margin-top:12px;padding:12px" onclick="try{checkLogin()}catch(e){alert('خطأ: '+e.message)}">تسجيل الدخول</button>
+ <button style="width:100%;margin-top:12px;padding:12px" onclick="checkLogin()">تسجيل الدخول</button>
 </div></div>
 
 <div id="app" style="display:none">
@@ -384,7 +383,7 @@ function validateAndSave(){
   for(let i=1;i<=18;i++)if(!document.querySelector(`input[name="q_${i}"]:checked`))miss.push('تقييم المعيار رقم '+i);
   const fin=document.querySelector('input[name="v_final"]:checked');if(!fin)miss.push('الحكم العام على الدرس');
   if(miss.length)return alert('⚠️ أكمل البيانات التالية قبل الحفظ:\n\n- '+miss.join('\n- '));
-  if(+$('v_absence').value>+$('v_students').value)return alert('⚠️ عدد الغياب أكبر من عدد الطلبة.');
+  if(+$('v_absence').value>+$('v_students').value)return alert('⚠️️ عدد الغياب أكبر من عدد الطلبة.');
   save(fin);
 }
 const vals=sel=>Array.from(document.querySelectorAll(sel+':checked')).map(i=>i.value);
