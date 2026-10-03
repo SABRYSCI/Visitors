@@ -6,6 +6,15 @@
 <title>استمارة الملاحظة الصفية الموحدة</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<!-- كود صيد الأخطاء لمعرفة سبب أي مشكلة مستقبلاً -->
+<script>
+window.onerror = function(msg, url, line) {
+    alert("تنبيه برمجي (صائد الأخطاء):\n" + msg + "\nالسطر: " + line + "\n\nإذا استمرت المشكلة، يرجى تحديث الصفحة (Ctrl+F5).");
+    return false;
+};
+</script>
+
 <style>
 :root{--br:#8f1d1d;--ink:#1e293b;--mut:#64748b;--ln:#dfe4ec;--bg:#f1f3f7;--cd:#fff;--soft:#f8fafc;--l1:#dc2626;--l2:#ea8a0c;--l3:#2563eb;--l4:#059669}
 .dark{--ink:#e5eaf3;--mut:#94a3b8;--ln:#2b3648;--bg:#0c1320;--cd:#152033;--soft:#101a2b}
@@ -97,9 +106,9 @@ table.lg{width:100%;border-collapse:collapse;font-size:14px}table.lg th,table.lg
  <img src="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png" alt="">
  <h2>نظام الزيارات الصفية</h2>
  <p style="color:var(--mut);margin-top:0">أدخل كلمة المرور للمتابعة</p>
- <input type="password" id="loginPass" placeholder="كلمة المرور" style="text-align:center;font-size:18px" onkeydown="if(event.key==='Enter')checkLogin()">
+ <input type="password" id="loginPass" placeholder="كلمة المرور" style="text-align:center;font-size:18px" onkeydown="if(event.key==='Enter'){try{checkLogin()}catch(e){alert('خطأ: '+e.message)}}">
  <p id="loginError" style="color:var(--l1);font-weight:700;display:none;margin:8px 0 0">كلمة المرور غير صحيحة</p>
- <button style="width:100%;margin-top:12px;padding:12px" onclick="checkLogin()">تسجيل الدخول</button>
+ <button style="width:100%;margin-top:12px;padding:12px" onclick="try{checkLogin()}catch(e){alert('خطأ: '+e.message)}">تسجيل الدخول</button>
 </div></div>
 
 <div id="app" style="display:none">
@@ -281,15 +290,23 @@ const SCHED={"ابتدائي":["7:15 - 8:05","8:05 - 8:55","8:55 - 9:45","10:15 
 let db={visits:[]}, curSheet=null;
 
 function checkLogin(){
-  const pass = $('loginPass').value.trim();
-  if(pass === "2030"){
-      $('loginScreen').style.display='none';
-      $('app').style.display='block';
-      fetchData().then(renderHome);
-  } else { 
-      $('loginError').style.display='block';
+  try {
+      const pass = $('loginPass').value.trim();
+      if(pass === "2030"){
+          $('loginScreen').style.display='none';
+          $('app').style.display='block';
+          fetchData().then(renderHome).catch(e => {
+              alert("تم الدخول بنجاح، لكن حدث خطأ أثناء جلب البيانات السابقة من السحابة: " + e.message);
+              renderHome();
+          });
+      } else { 
+          $('loginError').style.display='block';
+      }
+  } catch(err) {
+      alert("خطأ أثناء محاولة الدخول: " + err.message);
   }
 }
+
 function toggleDark(){document.documentElement.classList.toggle('dark');const d=document.documentElement.classList.contains('dark');localStorage.setItem('theme',d?'dark':'light');$('themeBtn').textContent=d?'☀️':'🌙'}
 if(localStorage.getItem('theme')==='dark')toggleDark();
 function go(id){['home','entry','reports'].forEach(t=>$(t).classList.toggle('on',t===id));if(id==='home')renderHome();window.scrollTo(0,0)}
@@ -412,8 +429,26 @@ async function pdfAction(btn,id,mode){
   }catch(e){alert('تعذر تنفيذ العملية: '+e.message)}finally{btn.disabled=false;btn.innerHTML=h}
 }
 
-async function fetchData(){try{const r=await fetch(SCRIPT_URL+'?t='+Date.now());db.visits=(await r.json()).visits||[]}catch(e){console.error(e)}}
-async function refreshData(){await fetchData();generateReport();renderHome();alert('تم جلب أحدث البيانات من السحابة')}
+async function fetchData(){
+    try {
+        const r = await fetch(SCRIPT_URL+'?t='+Date.now());
+        if (!r.ok) throw new Error("فشل الاتصال بخادم جوجل.");
+        db.visits = (await r.json()).visits || [];
+    } catch(e) {
+        console.error(e);
+        throw e;
+    }
+}
+async function refreshData(){
+    try {
+        await fetchData();
+        generateReport();
+        renderHome();
+        alert('تم جلب أحدث البيانات من السحابة');
+    } catch (e) {
+        alert("فشل تحديث السجل: " + e.message + "\n\nالرجاء التأكد من تحديث الـ Deployment في Google Apps Script.");
+    }
+}
 
 const statsOf=arr=>{const c=[0,0,0,0];arr.forEach(v=>{const l=lvl(v.FinalJudgment);c[l<0?0:l]++});return c};
 const pct=(n,t)=>{if(!t)return '0%';const p=n/t*100;return Number.isInteger(p)?p+'%':p.toFixed(2)+'%'};
