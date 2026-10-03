@@ -6,14 +6,6 @@
 <title>استمارة الملاحظة الصفية الموحدة</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-<script>
-window.onerror = function(msg, url, line) {
-    alert("تنبيه برمجي:\n" + msg + "\nالسطر: " + line);
-    return false;
-};
-</script>
-
 <style>
 :root{--br:#8f1d1d;--ink:#1e293b;--mut:#64748b;--ln:#dfe4ec;--bg:#f1f3f7;--cd:#fff;--soft:#f8fafc;--l1:#dc2626;--l2:#ea8a0c;--l3:#2563eb;--l4:#059669}
 .dark{--ink:#e5eaf3;--mut:#94a3b8;--ln:#2b3648;--bg:#0c1320;--cd:#152033;--soft:#101a2b}
@@ -117,14 +109,16 @@ table.lg{width:100%;border-collapse:collapse;font-size:14px}table.lg th,table.lg
 </div></header>
 
 <main>
+<!-- الرئيسية + الإحصائيات -->
 <section id="home" class="tab on">
  <div class="act np">
   <button onclick="openNew()">📝 إدخال زيارة صفية جديدة</button>
-  <button onclick="go('reports');updateFilterUI();refreshData()">📊 سجلات الزيارات والتقارير</button>
+  <button onclick="go('reports');updateFilterUI();refreshData(true)">📊 سجلات الزيارات والتقارير</button>
  </div>
  <div class="card"><h3>نظرة سريعة على العام الدراسي <span id="hYear"></span></h3><div id="homeStats"></div></div>
 </section>
 
+<!-- الإدخال -->
 <section id="entry" class="tab">
  <div class="card">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h2 id="formTitle" style="margin:0">إدخال زيارة صفية جديدة</h2><button class="sec sm" onclick="go('home')">عودة</button></div>
@@ -179,6 +173,7 @@ table.lg{width:100%;border-collapse:collapse;font-size:14px}table.lg th,table.lg
  </div>
 </section>
 
+<!-- التقارير -->
 <section id="reports" class="tab">
  <div class="card tools np">
   <div><label>العام الدراسي</label><input id="r_year" value="2026-2027" style="width:110px;text-align:center;font-weight:700"></div>
@@ -200,79 +195,12 @@ table.lg{width:100%;border-collapse:collapse;font-size:14px}table.lg th,table.lg
 <datalist id="visitorsData"></datalist>
 
 <script>
-const localTeachers = [
-  { cpr: "781251907", name: "صبري محمد حمد السيد إبراهيم", subject: "العلوم", email: "amirasabry80@gmail.com" },
-  { cpr: "770601715", name: "حسن عبدعلي حياة المشخص", subject: "إداري", email: "hayat31@hotmail.com" },
-  { cpr: "000502286", name: "دانيال نادر محمد خورشيد", subject: "اللغة الانجليزية", email: "Daniel4bh@gmail.com" },
-  { cpr: "730202976", name: "محمد إبراهيم محمد ناصر", subject: "نظام معلم فصل", email: "mohds24@gmail.com" },
-  { cpr: "791343197", name: "طه عاطف طه عبد اللطيف", subject: "الرياضيات", email: "teetooo1001@gmail.com" },
-  { cpr: "710654782", name: "منتصر عثمان زيدان ابوزيد", subject: "اللغة الانجليزية", email: "Montaserzidan8@gmail.com" },
-  { cpr: "820503207", name: "إبراهيم عبدالنبي أحمد علي ناصر", subject: "تربية خاصة (دمج)", email: "abuhussainsb@gmail.com" },
-  { cpr: "670158887", name: "لطفي ابراهيم محمد ابراهيم", subject: "الرياضيات", email: "Lotfytas1@gmail.com" },
-  { cpr: "680839461", name: "عبدالباسط محمد السيد محمد", subject: "الرياضيات", email: "abdelbaset161616@gmail.com" },
-  { cpr: "750504897", name: "علي محسن علي سيف", subject: "المجالات العملية", email: "Abhusain.1983@gmail.com" },
-  { cpr: "910304823", name: "ياسر عبد الهادي عبد الله عيسى", subject: "اللغة العربية", email: "amirasabry80@gmail.com" },
-  { cpr: "820464350", name: "سفيان محمد نورفل", subject: "التربية الإسلامية", email: "aminesoufiane35@gmail.com" },
-  { cpr: "750802537", name: "عبدالله حسن عبدالله سند", subject: "المجالات العملية", email: "Abdullasanad.345@gmail.com" },
-  { cpr: "741006316", name: "ماهر مهدي علي عمران", subject: "اللغة العربية", email: "Maher-deen@hotmail.com" },
-  { cpr: "711242100", name: "ايمن محمد بكري احمد", subject: "اللغة الانجليزية", email: "aymen.bakry14@gmail.com" },
-  { cpr: "820702366", name: "حسين سعيد جاسم علي", subject: "مصادر التعلم", email: "Sun12bh@gmail.com" },
-  { cpr: "860604241", name: "يوسف علي عبدالله عبدالحق", subject: "تقنية المعلومات", email: "amirasabry80@gmail.com" },
-  { cpr: "690246110", name: "صلاح فؤاد محمد السيد", subject: "تربية خاصة (نطق ولغة)", email: "fouadsalah026@gmail.com" },
-  { cpr: "790306913", name: "حسين هلال ابراهيم احمد", subject: "تقنية المعلومات", email: "amirasabry80@gmail.com" },
-  { cpr: "661002705", name: "محمد علي محسن العلي", subject: "الرياضيات", email: "mod913@hotmail.com" },
-  { cpr: "900905719", name: "محمد عبدالجبار جعفر العويناتي", subject: "اللغة العربية والتربية الإسلامية", email: "Mo-hd@hotmail.com" },
-  { cpr: "731201817", name: "جعفر حسن عبدالله الزاير", subject: "العلوم", email: "amirasabry80@gmail.com" },
-  { cpr: "980805341", name: "عبدالله أحمد إبراهيم دليم", subject: "إدارة", email: "abdulladliam123@gmail.com" },
-  { cpr: "720202892", name: "باسم ناصر سعد رحال", subject: "اللغة العربية", email: "basim221972@gmail.com" },
-  { cpr: "670639486", name: "محمد محمود محمد سليمان", subject: "العلوم", email: "Abofarouk67@gmail.com" },
-  { cpr: "700243232", name: "السيد البيلي السيد بيلي", subject: "الزراعة", email: "Selbially99@yahoo.com" },
-  { cpr: "990104885", name: "محمد عبدالنبي سلمان العويناتي", subject: "الرياضيات", email: "Mohamedabdulnabi19@gmail.com" },
-  { cpr: "811003892", name: "محمد جعفر احمد عبدالحسين", subject: "عام", email: "dirazy@gmail.com" },
-  { cpr: "701140356", name: "درويش يحيى زين الدين", subject: "عام", email: "Yasserzainuddin2@gmail.com" },
-  { cpr: "781100712", name: "حسن حميد محسن علي", subject: "عام", email: "Mrhassan12332111@gmail.com" },
-  { cpr: "820603350", name: "حسين راشد حبيب حسين الدرازي", subject: "التربية الرياضية", email: "amirasabry80@gmail.com" },
-  { cpr: "680110836", name: "محمد إبراهيم علي آل طوق", subject: "اللغة العربية", email: "m_tauq@hotmail.com" },
-  { cpr: "720749492", name: "ايمن خضر السيد عيسي", subject: "عام", email: "Khedreb@gmail.com" },
-  { cpr: "790708221", name: "عباس حسين فردان الفردان", subject: "التربية الرياضية", email: "abbas.fardan79@gmail.com" },
-  { cpr: "770706231", name: "علي عبدالله أحمد علي", subject: "المواد الاجتماعية", email: "ali_ali_77@hotmail.com" },
-  { cpr: "750840269", name: "احمد فراج احمد مصطفى", subject: "عام", email: "Ahmmedfarag372@gmail.com" },
-  { cpr: "780182618", name: "عاطف على التهامى بسيوني", subject: "عام", email: "atefali675@yahoo.com" },
-  { cpr: "721137601", name: "ناصر ماهر احمد محمد", subject: "المواد الاجتماعية", email: "Nasser.maher2819@yahoo.com" },
-  { cpr: "700202137", name: "موسى مدن حسين مدن عصفور", subject: "التربية الإسلامية", email: "Zas4101@Gmail.Com" },
-  { cpr: "851248977", name: "احمد عبد المطلب علي عبد المطلب", subject: "عام", email: "Ahmedbarwash@gmail.com" },
-  { cpr: "700034056", name: "عدنان عبدالجليل عبدالحسين الحلواجي", subject: "اللغة العربية", email: "Halwachi.adnan@gmail.com" },
-  { cpr: "770805647", name: "جاسم محمد جعفر الحداد", subject: "عام", email: "jmj19777@gmail.com" },
-  { cpr: "010312056", name: "عبدالرزاق محمد السالم", subject: "عام", email: "abd.razzaq05@gmail.com" },
-  { cpr: "951106112", name: "عبدالله موفق احمد فارس فارس", subject: "مسئول التربية الخاصة", email: "Abdullamuwafeq@gmail.com" },
-  { cpr: "000101338", name: "محمد عبد العزيز عبد الحسين أحمد جعفر", subject: "عام", email: "t.mohdbinjafar@gmail.com" },
-  { cpr: "750015586", name: "حسن علي محمد خميس", subject: "عام", email: "amirasabry80@gmail.com" },
-  { cpr: "980305322", name: "السيد محمد ضياء علي ابراهيم محمد", subject: "عام", email: "m40-40@hotmail.com" },
-  { cpr: "660583879", name: "أحمد علي أحمد عبد الكريم", subject: "عام", email: "Ahmedabdelkrem2@gmail.com" },
-  { cpr: "760408041", name: "عباس كاظم أحمد عبدالنبي", subject: "اللغة الانجليزية", email: "Abbaska@hotmail.com" },
-  { cpr: "850902843", name: "حمزة ميرزا جعفر", subject: "الرياضيات", email: "hamza666888@gmail.com" },
-  { cpr: "810704188", name: "عبدالله صالح هلال علي", subject: "عام", email: "Abdullahilal5@gmail.com" },
-  { cpr: "861106920", name: "احمد عبد العزيز عيسى شهاب", subject: "عام", email: "ahmedshehabii@hotmail.com" },
-  { cpr: "12345", name: "عبدالرضا عبدالرسول", subject: "العلوم", email: "amirasabry80@gmail.com" },
-  { cpr: "123456", name: "جلال ابراهيم", subject: "المواد الاجتماعية", email: "amirasabry80@gmail.com" },
-  { cpr: "1234567", name: "حسين السواد", subject: "اللغة الانجليزية", email: "amirasabry80@gmail.com" }
-];
-
-const localVisitors = [
-  { name: "محمد إبراهيم محمد ناصر", job: "مدير المدرسة", email: "mohds24@gmail.com" }, 
-  { name: "عبدالله أحمد دليم", job: "المدير المساعد", email: "abdulladliam123@gmail.com" },
-  { name: "د. عدنان عبدالجليل عبدالحسين الحلواجي", job: "معلم أول", email: "Halwachi.adnan@gmail.com" }, 
-  { name: "محمد علي محسن العلي", job: "معلم أول", email: "mod913@hotmail.com" },
-  { name: "عبدالرضا عبدالرسول", job: "معلم أول", email: "amirasabry80@gmail.com" }, 
-  { name: "عباس كاظم أحمد عبدالنبي", job: "معلم أول", email: "Abbaska@hotmail.com" },
-  { name: "موسى مدن حسين مدن عصفور", job: "معلم أول", email: "Zas4101@Gmail.Com" }, 
-  { name: "جلال ابراهيم", job: "معلم أول", email: "amirasabry80@gmail.com" },
-  { name: "حسين راشد حبيب حسين الدرازي", job: "منسق", email: "amirasabry80@gmail.com" },
-  { name: "عبدالله موفق احمد فارس فارس", job: "مسئول التربية الخاصة", email: "Abdullamuwafeq@gmail.com" }
-];
-
+const localTeachers=[["صبري محمد حمد السيد إبراهيم","العلوم","amirasabry80@gmail.com"],["حسن عبدعلي حياة المشخص","إداري","hayat31@hotmail.com"],["دانيال نادر محمد خورشيد","اللغة الانجليزية","Daniel4bh@gmail.com"],["محمد إبراهيم محمد ناصر","نظام معلم فصل","mohds24@gmail.com"],["طه عاطف طه عبد اللطيف","الرياضيات","teetooo1001@gmail.com"],["منتصر عثمان زيدان ابوزيد","اللغة الانجليزية","Montaserzidan8@gmail.com"],["إبراهيم عبدالنبي أحمد علي ناصر","تربية خاصة (دمج)","abuhussainsb@gmail.com"],["لطفي ابراهيم محمد ابراهيم","الرياضيات","Lotfytas1@gmail.com"],["عبدالباسط محمد السيد محمد","الرياضيات","abdelbaset161616@gmail.com"],["علي محسن علي سيف","المجالات العملية","Abhusain.1983@gmail.com"],["ياسر عبد الهادي عبد الله عيسى","اللغة العربية","amirasabry80@gmail.com"],["سفيان محمد نورفل","التربية الإسلامية","aminesoufiane35@gmail.com"],["عبدالله حسن عبدالله سند","المجالات العملية","Abdullasanad.345@gmail.com"],["ماهر مهدي علي عمران","اللغة العربية","Maher-deen@hotmail.com"],["ايمن محمد بكري احمد","اللغة الانجليزية","aymen.bakry14@gmail.com"],["حسين سعيد جاسم علي","مصادر التعلم","Sun12bh@gmail.com"],["يوسف علي عبدالله عبدالحق","تقنية المعلومات","amirasabry80@gmail.com"],["صلاح فؤاد محمد السيد","تربية خاصة (نطق ولغة)","fouadsalah026@gmail.com"],["حسين هلال ابراهيم احمد","تقنية المعلومات","amirasabry80@gmail.com"],["محمد علي محسن العلي","الرياضيات","mod913@hotmail.com"],["محمد عبدالجبار جعفر العويناتي","اللغة العربية والتربية الإسلامية","Mo-hd@hotmail.com"],["جعفر حسن عبدالله الزاير","العلوم","amirasabry80@gmail.com"],["عبدالله أحمد إبراهيم دليم","إدارة","abdulladliam123@gmail.com"],["باسم ناصر سعد رحال","اللغة العربية","basim221972@gmail.com"],["محمد محمود محمد سليمان","العلوم","Abofarouk67@gmail.com"],["السيد البيلي السيد بيلي","الزراعة","Selbially99@yahoo.com"],["محمد عبدالنبي سلمان العويناتي","الرياضيات","Mohamedabdulnabi19@gmail.com"],["محمد جعفر احمد عبدالحسين","عام","dirazy@gmail.com"],["درويش يحيى زين الدين","عام","Yasserzainuddin2@gmail.com"],["حسن حميد محسن علي","عام","Mrhassan12332111@gmail.com"],["حسين راشد حبيب حسين الدرازي","التربية الرياضية","amirasabry80@gmail.com"],["محمد إبراهيم علي آل طوق","اللغة العربية","m_tauq@hotmail.com"],["ايمن خضر السيد عيسي","عام","Khedreb@gmail.com"],["عباس حسين فردان الفردان","التربية الرياضية","abbas.fardan79@gmail.com"],["علي عبدالله أحمد علي","المواد الاجتماعية","ali_ali_77@hotmail.com"],["احمد فراج احمد مصطفى","عام","Ahmmedfarag372@gmail.com"],["عاطف على التهامى بسيوني","عام","atefali675@yahoo.com"],["ناصر ماهر احمد محمد","المواد الاجتماعية","Nasser.maher2819@yahoo.com"],["موسى مدن حسين مدن عصفور","التربية الإسلامية","Zas4101@Gmail.Com"],["احمد عبد المطلب علي عبد المطلب","عام","Ahmedbarwash@gmail.com"],["عدنان عبدالجليل عبدالحسين الحلواجي","اللغة العربية","Halwachi.adnan@gmail.com"],["جاسم محمد جعفر الحداد","عام","jmj19777@gmail.com"],["عبدالرزاق محمد السالم","عام","abd.razzaq05@gmail.com"],["عبدالله موفق احمد فارس فارس","مسئول التربية الخاصة","Abdullamuwafeq@gmail.com"],["محمد عبد العزيز عبد الحسين أحمد جعفر","عام","t.mohdbinjafar@gmail.com"],["حسن علي محمد خميس","عام","amirasabry80@gmail.com"],["السيد محمد ضياء علي ابراهيم محمد","عام","m40-40@hotmail.com"],["أحمد علي أحمد عبد الكريم","عام","Ahmedabdelkrem2@gmail.com"],["عباس كاظم أحمد عبدالنبي","اللغة الانجليزية","Abbaska@hotmail.com"],["حمزة ميرزا جعفر","الرياضيات","hamza666888@gmail.com"],["عبدالله صالح هلال علي","عام","Abdullahilal5@gmail.com"],["احمد عبد العزيز عيسى شهاب","عام","ahmedshehabii@hotmail.com"],["عبدالرضا عبدالرسول","العلوم","amirasabry80@gmail.com"],["جلال ابراهيم","المواد الاجتماعية","amirasabry80@gmail.com"],["حسين السواد","اللغة الانجليزية","amirasabry80@gmail.com"]].map(([name,subject,email])=>({name,subject,email}));
+const localVisitors=[["محمد إبراهيم محمد ناصر","مدير المدرسة","mohds24@gmail.com"],["عبدالله أحمد دليم","المدير المساعد","abdulladliam123@gmail.com"],["د. عدنان عبدالجليل عبدالحسين الحلواجي","معلم أول","Halwachi.adnan@gmail.com"],["محمد علي محسن العلي","معلم أول","mod913@hotmail.com"],["عبدالرضا عبدالرسول","معلم أول","amirasabry80@gmail.com"],["عباس كاظم أحمد عبدالنبي","معلم أول","Abbaska@hotmail.com"],["موسى مدن حسين مدن عصفور","معلم أول","Zas4101@Gmail.Com"],["جلال ابراهيم","معلم أول","amirasabry80@gmail.com"],["حسين راشد حبيب حسين الدرازي","منسق","amirasabry80@gmail.com"],["عبدالله موفق احمد فارس فارس","مسئول التربية الخاصة","Abdullamuwafeq@gmail.com"]].map(([name,job,email])=>({name,job,email}));
+</script>
+<script>
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzty9WyGvvCLyOVI9XaDZxImseaSd4tanfPK4H9ZNWtEdYJUuTKlY7uo30ing_ARR8/exec";
-const ADMIN="mohds24@gmail.com", LOGO="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png";
+const PASS="2030", ADMIN="mohds24@gmail.com", LOGO="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png";
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])).replace(/\n/g,'<br>');
 const LV=[{t:'غير ملائم = يفي بالتوقعات جزئيا',s:'يفي جزئياً',c:'--l1'},{t:'مرض = يفي بالتوقعات تماما',s:'يفي تماماً',c:'--l2'},{t:'جيد = يتجاوز التوقعات',s:'يتجاوز',c:'--l3'},{t:'ممتاز = يتجاوز التوقعات بكثير',s:'يتجاوز بكثير',c:'--l4'}];
@@ -288,29 +216,21 @@ const PERIODS=["الأولى","الثانية","الثالثة","الرابعة"
 const SCHED={"ابتدائي":["7:15 - 8:05","8:05 - 8:55","8:55 - 9:45","10:15 - 11:00","11:00 - 11:45","11:45 - 12:30","12:30 - 13:15"],"إعدادي":["7:15 - 8:05","8:05 - 8:55","8:55 - 9:45","9:45 - 10:30","11:00 - 11:45","11:45 - 12:30","12:30 - 13:15"]};
 let db={visits:[]}, curSheet=null;
 
+/* ===== الدخول والمظهر ===== */
 function checkLogin(){
-  try {
-      const pass = $('loginPass').value.trim();
-      if(pass === "2030"){
-          $('loginScreen').style.display='none';
-          $('app').style.display='block';
-          fetchData().then(renderHome).catch(e => {
-              alert("تم الدخول بنجاح، لكن حدث خطأ أثناء جلب البيانات السابقة من السحابة: " + e.message);
-              renderHome();
-          });
-      } else { 
-          $('loginError').style.display='block';
-      }
-  } catch(err) {
-      alert("خطأ أثناء محاولة الدخول: " + err.message);
-  }
+  try{
+    if($('loginPass').value.trim()===PASS){
+      $('loginScreen').style.display='none';$('app').style.display='block';
+      fetchData().then(renderHome).catch(e=>{alert('تم الدخول، لكن تعذر جلب البيانات من السحابة: '+e.message);renderHome()});
+    }else $('loginError').style.display='block';
+  }catch(err){alert('خطأ أثناء الدخول: '+err.message)}
 }
-
 function toggleDark(){document.documentElement.classList.toggle('dark');const d=document.documentElement.classList.contains('dark');localStorage.setItem('theme',d?'dark':'light');$('themeBtn').textContent=d?'☀️':'🌙'}
 if(localStorage.getItem('theme')==='dark')toggleDark();
 function go(id){['home','entry','reports'].forEach(t=>$(t).classList.toggle('on',t===id));if(id==='home')renderHome();window.scrollTo(0,0)}
-const post=o=>fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(o)}).then(r=>r.json());
+const post=o=>fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({...o,key:PASS})}).then(r=>r.json());
 
+/* ===== بناء الاستمارة ===== */
 function buildStatic(){
   $('v_class').innerHTML='<option value="">-- اختر الصف --</option>'+CLASSES.map(([n,c])=>Array.from({length:c},(_,i)=>`<option>${n} / ${i+1}</option>`).join('')).join('');
   $('v_period').innerHTML='<option value="">-- اختر الحصة --</option>'+PERIODS.map(p=>`<option>${p}</option>`).join('');
@@ -355,7 +275,8 @@ function fillTeacher(){const t=localTeachers.find(x=>x.name===$('v_teacher').val
 function fillVisitor(){const v=localVisitors.find(x=>x.name===$('v_visitor').value);if(v){$('v_job').value=v.job;$('v_visitor_email').value=v.email||''}}
 
 function openNew(){
-  ['v_teacher','v_subject','v_class','v_date','v_lesson','v_period','v_time','v_students','v_absence','v_visitor','v_job','v_visitor_email','v_teacher_email','v_success','v_improve','v_support_other','edit_visit_id'].forEach(i=>$(i).value='');$('v_visitNo').value=1;filterTeachers();
+  ['v_teacher','v_subject','v_class','v_date','v_lesson','v_period','v_time','v_students','v_absence','v_visitor','v_job','v_visitor_email','v_teacher_email','v_success','v_improve','v_support_other','edit_visit_id'].forEach(i=>$(i).value='');
+  $('v_visitNo').value=1;filterTeachers();
   document.querySelectorAll('#entry input[type=checkbox],#entry input[type=radio]').forEach(i=>i.checked=false);
   $('formTitle').textContent='إدخال زيارة صفية جديدة';$('saveBtn').textContent='حفظ الزيارة وإرسال PDF';lockLogic();go('entry');
 }
@@ -377,13 +298,14 @@ function editVisit(id){
   const f=document.querySelector(`input[name="v_final"][value="${v.FinalJudgment}"]`);if(f)f.checked=true;
 }
 
+/* ===== الحفظ + PDF ===== */
 function validateAndSave(){
   const req=[['v_teacher','اسم المعلم'],['v_class','الصف/الشعبة'],['v_date','تاريخ الزيارة'],['v_visitNo','رقم الزيارة'],['v_lesson','عنوان الدرس'],['v_period','الحصة'],['v_time','الزمن'],['v_students','عدد الطلبة'],['v_absence','عدد الغياب'],['v_visitor','اسم الزائر'],['v_job','المسمى الوظيفي']];
   const miss=req.filter(([i])=>!String($(i).value).trim()).map(x=>x[1]);
   for(let i=1;i<=18;i++)if(!document.querySelector(`input[name="q_${i}"]:checked`))miss.push('تقييم المعيار رقم '+i);
   const fin=document.querySelector('input[name="v_final"]:checked');if(!fin)miss.push('الحكم العام على الدرس');
   if(miss.length)return alert('⚠️ أكمل البيانات التالية قبل الحفظ:\n\n- '+miss.join('\n- '));
-  if(+$('v_absence').value>+$('v_students').value)return alert('⚠️️ عدد الغياب أكبر من عدد الطلبة.');
+  if(+$('v_absence').value>+$('v_students').value)return alert('⚠️ عدد الغياب أكبر من عدد الطلبة.');
   save(fin);
 }
 const vals=sel=>Array.from(document.querySelectorAll(sel+':checked')).map(i=>i.value);
@@ -392,7 +314,7 @@ async function save(fin){
   try{
     const sup=vals('#supBox input');if($('chk_other').checked&&$('v_support_other').value.trim())sup.push($('v_support_other').value.trim());
     const editId=$('edit_visit_id').value;
-    const p={ID:editId||Date.now().toString(),Year:$('r_year').value\vert{}\vert{}"2026-2027",Semester:"طوال العام",Date:$('v_date').value,TeacherName:$('v_teacher').value,Subject:$('v_subject').value,
+    const p={ID:editId||Date.now().toString(),Year:$('r_year').value||"2026-2027",Semester:"طوال العام",Date:$('v_date').value,TeacherName:$('v_teacher').value,Subject:$('v_subject').value,
       VisitorName:$('v_visitor').value,VisitorJob:$('v_job').value,VisitorEmail:$('v_visitor_email').value,TeacherEmail:$('send_to_teacher').checked?$('v_teacher_email').value:"",AdminEmail:ADMIN,
       FinalJudgment:fin.value,Extra_Class:$('v_class').value,Extra_VisitNo:$('v_visitNo').value,Extra_Lesson:$('v_lesson').value,Period:$('v_period').value,Extra_Time:$('v_time').value,
       StudentsCount:$('v_students').value,AbsenceCount:$('v_absence').value,Extra_Skills:vals('#skillsBox input').join('، '),Extra_SW:vals('#swBox input').join('، '),
@@ -428,41 +350,40 @@ async function pdfAction(btn,id,mode){
   }catch(e){alert('تعذر تنفيذ العملية: '+e.message)}finally{btn.disabled=false;btn.innerHTML=h}
 }
 
+/* ===== البيانات ===== */
 async function fetchData(){
-    try {
-        const r = await fetch(SCRIPT_URL+'?t='+Date.now());
-        if (!r.ok) throw new Error("فشل الاتصال بخادم جوجل.");
-        db.visits = (await r.json()).visits || [];
-    } catch(e) {
-        console.error(e);
-        throw e;
-    }
+  const r=await fetch(SCRIPT_URL+'?key='+encodeURIComponent(PASS)+'&t='+Date.now());
+  if(!r.ok)throw new Error('فشل الاتصال بخادم جوجل');
+  const j=await r.json();
+  if(j.status==='error')throw new Error(j.error==='unauthorized'?'كلمة المرور في Code.gs (KEY) لا تطابق كلمة مرور الصفحة':j.error);
+  db.visits=j.visits||[];
 }
-async function refreshData(){
-    try {
-        await fetchData();
-        generateReport();
-        renderHome();
-        alert('تم جلب أحدث البيانات من السحابة');
-    } catch (e) {
-        alert("فشل تحديث السجل: " + e.message + "\n\nالرجاء التأكد من تحديث الـ Deployment في Google Apps Script.");
-    }
+async function refreshData(silent){
+  try{await fetchData();generateReport();renderHome();if(silent!==true)alert('تم جلب أحدث البيانات من السحابة')}
+  catch(e){alert('فشل تحديث السجل: '+e.message+'\n\nتأكد من نشر إصدار جديد من Code.gs ومن تطابق كلمة المرور (KEY).')}
+}
+async function deleteVisit(id){
+  if(!confirm('حذف هذه الزيارة نهائياً من السجل؟'))return;
+  try{const r=await post({action:'delete',ID:id});if(r.status!=='success')throw new Error(r.error);
+    db.visits=db.visits.filter(x=>String(x.ID)!==String(id));generateReport()}catch(e){alert('تعذر الحذف: '+e.message)}
 }
 
+/* ===== الرئيسية: إحصائيات ===== */
 const statsOf=arr=>{const c=[0,0,0,0];arr.forEach(v=>{const l=lvl(v.FinalJudgment);c[l<0?0:l]++});return c};
 const pct=(n,t)=>{if(!t)return '0%';const p=n/t*100;return Number.isInteger(p)?p+'%':p.toFixed(2)+'%'};
 function renderHome(){
-  const yr=$('r_year').value,vs=db.visits.filter(v=>!yr\vert{}\vert{}v.Year===yr);$('hYear').textContent=yr;
+  const yr=$('r_year').value,vs=db.visits.filter(v=>!yr||v.Year===yr);$('hYear').textContent=yr;
   if(!vs.length){$('homeStats').innerHTML='<p style="color:var(--mut)">لا توجد زيارات مسجلة لهذا العام بعد.</p>';return}
   const c=statsOf(vs),t=vs.length,teachers=new Set(vs.map(v=>v.TeacherName)).size,by={};
   vs.forEach(v=>by[v.Subject]=(by[v.Subject]||0)+1);
   const last=vs.slice().sort((a,b)=>String(b.Date).localeCompare(String(a.Date))).slice(0,5);
   $('homeStats').innerHTML=`<div class="stat"><div><b>${t}</b><span>إجمالي الزيارات</span></div><div><b>${teachers}</b><span>معلمون تمت زيارتهم</span></div><div><b>${pct(c[2]+c[3],t)}</b><span>جيد وأعلى</span></div><div><b>${Object.keys(by).length}</b><span>أقسام</span></div></div>
-  <div class="bar">${c.map((n,i)=>`<span style="width:${n/t*100}\%;background:var(${LV[i].c})"></span>`).join('')}</div>
+  <div class="bar">${c.map((n,i)=>`<span style="width:${n/t*100}%;background:var(${LV[i].c})"></span>`).join('')}</div>
   <div class="leg">${LV.map((l,i)=>`<span><i style="background:var(${l.c})"></i>${l.t.split(' =')[0]}: ${c[i]} (${pct(c[i],t)})</span>`).join('')}</div>
   <h3 style="margin-top:16px">آخر الزيارات</h3><table class="lg"><tr><th>التاريخ</th><th>المعلم</th><th>المادة</th><th>الحكم</th></tr>${last.map(v=>{const l=lvl(v.FinalJudgment);return `<tr><td>${esc(v.Date)}</td><td>${esc(v.TeacherName)}</td><td>${esc(v.Subject)}</td><td><span class="chip" style="background:var(${LV[l<0?0:l].c})">${LV[l<0?0:l].t.split(' =')[0]}</span></td></tr>`}).join('')}</table>`;
 }
 
+/* ===== التقارير ===== */
 function updateFilterUI(){
   const f=$('r_filterBy').value;$('div_specific').style.display=f==='all'?'none':'block';if(f==='all')return;
   const o=f==='teacher'?localTeachers.map(t=>t.name):f==='dept'?localTeachers.map(t=>t.subject):localVisitors.map(v=>v.name);
@@ -480,7 +401,7 @@ function generateReport(){
     title.textContent=`سجل الزيارات: ${who} (${yr})`;
     out.innerHTML=`<p><b>إجمالي الزيارات: ${rows.length}</b></p><div class="tw"><table class="lg"><tr><th>التاريخ</th><th>المعلم</th><th>المقيم</th><th>الحكم</th><th class="np">إجراءات</th></tr>`+
     (rows.length?rows.map(v=>{const l=lvl(v.FinalJudgment);return `<tr><td>${esc(v.Date)}</td><td><b>${esc(v.TeacherName)}</b></td><td>${esc(v.VisitorName)}</td><td><span class="chip" style="background:var(${LV[l<0?0:l].c})">${LV[l<0?0:l].t.split(' =')[0]}</span></td>
-      <td class="np"><button class="sm" onclick="editVisit('${v.ID}')">تعديل</button> <button class="sm" style="background:#d97706" onclick="showSheet('${v.ID}')">عرض وطباعة</button> <button class="sm" style="background:#059669" onclick="pdfAction(this,'${v.ID}','send')">إرسال PDF</button> <button class="sm" style="background:#475569" onclick="pdfAction(this,'${v.ID}','download')">تحميل PDF</button></td></tr>`}).join(''):'<tr><td colspan="5">لا توجد زيارات مطابقة.</td></tr>')+'</table></div>';return;
+      <td class="np"><button class="sm" onclick="editVisit('${v.ID}')">تعديل</button> <button class="sm" style="background:#d97706" onclick="showSheet('${v.ID}')">عرض وطباعة</button> <button class="sm" style="background:#059669" onclick="pdfAction(this,'${v.ID}','send')">إرسال PDF</button> <button class="sm" style="background:#475569" onclick="pdfAction(this,'${v.ID}','download')">تحميل PDF</button> <button class="sm" style="background:#b91c1c" onclick="deleteVisit('${v.ID}')">حذف</button></td></tr>`}).join(''):'<tr><td colspan="5">لا توجد زيارات مطابقة.</td></tr>')+'</table></div>';return;
   }
   if(!rows.length){out.innerHTML='<p style="text-align:center;color:var(--l1);font-weight:700;padding:40px">لا توجد زيارات مطابقة.</p>';return}
   const head=LV.map(l=>l.t.replace(' = ',' =<br>'));
@@ -503,6 +424,7 @@ function generateReport(){
   }
 }
 
+/* ===== الاستمارة الرسمية (للعرض والطباعة وملف PDF) ===== */
 function sheetHTML(v){
   const t=String(v.Extra_Time||'').split('-'),J=lvl(v.FinalJudgment),has=(s,x)=>String(s||'').includes(x);
   let rows='',cur='';
@@ -527,7 +449,8 @@ function sheetHTML(v){
 }
 function showSheet(id){
   const v=db.visits.find(x=>String(x.ID)===String(id));if(!v)return;curSheet=v;
-  $('repHead').style.display='none';$('out').innerHTML=`<div class="tools np" style="margin-bottom:10px"><button onclick="window.print()">🖨️ طباعة الاستمارة (ورقتان)</button><button class="sec" onclick="generateReport()">عودة للسجل</button></div><div class="sw">${sheetHTML(v)}</div>`;
+  $('repHead').style.display='none';
+  $('out').innerHTML=`<div class="tools np" style="margin-bottom:10px"><button onclick="window.print()">🖨️ طباعة الاستمارة (ورقتان)</button><button class="sec" onclick="generateReport()">عودة للسجل</button></div><div class="sw">${sheetHTML(v)}</div>`;
   document.title=('استمارة_'+v.TeacherName+'_'+v.Date).replace(/\s+/g,'_');window.scrollTo(0,0);
 }
 window.addEventListener('afterprint',()=>document.title='استمارة الملاحظة الصفية الموحدة');
