@@ -469,7 +469,8 @@ buildStatic();
 let ME={role:'admin',depts:[],name:''};
 const inDept=s=>{s=String(s||'').replace(/\s/g,'');return ME.depts.some(d=>{d=d.replace(/\s/g,'');return d.slice(-1)==='*'?s.indexOf(d.slice(0,-1))===0:s===d})};
 
-$('loginPass').insertAdjacentHTML('beforebegin','<input id="loginUser" placeholder="اسم المستخدم (اسم القسم)" style="text-align:center;font-size:18px;margin-bottom:8px" onkeydown="if(event.key===\'Enter\')$(\'loginPass\').focus()">');
+$('loginPass').insertAdjacentHTML('beforebegin','<select id="loginUser" style="text-align:center;font-size:18px;margin-bottom:8px" onchange="$(\'loginPass\').focus()"><option value="">-- اختر المستخدم --</option></select>');
+fetch(SCRIPT_URL+'?users=1').then(r=>r.json()).then(j=>{if(j.users)$('loginUser').innerHTML='<option value="">-- اختر المستخدم --</option>'+j.users.map(u=>`<option>${esc(u)}</option>`).join('')}).catch(()=>{});
 $('loginPass').placeholder='كلمة المرور';
 document.querySelector('.hd .in').insertAdjacentHTML('beforeend','<button onclick="location.reload()">خروج</button>');
 document.head.insertAdjacentHTML('beforeend',`<style>
