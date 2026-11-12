@@ -499,6 +499,7 @@ async function checkLogin(){
 function applyRole(){
   const adm=ME.role==='admin';
   if(!adm){const k=localTeachers.filter(t=>inDept(t.subject));localTeachers.length=0;localTeachers.push(...k);$('r_filterBy').options[0].text='كل القسم'}
+  if(!adm){const kv=localVisitors.filter(x=>!x.job.includes('مدير'));localVisitors.length=0;localVisitors.push(...kv)}
   buildStatic();
   if(!adm){const o=$('v_dept').querySelector('option[value=all]');if(o)o.remove();
     const ds=[...new Set(localTeachers.map(t=>t.subject))];if(ds.length===1){$('v_dept').value=ds[0];filterTeachers()}}
@@ -529,6 +530,22 @@ function renderHome(){
   <p style="margin:12px 0 0"><button class="sec sm" onclick="go('reports');$('r_type').value='log';updateFilterUI();generateReport()">عرض كل الزيارات في السجل (${t})</button></p>`;
   document.querySelectorAll('#homeStats [data-n]').forEach(el=>{const raw=el.dataset.n,n=parseFloat(raw),suf=raw.replace(/[\d.]/g,'');if(isNaN(n))return;let s=null;
     const f=ts=>{s=s||ts;const p=Math.min((ts-s)/700,1);el.textContent=Math.round(n*p)+suf;if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)});
+}
+
+/* ===== إصلاح ملف PDF الفارغ ===== */
+async function makePdf(v){
+  await document.fonts.ready;window.scrollTo(0,0);
+  let logo='';
+  try{const b=await (await fetch(LOGO)).blob();logo=await new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)})}catch(e){}
+  let html=sheetHTML(v);html=logo?html.split(LOGO).join(logo):html.replace(/<img[^>]*>/,'');
+  const host=document.createElement('div');
+  host.style.cssText='position:absolute;top:0;left:0;width:794px;z-index:-1;background:#fff';
+  host.innerHTML=html;document.body.appendChild(host);
+  await new Promise(r=>setTimeout(r,400));
+  try{
+    const pdf=await html2pdf().set({margin:0,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true,backgroundColor:'#fff',scrollX:0,scrollY:0,windowWidth:794},jsPDF:{unit:'mm',format:'a4'},pagebreak:{mode:['css'],before:'.sheet2'}}).from(host).toPdf().get('pdf');
+    return {b64:pdf.output('datauristring').split(',')[1],name:('استمارة_'+v.TeacherName+'_'+v.Date).replace(/[\\\/:*?"<>|\s]+/g,'_')+'.pdf'};
+  }finally{host.remove()}
 }
 
 </script>
