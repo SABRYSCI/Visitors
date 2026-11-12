@@ -539,13 +539,12 @@ async function makePdf(v){
   try{const b=await (await fetch(LOGO)).blob();logo=await new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)})}catch(e){}
   let html=sheetHTML(v);html=logo?html.split(LOGO).join(logo):html.replace(/<img[^>]*>/,'');
   const host=document.createElement('div');
-  host.style.cssText='position:absolute;top:0;left:0;width:794px;z-index:-1;background:#fff';
-  host.innerHTML=html;document.body.appendChild(host);
-  await new Promise(r=>setTimeout(r,400));
+  host.style.cssText='width:794px;background:#fff';
+  host.innerHTML=html;
   try{
     const pdf=await html2pdf().set({margin:0,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true,backgroundColor:'#fff',scrollX:0,scrollY:0,windowWidth:794},jsPDF:{unit:'mm',format:'a4'},pagebreak:{mode:['css'],before:'.sheet2'}}).from(host).toPdf().get('pdf');
     return {b64:pdf.output('datauristring').split(',')[1],name:('استمارة_'+v.TeacherName+'_'+v.Date).replace(/[\\\/:*?"<>|\s]+/g,'_')+'.pdf'};
-  }finally{host.remove()}
+  }finally{}
 }
 
 </script>
