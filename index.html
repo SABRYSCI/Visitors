@@ -206,7 +206,7 @@ const localVisitors=[["محمد إبراهيم محمد ناصر","مدير ال
 </script>
 <script>
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzty9WyGvvCLyOVI9XaDZxImseaSd4tanfPK4H9ZNWtEdYJUuTKlY7uo30ing_ARR8/exec";
-const PASS="2030", ADMIN="mohds24@gmail.com", LOGO="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png";
+let PASS="", ADMIN="mohds24@gmail.com", LOGO="https://i.postimg.cc/K88X7RLb/trwysyh-dhhbyt.png";
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])).replace(/\n/g,'<br>');
 const LV=[{t:'غير ملائم = يفي بالتوقعات جزئيا',s:'يفي جزئياً',c:'--l1'},{t:'مرض = يفي بالتوقعات تماما',s:'يفي تماماً',c:'--l2'},{t:'جيد = يتجاوز التوقعات',s:'يتجاوز',c:'--l3'},{t:'ممتاز = يتجاوز التوقعات بكثير',s:'يتجاوز بكثير',c:'--l4'}];
@@ -462,6 +462,74 @@ function showSheet(id){
 }
 window.addEventListener('afterprint',()=>document.title='استمارة الملاحظة الصفية الموحدة');
 buildStatic();
+</script>
+
+<script>
+/* ===== صلاحيات الأقسام + لوحة الإحصائيات: ضعه داخل <script> جديد قبل </body> مباشرة ===== */
+let ME={role:'admin',depts:[],name:''};
+const inDept=s=>{s=String(s||'').replace(/\s/g,'');return ME.depts.some(d=>{d=d.replace(/\s/g,'');return d.slice(-1)==='*'?s.indexOf(d.slice(0,-1))===0:s===d})};
+
+$('loginPass').insertAdjacentHTML('beforebegin','<input id="loginUser" placeholder="اسم المستخدم (اسم القسم)" style="text-align:center;font-size:18px;margin-bottom:8px" onkeydown="if(event.key===\'Enter\')$(\'loginPass\').focus()">');
+$('loginPass').placeholder='كلمة المرور';
+document.querySelector('.hd .in').insertAdjacentHTML('beforeend','<button onclick="location.reload()">خروج</button>');
+document.head.insertAdjacentHTML('beforeend',`<style>
+.card,.stat>div,.act button{transition:transform .2s,box-shadow .2s,border-color .2s}
+.card{animation:fi .45s ease both}.stat>div:hover,.act button:hover{transform:translateY(-3px);box-shadow:0 8px 18px #0f172a1f}
+@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes gr{from{transform:scaleY(0)}to{transform:scaleY(1)}}@keyframes gw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.bar span{transform-origin:right;animation:gw .8s ease-out}
+.dash{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:14px}
+.dn{width:130px;height:130px;border-radius:50%;margin:auto;display:flex;align-items:center;justify-content:center;position:relative}
+.dn:after{content:"";position:absolute;inset:18px;background:var(--cd);border-radius:50%}.dn b{position:relative;z-index:1;font-size:22px}
+.mc{display:flex;gap:8px;align-items:flex-end;height:150px}.mc>div{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;font-size:12px}
+.mc i{width:70%;background:var(--br);border-radius:6px 6px 0 0;transform-origin:bottom;animation:gr .7s ease-out}
+.warn b{color:var(--l1)}
+</style>`);
+
+async function checkLogin(){
+  const u=$('loginUser').value.trim(),p=$('loginPass').value.trim();PASS=u+'|'+p;
+  try{
+    const j=await (await fetch(SCRIPT_URL+'?key='+encodeURIComponent(PASS)+'&t='+Date.now())).json();
+    if(j.status==='error'){PASS='';$('loginError').style.display='block';return}
+    ME=j.me;db.visits=j.visits||[];applyRole();
+    $('loginScreen').style.display='none';$('app').style.display='block';renderHome();
+  }catch(e){alert('تعذر الاتصال بالخادم: '+e.message)}
+}
+function applyRole(){
+  const adm=ME.role==='admin';
+  if(!adm){const k=localTeachers.filter(t=>inDept(t.subject));localTeachers.length=0;localTeachers.push(...k);$('r_filterBy').options[0].text='كل القسم'}
+  buildStatic();
+  if(!adm){const o=$('v_dept').querySelector('option[value=all]');if(o)o.remove();
+    const ds=[...new Set(localTeachers.map(t=>t.subject))];if(ds.length===1){$('v_dept').value=ds[0];filterTeachers()}}
+  document.querySelector('.hd small').textContent=(adm?'صلاحية كاملة':'قسم '+ME.depts.join('، ').replace(/\*/g,''))+' | '+ME.name;
+}
+
+function renderHome(){
+  const yr=$('r_year').value,vs=db.visits.filter(v=>!yr||v.Year===yr),adm=ME.role==='admin';$('hYear').textContent=yr;
+  if(!vs.length){$('homeStats').innerHTML='<p style="color:var(--mut)">لا توجد زيارات مسجلة لهذا العام بعد.</p>';return}
+  const c=statsOf(vs),t=vs.length,tn=new Set(vs.map(v=>v.TeacherName)).size,
+   pool=localTeachers.filter(x=>!['اداري','المدير','المدير المساعد'].includes(x.subject)).length||1,
+   grp=k=>{const g={};vs.forEach(v=>(g[v[k]||'—']=g[v[k]||'—']||[]).push(v));return Object.entries(g).sort((a,b)=>b[1].length-a[1].length)},
+   sb=a=>{const s=statsOf(a);return `<div class="bar">${s.map((x,i)=>`<span style="width:${x/a.length*100}%;background:var(${LV[i].c})"></span>`).join('')}</div>`},
+   tbl=(ti,k,h)=>`<div class="card" style="margin:0"><h3>${ti}</h3><div class="tw"><table class="lg"><tr><th>${h}</th><th>الزيارات</th><th>جيد وأعلى</th><th style="width:34%">المستوى</th></tr>${grp(k).map(([n,a])=>{const s=statsOf(a);return `<tr><td>${esc(n)}</td><td><b>${a.length}</b></td><td>${pct(s[2]+s[3],a.length)}</td><td>${sb(a)}</td></tr>`}).join('')}</table></div></div>`,
+   mo={};vs.forEach(v=>{const m=String(v.Date).slice(0,7);mo[m]=(mo[m]||0)+1});
+  const ms=Object.entries(mo).sort(),mx=Math.max(...ms.map(x=>x[1])),good=pct(c[2]+c[3],t);
+  let acc=0;const cg=c.map((n,i)=>{const a=acc/t*100;acc+=n;return `var(${LV[i].c}) ${a}% ${acc/t*100}%`}).join(',');
+  const kp=[[t,'إجمالي الزيارات'],[tn,'معلمون تمت زيارتهم'],[Math.round(tn/pool*100)+'%','نسبة تغطية المعلمين'],[good,'جيد وأعلى'],[c[0],'تحتاج دعماً (يفي جزئياً)']];
+  const last=vs.slice().sort((a,b)=>String(b.Date).localeCompare(String(a.Date))).slice(0,8);
+  $('homeStats').innerHTML=`<div class="stat">${kp.map((k,i)=>`<div class="${i==4&&k[0]?'warn':''}"><b data-n="${k[0]}">${k[0]}</b><span>${k[1]}</span></div>`).join('')}</div>
+  <div class="dash">
+   <div class="card" style="margin:0"><h3>مستوى الزيارات</h3><div class="dn" style="background:conic-gradient(${cg})"><b>${good}</b></div><div class="leg" style="margin-top:12px">${LV.map((l,i)=>`<span><i style="background:var(${l.c})"></i>${l.t.split(' =')[0]}: ${c[i]}</span>`).join('')}</div></div>
+   <div class="card" style="margin:0"><h3>الزيارات حسب الشهر</h3><div class="mc">${ms.map(([m,n])=>`<div><b>${n}</b><i style="height:${n/mx*80}%"></i><span>${m.slice(5)}/${m.slice(2,4)}</span></div>`).join('')}</div></div>
+   ${adm?tbl('مقارنة الأقسام','Subject','القسم'):tbl('معلمو القسم','TeacherName','المعلم')}
+   ${adm?tbl('نشاط المقيمين','VisitorName','المقيم'):tbl('المقيمون','VisitorName','المقيم')}
+  </div>
+  <h3 style="margin-top:16px">آخر الزيارات</h3><div class="tw"><table class="lg"><tr><th>التاريخ</th><th>المعلم</th><th>المادة</th><th>الحكم</th></tr>${last.map(v=>{const l=Math.max(lvl(v.FinalJudgment),0);return `<tr><td>${esc(v.Date)}</td><td>${esc(v.TeacherName)}</td><td>${esc(v.Subject)}</td><td><span class="chip" style="background:var(${LV[l].c})">${LV[l].t.split(' =')[0]}</span></td></tr>`}).join('')}</table></div>
+  <p style="margin:12px 0 0"><button class="sec sm" onclick="go('reports');$('r_type').value='log';updateFilterUI();generateReport()">عرض كل الزيارات في السجل (${t})</button></p>`;
+  document.querySelectorAll('#homeStats [data-n]').forEach(el=>{const raw=el.dataset.n,n=parseFloat(raw),suf=raw.replace(/[\d.]/g,'');if(isNaN(n))return;let s=null;
+    const f=ts=>{s=s||ts;const p=Math.min((ts-s)/700,1);el.textContent=Math.round(n*p)+suf;if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)});
+}
+
 </script>
 </body>
 </html>
